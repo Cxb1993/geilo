@@ -31,39 +31,41 @@
 
 
 % tydligere titler med PCE in front
-\section{Polynomial chaos expansion part II: Method Introduction}
-
+\section{Polynomial chaos expansion part I: Method Introduction}
 Polynomial chaos expansion is a class of methods for determining the
-uncertainties in forward models given uncertainty in input parameters.
+uncertainties in forward models given uncertainty in the input parameters.
+It is much faster than other methods and as such it is an invaluable tool when working on large problems.
+%The main advantage for polynomial chaos expansion over other methods is that it is much faster.
 % Mangler en setning om hvorfor PCE har noe verdi (svar: den er raskere enn andre metoder)
-In this first lecture we will give an introduction to the general
-concepts necessary to understand the foundation of the theory.
-Along the lecture will also give an introduction to a software
+In this first lecture we will give an introduction to the theory, introducing the 
+general concepts necessary to understand the foundation of the theory.
+The lecture will also give a presentation of a software
 package called Chaospy, a Python toolbox developed specifically to
-use polynomial chaos expansion in practice.
+use polynomial chaos expansion.
 
 
 
-\section{Polynomial chaos expansion part II: Practical implementation}
+\section{Polynomial chaos expansion part II: Practical Implementation}
+We will in this lecture teach how to implement and use a polynomial chaos expansion.
 % Mangler setning om at dette er hvor man lærer å bruke PCE på praktiske problemer.
 One important set of methods to get the coefficients of the
 polynomial chaos expansion are collocation methods.
-These are methods that require the residue of the governing
-equations to be zero at specific points in the computations.
+% These are methods that require the residue of the governing
+% equations to be zero at specific points in the computations.
 % hva var dette? ser litt ut som Galerkin.
 We will take a closer look at two subclasses of this set of
-methods, the pseudospectral approach utilizing sparse grids and a
-interpolation approach.  After this lecture you will be able to do
-a polynomial chaos expansion using Chaospy on simpler problems.
+methods, the pseudospectral approach utilizing sparse grids and an
+interpolation approach. 
+%After this lecture you will be able to do a polynomial chaos expansion using Chaospy on simpler problems.
 
 % Pseudo-spectral methods collocation
 
 
 
-\section{Polynomial chaos expansion part III: Some advanced topics}
+\section{Polynomial chaos expansion part III: Some Advanced Topics}
 This lecture covers more advanced topics, such as what happens when
-you no longer have independent variables.
-This problem is solved by using a Rosenblatt transformation on the
+you no longer have independent variables,
+which is solved by using a Rosenblatt transformation on the
 system parameters.
 %Second to last we generalize the polynomial chaos expansion by using different orthogonal polynomials.
 We will end with a walkthrough of the Galerkin method, another
