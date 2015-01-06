@@ -153,7 +153,7 @@
   \frametitle{Convergence of Monte Carlo Sampling}
 
   \begin{figure}
-    \includegraphics[width=0.8\textwidth]{MC_convergence_only_1D.png}
+    \includegraphics[width=0.8\textwidth]{MC_convergence_1D_1.png}
   \end{figure}
   
 \end{frame}
@@ -195,9 +195,14 @@ Single-index\\
   \end{tabular}
   \end{columns}
 \end{frame}
+
 \begin{frame}
   \frametitle{Convergence of polynomial approximation}
 
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{MC_convergence_1D_2.png}
+  \end{figure}
+  
 \end{frame}
 
 
@@ -254,7 +259,7 @@ Assumptions:
 \end{frame}
 
 \begin{frame}
- \frametitle{Proposal, let us use Gram Schmidt to find the orthogonal polynomials}
+ \frametitle{Proposal, let us use Gram-Schmidt to find the orthogonal polynomials}
  Assumption: We are in 1D and have $a ~ F_q$ and $I = 1$. 
  \[V_0, V_1,...,V_N = 1, q,...,q^N\]
  The Gram Schmidt method is
@@ -267,22 +272,38 @@ Assumptions:
 
 \end{frame}
 
-\begin{chaospy}{Gram Schmidt with chaospy}
-N = 3
-\begin{lstlisting}[languange=python]
-  
+\begin{chaospy}{Gram-Schmidt with chaospy}
+\begin{lstlisting}[language=python]
+M = 5; D = 1
+N = factorial(M+D)/factorial(M) - 1
+a = cp.Uniform()
+
+V = cp.basis(0,M,1)
+P_M =  [V[0]]
+
+for n in xrange(1,N):
+    summation = 0
+    for m in xrange(0,n):
+        summation += P_M[m]*cp.E(V[n]*P_M[m],a)
+                            /cp.E(P_M[m]**2,a)
+    P_M.append(V[n] - summation)
  \end{lstlisting}
 \end{chaospy}
 
 
 \begin{frame}
  \frametitle{Plot of all generated polynomials}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{gramschmidtpoly.png}
+  \end{figure}
 \end{frame}
 
 
 \begin{frame}
  \frametitle{But once again things go wrong}
   %plot the errors as we go to large M
+  
+  
  \end{frame}
 
 
@@ -319,20 +340,39 @@ print P
   
 \begin{frame}
  \frametitle{The Three Term Recurrence (TTR) relation}
-
+\includegraphics[width=0.9\textwidth]{k_convergence.png}
  \end{frame}
+
+
+\begin{chaospy}{Finding the Fourier coefficients}
+ \begin{lstlisting}[language=python]
+a = cp.Uniform(0,0.1)
+
+def u(x,a):
+  ax = np.outer(a,x)
+  return np.exp(-ax)
+
+m = 2
+x = np.linspace(0, 10, 100)
+
+P, norm = cp.orth_ttr(m, a, retall=True)
+nodes, weights = cp.generate_quadrature(m+1, a,
+                                        rule="G")
+solves = u(x,nodes[0])
+U_hat, c = cp.fit_quadrature(P, nodes, weights,
+                             solves,retall=True)
+\end{lstlisting}
+
+\end{chaospy}
 
 
 \begin{frame}
- \frametitle{Finding the Fourier coefficients}
+\frametitle{Convergence of orthogonal polynomial approximation}
 
- \end{frame}
-
-
-\begin{frame}
- \frametitle{Convergence}
-
- \end{frame}
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{MC_convergence_1D_3.png}
+  \end{figure}
+   \end{frame}
 
 
 \begin{frame}
@@ -393,11 +433,32 @@ print cp.E(P[3]*P[3],dist)
 \end{chaospy}
  
  
+ \begin{chaospy}{Convergence of multdimensional problem}
+ \begin{lstlisting}[language=python]
+def u(x,a, I):
+  return I*np.exp(-a*x)
  
+a = cp.Uniform(0, 0.1); I = cp.Uniform(8, 10)
+dist = cp.J(a,I)
+x = np.linspace(0, 10, 100)
+m = 2
+
+P = cp.orth_ttr(m, dist)
+nodes, weights = cp.generate_quadrature(m+1, dist,
+                                        rule="G")
+i1,i2 = np.mgrid[:len(weights), :100]
+solves = u(x[i2],nodes[0][i1],nodes[1][i1])
+U_hat = cp.fit_quadrature(P, nodes, weights,
+                          solves)
+ \end{lstlisting}
+\end{chaospy}
+
  
 \begin{frame}
  \frametitle{Convergence}
-
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{MC_convergence_2D.png}
+  \end{figure}
 
  \end{frame}
  
@@ -424,11 +485,6 @@ print cp.E(P[3]*P[3],dist)
   \end{frame}
 
 
-\begin{frame}
-  \frametitle{What happens if we choose the wrong distribution}
-  
-\end{frame}
-
 
 
 
@@ -445,6 +501,11 @@ print cp.E(P[3]*P[3],dist)
  
 
 \if f
+%\begin{frame}
+%  \frametitle{What happens if we choose the wrong distribution}
+  
+%\end{frame}
+
 
 
 \begin{frame}

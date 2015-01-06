@@ -2,7 +2,7 @@ import chaospy as cp
 import pylab as pl
 import numpy as np
 
-Nt = 10**3
+Nt = 10**2
 N = 10
 
 def E_analytical(x):
@@ -13,9 +13,12 @@ def V_analytical(x):
     return 1220*(1-np.exp(-0.2*x))/(3*x) - (90*(1-np.exp(-0.1*x))/(x))**2
 
 
-def u(t,a, I):
-    return I*np.exp(-a*t)
+#def u(t,a, I):
+#    return I*np.exp(-a*t)
 
+def u(x,a, I):
+    #ax = np.outer(a,x)
+    return I*np.exp(-a*x)
  
 a = cp.Uniform(0, 0.1)
 I = cp.Uniform(8, 10)
@@ -64,29 +67,33 @@ errorCP = []
 varCP = []
 a_m = cp.E(a)
 I_m = cp.E(I)
-for n in xrange(1,N):
-    print n
-    P = cp.orth_ttr(n, dist)
+m = 2
+
+K = xrange(m,N+1)
+for n in K:
+
+    
+    
+    P = cp.orth_ttr(m, dist)
     nodes, weights = cp.generate_quadrature(n, dist, rule="G")
-    solves = u(nodes[0],a_m,I_m)
+
+    i1,i2 = np.mgrid[:len(weights), :Nt]
+    solves = u(T[i2],nodes[0][i1],nodes[1][i1])
+
     U_hat = cp.fit_quadrature(P, nodes, weights, solves)
-    print cp.Var(U_hat,dist)
-    print np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist)))
     #errorCP.append(dt*np.sum(np.abs(cp.E(u,dist) - cp.E(U_hat,dist))))
     #varCP.append(dt*np.sum(np.abs(cp.Var(u,dist) - cp.Var(U_hat,dist))))
     #errorCP.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     #varCP.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
-    errorCP.append(dt*np.sum(np.abs(E_analytical(T))) - cp.E(U_hat,dist))
-    varCP.append(dt*np.sum(np.abs(V_analytical(T))) - cp.Var(U_hat,dist))
-
-
-
+    errorCP.append(dt*np.sum(np.abs(E_analytical(T)) - cp.E(U_hat,dist)))
+    varCP.append(dt*np.sum(np.abs(V_analytical(T)) - cp.Var(U_hat,dist)))
+    
 
 pl.plot(totalerrorMC[:])
 pl.plot(totalvarianceMC[:])
-pl.plot(errorCP)
-pl.plot(varCP)
-pl.xlabel("Terms, N")
+pl.plot(K,errorCP)
+pl.plot(K, varCP)
+pl.xlabel("Samples, k")
 pl.ylabel("Error")
 pl.yscale('log')
 pl.title("Error in expectation value and variance ")
