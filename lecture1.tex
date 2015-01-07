@@ -93,14 +93,17 @@
   \end{align*}
   where $a$ and $I$ are uncertain.\newline
   
-  \pause
+    \pause
   Standard notation
   \begin{itemize}
     \item $u(\mathbf{x}, \mathbf{q})$ - Solution to the differential equation.
     \item $\mathbf{q}$ - Parameters with uncertanties, $a$ and $I$.
-    \item $D$ - The number of input parameters, $D=2$.
+    \item $D$ - The number of input parameters, $D=2$.\newline
   \end{itemize}
+\pause
+We start by looking at the 1D problem, where only a is uncertain and $I=1$.
 \end{frame}
+
 
 \begin{frame}
   \frametitle{Probability space}
@@ -120,33 +123,42 @@
     \begin{figure}
     \includegraphics[width=\textwidth]{MC.png}
   \end{figure}
+  \pause
 \begin{lstlisting}[language=python]
-  import chaospy as cp
-  import numpy as np
+import chaospy as cp
+import numpy as np
 
-  def u(x, a, I):
-    return I*np.exp(-a*x)
+def u(x, a, I):
+  return I*np.exp(-a*x)
     
-  N = 1000
+N = 1000
 
-  a = cp.Uniform()
-  I = cp.Uniform()
+a = cp.Uniform(0.0.1); I = cp.Uniform(8,10)
+  
+\end{lstlisting}
+\end{frame}
 
-  samplesI = I.sample(N)
-  samplesa = a.sample(N)
-  x = np.linspace(0, 10, N)
+\begin{chaospy}{Monte Carlo with chaospy}
+\begin{lstlisting}[language=python]
+samplesI = I.sample(N)
+samplesa = a.sample(N)
+x = np.linspace(0, 10, N)
 
-  U = u(x, samplesa, samplesI)
+U = u(x, samplesa, samplesI)
 
-  E = np.sum(U)/N
-  Var = np.sum(U**2)/N - E**2
+E = np.sum(U)/N
+Var = np.sum(U**2)/N - E**2
 
-  print "E = ", E
-  print "Var = ", Var
+print "E = ", E
+print "Var = ", Var
+  
+>>> E =  7.15882532019
+>>> Var =  2.16180476368
+
 \end{lstlisting}
 
-    
-\end{frame}
+\end{chaospy}
+
 
 
 \begin{frame}
@@ -220,7 +232,7 @@ Single-index\\
   \[\langle P_n,P_m\rangle =
   \begin{cases}
     \norm{P_n}^2_Q & n = m \\
-    0 & n \neq M
+    0 & n \neq m
   \end{cases}\]
 
 \end{frame}
@@ -302,7 +314,9 @@ for n in xrange(1,N):
 \begin{frame}
  \frametitle{But once again things go wrong}
   %plot the errors as we go to large M
-  
+    \begin{figure}
+    \includegraphics[width=0.8\textwidth]{gramschmidterror1.png}
+  \end{figure}
   
  \end{frame}
 
@@ -336,7 +350,13 @@ print P
 \end{lstlisting}
 \end{chaospy}
 
-  
+\begin{frame}
+ \frametitle{Things are better now}
+    %plot the errors as we go to large M
+    \begin{figure}
+    \includegraphics[width=0.8\textwidth]{gramschmidterror2.png}
+  \end{figure} 
+ \end{frame}
   
 \begin{frame}
  \frametitle{The Three Term Recurrence (TTR) relation}
@@ -433,7 +453,7 @@ print cp.E(P[3]*P[3],dist)
 \end{chaospy}
  
  
- \begin{chaospy}{Convergence of multdimensional problem}
+ \begin{chaospy}{Convergence of a multidimensional problem, code}
  \begin{lstlisting}[language=python]
 def u(x,a, I):
   return I*np.exp(-a*x)
@@ -455,9 +475,9 @@ U_hat = cp.fit_quadrature(P, nodes, weights,
 
  
 \begin{frame}
- \frametitle{Convergence}
+ \frametitle{Convergence of a multidimensional problem}
 \begin{figure}
-    \includegraphics[width=0.8\textwidth]{MC_convergence_2D.png}
+    \includegraphics[width=0.85\textwidth]{MC_convergence_2D.png}
   \end{figure}
 
  \end{frame}
@@ -471,7 +491,7 @@ U_hat = cp.fit_quadrature(P, nodes, weights,
 
 \begin{frame}
   \frametitle{The curse of dimensionality}
-  \includegraphics[height = 0.9\textheight]{dimensionality.png}
+  \includegraphics[height = 0.85\textheight]{dimensionality.png}
 
 \end{frame}
 
@@ -479,7 +499,7 @@ U_hat = cp.fit_quadrature(P, nodes, weights,
 \begin{frame}
   \frametitle{Gibb's Phenomena, discontinues methods are troublesome}
   \begin{figure}
-  \includegraphics[width=0.8\textwidth]{gibbs.png}
+  \includegraphics[width=0.85\textwidth]{gibbs.png}
   \end{figure}
 
   \end{frame}
