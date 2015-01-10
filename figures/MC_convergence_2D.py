@@ -85,7 +85,7 @@ pl.xlabel("Samples, k")
 pl.ylabel("Error")
 pl.yscale('log')
 pl.title("Error in expectation value and variance ")
-pl.legend(["Expectation value MC","Variance MC","Expectation value PC","Variance PC"])
+pl.legend(["E, MC","Var, MC","E, PC","Var, PC"])
 pl.savefig("MC_convergence_2D.png")
 
 pl.show()

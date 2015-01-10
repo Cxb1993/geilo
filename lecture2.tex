@@ -2,7 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, pdfpages, pdflscape, lscape, color, listings, hyperref, amssymb, graphicx,textcomp,varioref, afterpage, subcaption, float, bm, tikz, multicol} 
 
-
+\global
 \newcommand{\Fig}[1]{Figure \ref{#1}}
 \newcommand{\fig}[1]{figure \ref{#1}}
 \newcommand{\tab}[1]{table \ref{#1}}
@@ -34,6 +34,10 @@
 }
 {
  \end{frame}
+}
+
+\lstset{
+escapeinside=||
 }
 
 
@@ -77,35 +81,39 @@
   \begin{align*}
     \frac{d u(x)}{dx} & =-au(x),\qquad u(0) = I,
   \end{align*}
-  where $a$ and $I$ are uncertain.
+  \pause
+  With the solution:
+  \[u(x) = Ie^{-a(x)}\]
+  \pause
+  where
+   \[a \sim \text{Uniform(0, 0.1)}, \qquad I \sim \text{Uniform(8, 10)}\] 
 \end{frame}
 
 
 \begin{chaospy}{Repetition: The 1D code, with a uncertain and $I=1$}
  \begin{lstlisting}[language=python]
-a = cp.Uniform(0,0.1)
-
 def u(x,a):
   ax = np.outer(a,x)
   return np.exp(-ax)
-
-m = 5
+|\pause|
+m = 2
+a = cp.Uniform(0,0.1)
 x = np.linspace(0, 10, 100)
-
-P = cp.orth_ttr(m, a)
+|\pause|
+P, norm = cp.orth_ttr(m, a, retall=True)|\pause|
 nodes, weights = cp.generate_quadrature(m+1, a,
-                                        rule="G")
-solves = u(x,nodes[0])
-U_hat = cp.fit_quadrature(P, nodes,
-                          weights, solves)
+                                        rule="G")|\pause|
+solves = u(x,nodes[0])|\pause|
+u_hat, c = cp.fit_quadrature(P, nodes, weights,
+                             solves,retall=True)
 \end{lstlisting}
 \end{chaospy}
 
 
 \begin{frame}
- \frametitle{Plot of convergence}
+ \frametitle{Plot of convergence for the 1D problem}
  \begin{figure}
-  \includegraphics[width=0.8\textwidth]{Convergence_repeat.png}
+  \includegraphics[width=0.85\textwidth]{Convergence_repeat.png}
  \end{figure}
 
 \end{frame}
@@ -117,37 +125,42 @@ U_hat = cp.fit_quadrature(P, nodes,
 
  \begin{align*}
  c_i(x) &= \frac{\langle P_i,u(x,q)\rangle}{\norm{P_i}^2}\\
- &=\frac{1}{\norm{P_i}^2} \int P_i(q)u(x,q)f(q)dq \approx\\
- \pause
-  \hat{c}_i(x) &= \sum P_i(q_k)f(q_k)\omega_k  
+\onslide<2-> {&=\frac{1}{\norm{P_i}^2} \int P_i(q)u(x,q)f(q)dq} \onslide<3-> {\approx\\
+   \hat{c}_i(x) &= \sum P_i(q_k)f(q_k)\omega_k}  
 \end{align*}
-$q_k$ - quadrature nodes
-$\omega_k$ - quadrature weights
+\onslide<4->
+\begin{itemize}
+ \item $q_k$ - quadrature nodes
+\item $\omega_k$ - quadrature weights
+
+\end{itemize}
+
  \end{frame}
  
 \begin{chaospy}{Repetition: 2D code}
-   \begin{lstlisting}[language=python]
+
+ \begin{lstlisting}[language=python]
 def u(x,a, I):
   return I*np.exp(-a*x)
- 
-a = cp.Uniform(0, 0.1)
-I = cp.Uniform(8, 10)
-dist = cp.J(a,I)
-x = np.linspace(0, 10, 100); k = 4; m = 5
-
-P = cp.orth_ttr(m, dist)
-nodes, weights = cp.generate_quadrature(k, dist, 
-                                       rule="E")
-i1,i2 = np.mgrid[:len(weights), :Nt]
-solves = u(x[i2],nodes[0][i1],nodes[1][i1])
-U_hat = cp.fit_quadrature(P, nodes, weights,
+|\pause| 
+a = cp.Uniform(0, 0.1); I = cp.Uniform(8, 10)
+dist = cp.J(a,I)|\pause|
+x = np.linspace(0, 10, 100)
+m = 2
+|\pause| 
+P = cp.orth_ttr(m, dist)|\pause|
+nodes, weights = cp.generate_quadrature(m+1, dist,
+                                        rule="G")|\pause|
+i1,i2 = np.mgrid[:len(weights), :100]|\pause|
+solves = u(x[i2],nodes[0][i1],nodes[1][i1])|\pause|
+u_hat = cp.fit_quadrature(P, nodes, weights,
                           solves)
 \end{lstlisting}
 \end{chaospy}
 
 
 \begin{frame}
- \frametitle{Plot of the nodes for a 2D problem}
+ \frametitle{Plot of the nodes for the 2D problem}
  \begin{figure}
   \includegraphics[width=0.85\textwidth]{nodes.png}
  \end{figure}
@@ -161,12 +174,42 @@ U_hat = cp.fit_quadrature(P, nodes, weights,
  \end{figure}
 \end{frame}
 
+\begin{frame}
+ \frametitle{Solution: choose a smaller set of points that approximates the space, Smolyak sparse grids}
+
+Full tensor basis:
+\begin{table}
+ \begin{tabular}{|c|c|c|}\hline
+ $y^2$&$y^2x$&$y^2x^2$\\\hline
+ $y$&$yx$&$yx^2$\\\hline
+ $1$&$x$&$x^2$\\\hline
+ \end{tabular}
+\end{table}
+\pause
+Smolyak sparse grid:
+ \begin{figure}
+  \includegraphics[width=\textwidth]{smolyak2.png}
+ \end{figure}
+
+\end{frame}
+
+\begin{frame}
+ \frametitle{Smolyak sparse grid nodes}
+
+
+ \begin{figure}
+  \includegraphics[width=\textwidth]{smolyak.png}
+ \end{figure}
+
+\end{frame}
+
+
 \begin{frame}[fragile]
  \frametitle{Plot of the nodes for a 2D problem using a sparse grid}
  \begin{lstlisting}[language=python]
   nodes, weights = 
-   cp.generate_quadrature(k, dist, 
-   rule="E", sparse=True)
+   cp.generate_quadrature(k, dist, rule="E",
+                          sparse=True)
  \end{lstlisting}
 
  \pause
@@ -178,7 +221,8 @@ U_hat = cp.fit_quadrature(P, nodes, weights,
  
  \begin{frame}
   \frametitle{Nested sparse grids}
- Clenshaw-Curtis: cp.generate\_quadrature(k, dist, rule="C",growth=False)
+ Clenshaw-Curtis:\\
+ cp.generate\_quadrature(k, dist, rule="C",growth=False)
   \begin{table}
   \begin{tabular}{lcccccccc}
     1& &&& $\bullet$& &&&  \\\hline
@@ -188,7 +232,8 @@ U_hat = cp.fit_quadrature(P, nodes, weights,
   \end{table}
   
   
-  Nested Clenshaw-Curtis: cp.generate\_quadrature(k, dist, rule="C",growth=True)
+  Nested Clenshaw-Curtis:\\
+  cp.generate\_quadrature(k, dist, rule="C",growth=True)
   \begin{table}
   \begin{tabular}{lcccccccc}
     1& &&& $\bullet$& &&&  \\\hline
@@ -248,19 +293,34 @@ U_hat = cp.fit_quadrature(P, nodes, weights,
 
   
   
+  \begin{frame}
+ \frametitle{Different }
+ \begin{figure}        
+ \begin{subfigure}[b]{0.5\textwidth}
+                \includegraphics[width=\textwidth]{convergence_2D_L.png}
+                \caption{$L=M-1$, $L=M$, $L=M+1$}
+        \end{subfigure}%        
+ \begin{subfigure}[b]{0.5\textwidth}
+                \includegraphics[width=\textwidth]{convergence_2D_L_sparse.png}
+                \caption{Sparse grid: $L=M-1$, $L=M$}
+        \end{subfigure}
+        \end{figure}
+\end{frame}
+  
+  
+  
  \begin{frame}
   \frametitle{Definition of Gaussian quadrature}
   \begin{align*}
    \int W(q)u(x,q)dq &\approx \sum_k \omega_k u(x,q_k)\\
-   \intertext{for a fitting $W(q)$}
-   \pause
-   \int f(q)u(x,q)dq &\approx \sum_k \omega_k u(x,q_k)\\
-     \end{align*}
- \end{frame}
+   \intertext{for a weighting function $W(q)$}
+   \uncover<2-> {\int f(q)u(x,q)dq \approx \sum_k \omega_k u(x,q_k)}
+    \end{align*}
+   \end{frame}
 
  
   \begin{frame}
- \frametitle{Different distributions}
+ \frametitle{Nodes for different probability distributions}
  \begin{figure}        
  \begin{subfigure}[b]{0.37\textwidth}
                 \includegraphics[width=\textwidth]{nodes_uniform.png}
@@ -291,50 +351,223 @@ U_hat = cp.fit_quadrature(P, nodes, weights,
 
  \end{frame}
 
- \if f
+ 
  \begin{frame}
   \frametitle{Point collocation}
-  
-  \begin{align*}
-   \overrightarrow{C} = \left[
+  \begin{center}
+ \begin{tabular}{cc}
+   $\vec{C} = \left[
   \begin{matrix}
   C_0  \\
   \vdots \\
   C_N 
- \end{matrix}\right]
- 
- && \overrightarrow{P} = \left[
+ \end{matrix}\right]$
+ & $\vec{P} = \left[
   \begin{matrix}
   P_0(q_0) & \dots & P_N(q_0)  \\
   \vdots & & \vdots \\
   P_0(q_k) & \dots& P_N(q_k) 
- \end{matrix}\right]
-  \end{align*}
+ \end{matrix}\right]$
+ \end{tabular}
+\end{center}
 
- 
-   \[\overrightarrow{U} = \left[
+\[\vec{U} = \left[
   \begin{matrix}
   u(x,q_0)  \\
   \vdots \\
   u(x,q_k) 
  \end{matrix}\right]\]
+ 
  \end{frame}
 
- \fi
  
  
- 
- 
- 
-%\begin{chaospy}{Testing the very basics}
-% \begin{alert}{Exercise:}
-%The voltage, V, over a capacitator in a RC circuit is given by:
-% \[V_0e^{-\frac{t}{\tau}}\]
-% where $V_0 = 4$ is the initial condition and $\tau$ the time constant. Our measurments are not precise and $\tau$ is therefore given by a normal distribution around 2
-% \end{alert}
-%\end{chaospy}
+\begin{frame}
+ \frametitle{Least square minimization}
+ \[\vec{P}\cdot \vec{C}= \vec{U}\]
+ \[\hat{c} = (\vec{P}^T\vec{P})^{-1}\vec{P}^T\vec{U}\]
+\end{frame}
 
 
+\begin{frame}
+ \frametitle{Convergence using least square minimization}
+ \begin{figure}
+  \includegraphics[width=0.85\textwidth]{convergence_collocation.png}
+ \end{figure}
+\end{frame}
+
+
+\begin{chaospy}{Code for least square minimization}
+ \begin{lstlisting}[language=python]
+def u(x, a, I):
+  return I*np.exp(-a*x)
+ |\pause|
+a = cp.Uniform(0, 0.1)
+I = cp.Uniform(8, 10)
+dist = cp.J(a,I)
+|\pause|
+x = np.linspace(0, 10, 100)
+ |\pause|
+P = cp.orth_ttr(n, dist) |\pause|
+nodes = dist.sample(2*len(P), "H") |\pause|
+solves = [u(T, s[0], s[1]) for s in nodes.T] |\pause|
+U_hat = cp.fit_regression(P, nodes, solves,
+                          rule="LS")
+ \end{lstlisting}
+
+\end{chaospy}
+
+
+\begin{frame}
+ \frametitle{Sampling scheme}
+ \begin{figure}
+  \includegraphics[width=0.85\textwidth]{sampling.pdf}
+ \end{figure}
+ 
+\end{frame}
+
+  \begin{frame}
+ \frametitle{Different sampling schemes}
+ \begin{figure}        
+ \begin{subfigure}[b]{0.5\textwidth}
+                \includegraphics[width=\textwidth]{samples.png}
+                \caption{Sobol sampling, default: \\                
+                nodes = dist.sample(100)}
+        \end{subfigure}%        
+ \begin{subfigure}[b]{0.5\textwidth}
+                \includegraphics[width=\textwidth]{samples_M.png}
+                \caption{Hammersley sampling: \\                
+                nodes = dist.sample(100, "M")}
+        \end{subfigure}
+        \end{figure}
+\end{frame}
+  
+
+
+\begin{frame}
+ \frametitle{Convergence using different sampling schemes}
+  \begin{figure}
+  \includegraphics[width=0.85\textwidth]{convergence_collocation_compare.png}
+ \end{figure}
+\end{frame}
+
+
+
+\begin{chaospy}{Analysis of the 2D problem}
+ \begin{lstlisting}[language=python]
+def u(x,a, I):
+  return I*np.exp(-a*x)
+|\pause|
+a = cp.Uniform(0, 0.1)
+I = cp.Uniform(8, 10)
+dist = cp.J(a,I)
+|\pause|
+x = np.linspace(0, 10, 100); M = 5
+|\pause|
+P, norm = cp.orth_ttr(M, dist, retall=True) |\pause|
+nodes, weights = cp.generate_quadrature(M+1, dist,
+                                        rule="G")|\pause|
+solves = [u(x, s[0], s[1]) for s in nodes.T] |\pause|
+U_hat, c = cp.fit_quadrature(P, nodes, weights,
+                             solves, retall=True)
+ \end{lstlisting}
+\end{chaospy}
+
+
+\begin{chaospy}{Analysis of the 2D problem continued}
+ \begin{lstlisting}[language=python]
+E_1 =  cp.E(U_hat,dist)
+E_2 = c[0]
+|\pause|
+Var_1 = cp.E(U_hat,dist)
+Var_2 = np.sum(norm[1:]*c[1:].T**2,1)
+|\pause|
+s = dist.sample(10**6)
+u_mc = U_hat(*s)
+|\pause|
+E_3 = np.mean(u_mc,0)
+Var_3 = np.var(u_mc,0)
+\end{lstlisting}
+\end{chaospy}
+
+\begin{frame}
+ \frametitle{Expectation value}
+   \begin{figure}
+    \includegraphics[width=0.85\textwidth]{E.png}
+   \end{figure}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Variance}
+   \begin{figure}
+    \includegraphics[width=0.85\textwidth]{Var.png}
+   \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Variance based sensitivity}
+ \begin{align*}
+  S_{T_i} &= \frac{E(Var(u | dist \backslash d_i ))}{Var(u)}\\
+\onslide<2->{&= \frac{E(E(u^2 | dist \backslash d_i ) - E((u | dist \backslash d_i )^2))}{Var(u)}}
+\end{align*} 
+\onslide<3->
+Code:
+ \begin{lstlisting}[language=python]
+  S_Ti = cp.Sens_t(U_hat, dist)
+ \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Variance based sensitivity}
+  \begin{figure}
+  \includegraphics[width=0.85\textwidth]{sens.png}
+ \end{figure}
+\end{frame}
+
+
+\begin{frame}[fragile]
+ \frametitle{Calculate confidence interval}
+ \begin{lstlisting}[language=python]
+p_10 = np.percentile(u_mc,10,0)
+p_90 = np.percentile(u_mc,90,0)
+ \end{lstlisting}
+
+ 
+\end{frame}
+
+
+
+
+\begin{chaospy}{Summary}
+ \begin{lstlisting}[language=python]
+def u(x,a, I):
+  return I*np.exp(-a*x)
+|\pause|
+a = cp.Uniform(0, 0.1)
+I = cp.Uniform(8, 10)
+dist = cp.J(a,I)
+|\pause|
+x = np.linspace(0, 10, 100); M = 5
+ \end{lstlisting}
+
+\end{chaospy}
+
+\begin{chaospy}{Summary continued}
+\begin{lstlisting}[language=python]
+P = cp.orth_ttr(M, dist) |\pause|
+nodes, weights = cp.generate_quadrature(M+1, dist,
+                                        rule="G")|\pause|
+solves = [u(x, s[0], s[1]) for s in nodes.T] |\pause|
+
+U_hat= cp.fit_quadrature(P, nodes, weights,
+                         solves)|\pause|
+                         
+mean = cp.E(U_hat, dist)|\pause|
+var = cp.Var(U_hat, dist)
+\end{lstlisting}
+
+\end{chaospy}
 
 
 

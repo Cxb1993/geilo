@@ -1,4 +1,17 @@
+import chaospy as cp
+I = cp.Uniform(8,10)
+a = cp.Normal(0,0.1)
+dist = cp.J(a,I)
 
+P = cp.orth_ttr(1, dist)
+print P
+
+P = cp.orth_ttr(3, dist)
+print cp.E(P[1]*P[2],dist)
+print cp.E(P[3]*P[3],dist)
+
+
+"""
 import chaospy as cp
 import pylab as pl
 import numpy as np
@@ -19,6 +32,7 @@ i1,i2 = np.mgrid[:len(weights), :100]
 solves = u(x[i2],nodes[0][i1],nodes[1][i1])
 U_hat = cp.fit_quadrature(P, nodes, weights, solves)
 print U_hat
+"""
 
 """
 a = cp.Uniform(0,0.1)
