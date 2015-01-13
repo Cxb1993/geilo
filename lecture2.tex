@@ -158,9 +158,37 @@ u_hat = cp.fit_quadrature(P, nodes, weights,
 \end{lstlisting}
 \end{chaospy}
 
+\begin{frame}
+ \frametitle{Quadrature rule, $\Pi$}
+ \begin{table}
+  \begin{tabular}{lcccccccc}
+    $\Pi_0$& &&& $\bullet$& &&&  \\\hline
+   $\Pi_1$ &&&$\bullet$& &$\bullet$&&& \\\hline
+   $\Pi_2$ &&$\bullet$&&$\bullet$ &&$\bullet$&& \\
+   \end{tabular}
+\end{table}  
+  
+ Examples:
+  \[\Pi_{11} = \begin{array}{cccc}
+                 \bullet & & \bullet\\
+                 &&\\
+                 \bullet & & \bullet
+                 \end{array}
+\]
+ \[ \Pi_{20} = \begin{array}{ccccc}
+           \bullet & & \bullet & & \bullet
+          \end{array}, \qquad \Pi_{12} = \begin{array}{cccc}
+					\bullet&&\bullet\\\\
+					\bullet&&\bullet\\\\
+					\bullet&&\bullet
+                                        \end{array}
+ \]
+ \end{frame}
+
+
 
 \begin{frame}
- \frametitle{Plot of the nodes for the 2D problem}
+ \frametitle{Plot of the nodes for the 2D problem, $\Pi_{44}$}
  \begin{figure}
   \includegraphics[width=0.85\textwidth]{nodes.png}
  \end{figure}
@@ -188,13 +216,13 @@ Full tensor basis:
 \pause
 Smolyak sparse grid:
  \begin{figure}
-  \includegraphics[width=\textwidth]{smolyak2.png}
+  \includegraphics[width=0.9\textwidth]{smolyak2.png}
  \end{figure}
-
+\[\Pi_{20} + \Pi_{11} + \Pi_{02} - \Pi_{10} - \Pi_{01}\]
 \end{frame}
 
 \begin{frame}
- \frametitle{Smolyak sparse grid nodes}
+ \frametitle{Smolyak sparse grid, nodes}
 
 
  \begin{figure}
@@ -208,7 +236,7 @@ Smolyak sparse grid:
  \frametitle{Plot of the nodes for a 2D problem using a sparse grid}
  \begin{lstlisting}[language=python]
   nodes, weights = 
-   cp.generate_quadrature(k, dist, rule="E",
+   cp.generate_quadrature(k, dist, rule="G",
                           sparse=True)
  \end{lstlisting}
 
@@ -218,16 +246,22 @@ Smolyak sparse grid:
  \end{figure}
 \end{frame}
  
+\begin{frame} 
+  \begin{figure}
+  \includegraphics[width=0.85\textwidth]{dimensionality_nodes_sparse.png}
+ \end{figure}
+ \end{frame}
  
  \begin{frame}
   \frametitle{Nested sparse grids}
+  
  Clenshaw-Curtis:\\
  cp.generate\_quadrature(k, dist, rule="C",growth=False)
   \begin{table}
   \begin{tabular}{lcccccccc}
-    1& &&& $\bullet$& &&&  \\\hline
-   2 &&&$\bullet$& &$\bullet$&&& \\\hline
-   3 &&$\bullet$&&$\bullet$ &&$\bullet$&& \\
+    $\Pi_0$& &&& $\bullet$& &&&  \\\hline
+   $\Pi_1$ &&&$\bullet$& &$\bullet$&&& \\\hline
+   $\Pi_2$ &&$\bullet$&&$\bullet$ &&$\bullet$&& \\
    \end{tabular}
   \end{table}
   
@@ -236,15 +270,31 @@ Smolyak sparse grid:
   cp.generate\_quadrature(k, dist, rule="C",growth=True)
   \begin{table}
   \begin{tabular}{lcccccccc}
-    1& &&& $\bullet$& &&&  \\\hline
-   2 &&$\bullet$&& $\bullet$&&$\bullet$ && \\\hline
-   3 &$\bullet$&$\bullet$&$\bullet$& $\bullet$&$\bullet$&$\bullet$ &$\bullet$& \\
+    $\Pi_0$& &&& $\bullet$& &&&  \\\hline
+   $\Pi_1$ &&$\bullet$&& $\bullet$&&$\bullet$ && \\\hline
+   $\Pi_2$ &$\bullet$&$\bullet$&$\bullet$& $\bullet$&$\bullet$&$\bullet$ &$\bullet$& \\
    \end{tabular}
   \end{table}
  
   \end{frame}
 
+\begin{frame}
+ \frametitle{Nested smolyak sparse grid, nodes}
 
+
+ \begin{figure}
+  \includegraphics[width=\textwidth]{smolyak_nested.png}
+ \end{figure}
+
+\end{frame}
+
+\begin{frame}
+ \frametitle{Nested smolyak sparse grid, nodes}
+ \begin{figure}
+  \includegraphics[width=0.5\textwidth]{smolyak_nested_nr.png}
+ \end{figure}
+
+\end{frame}
 
  
  \begin{frame}
@@ -269,7 +319,7 @@ Smolyak sparse grid:
   \end{itemize}
 
  \begin{figure}
-  \includegraphics[width=0.85\textwidth]{dimensionality_nodes_sparse.png}
+  \includegraphics[width=0.85\textwidth]{dimensionality_nodes_nested.png}
  \end{figure}
  \end{frame}
 
@@ -294,7 +344,7 @@ Smolyak sparse grid:
   
   
   \begin{frame}
- \frametitle{Different }
+ \frametitle{Difference }
  \begin{figure}        
  \begin{subfigure}[b]{0.5\textwidth}
                 \includegraphics[width=\textwidth]{convergence_2D_L.png}
@@ -485,8 +535,8 @@ Var_2 = np.sum(norm[1:]*c[1:].T**2,1)
 s = dist.sample(10**6)
 u_mc = U_hat(*s)
 |\pause|
-E_3 = np.mean(u_mc,0)
-Var_3 = np.var(u_mc,0)
+E_3 = np.mean(u_mc,1)
+Var_3 = np.var(u_mc,1)
 \end{lstlisting}
 \end{chaospy}
 
@@ -526,17 +576,21 @@ Code:
 \end{frame}
 
 
-\begin{frame}[fragile]
- \frametitle{Calculate confidence interval}
- \begin{lstlisting}[language=python]
-p_10 = np.percentile(u_mc,10,0)
-p_90 = np.percentile(u_mc,90,0)
- \end{lstlisting}
 
+\begin{chaospy}{Calculate confidence interval}
+  \begin{lstlisting}[language=python]
+p_10 = np.percentile(u_mc,10,1)
+p_90 = np.percentile(u_mc,90,1)
+ \end{lstlisting}
+\end{chaospy}
+
+\begin{frame}[fragile]
+ \frametitle{Confidence interval}
+  \begin{figure}
+  \includegraphics[width=0.85\textwidth]{percentiles.png}
+ \end{figure}
  
 \end{frame}
-
-
 
 
 \begin{chaospy}{Summary}
