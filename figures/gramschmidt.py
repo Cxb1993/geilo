@@ -21,10 +21,10 @@ def u(x,a):
 
 
 
-M = 5
+M = 50
 D = 1
 N = factorial(M+D)/factorial(M) - 1
-a = cp.Uniform(0,0.1)
+a = cp.Uniform(-1,1)
 
 #V = cp.variable(N)
 V = cp.basis(0,M,1)
@@ -36,8 +36,8 @@ for n in xrange(1,N):
         summation += P_M[m]*cp.E(V[n]*P_M[m],a)/cp.E(P_M[m]**2,a)
     P_M.append(V[n] - summation)
     
-
-x = plt.linspace(-2,2,100)
+""""
+x = plt.linspace(-1,1,100)
 dt = abs(x[1]-x[0])
 m = 1
 legend = []
@@ -45,13 +45,15 @@ for p in P_M:
     plt.plot(x, p(x),linewidth=2)
     legend.append("M = %d" % m)
     m+=1
-    
-plt.ylim([-1.5,1.5])
-plt.legend(legend, loc=2)
+
+pl.rc("figure", figsize=[6,4])
+
+#plt.ylim([-1.5,1.5])
+plt.legend(legend, loc=4)
 #plt.xlabel("Y")
 #plt.ylabel("X")
-plt.savefig("gramschmidtpoly.png")
-plt.show()
+#plt.savefig("gramschmidtpoly.png")
+#plt.show()
 
 
 """
@@ -60,6 +62,7 @@ x = plt.linspace(0.00001,10,100)
 P_M = cp.Poly(P_M)
 
 
+plt.rc("figure", figsize=[6,4])
 
 P_TTR = cp.orth_ttr(M, a)
 
@@ -67,8 +70,8 @@ M = np.arange(1,M-1)
    
 pp = cp.outer(P_M,P_M)
 m = cp.E(pp,a)
-m = m - cp.diag(cp.diag(m))
-error = sum(m)
+m = (m - cp.diag(cp.diag(m)))
+error = sum(abs(m))
 
 pp = cp.outer(P_TTR,P_TTR)
 m = cp.E(pp,a)
@@ -91,4 +94,4 @@ plt.legend(["Gram-Schimdt","TTR"],loc=2)
 plt.savefig("gramschmidterror2.png")
 
 plt.show()
-"""
+#"""

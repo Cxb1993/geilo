@@ -3,7 +3,7 @@ import pylab as pl
 import numpy as np
 from scipy.integrate import ode 
 from math import factorial
-
+import odespy
 
 def E_analytical(x):
     return 90*(1-np.exp(-0.1*x))/(x)
@@ -85,13 +85,19 @@ N = len(P)
 q0, q1 = cp.variable(2)
 
 P_nk = cp.outer(P, P)
-E_ank = cp.E(q*P_nk,dist)
+E_ank = cp.E(q0*P_nk,dist)
 E_nk = cp.E(P_nk,dist)
 
 
-print (E_ank/E_nk).shape
-print E_nk.shape
+def f(c_n,x):
+    return -c_n/E_nk*np.sum(E_ank,0)
 
+solver = odespy.RK4(f)
+
+c_0 = np.sum(cp.E(q1*P,dist),0)/E_nk
+solver.set_initial_condition(c_0)
+print c_0
+c_n, x_ = solver.solve(x)
 
 
 pl.xlabel("Samples, k")

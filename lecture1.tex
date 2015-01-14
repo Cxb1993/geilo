@@ -153,11 +153,7 @@ escapeinside=||
   \end{itemize}
   \pause
   \begin{center}
-      % TODO
-      % low: Add arrows on axes
-      % low: Thicker line, and larger fonts.
-      % low: wider picture
-  \includegraphics[width=.5\textwidth]{probspace.png}
+    \includegraphics[width=.5\textwidth]{probspace.png}
   \end{center}
 \end{frame}
 
@@ -190,19 +186,17 @@ a &\sim \text{Uniform(0, 0.1)} & I&=1
   \begin{align*}
     E(u) &= \int_0^{0.1}e^{-ax}\frac{1}{10}da
     = -\frac{1}{10x}\left(e^{-0.1x}-1\right)
-    = \frac{1-   e^{-0.1x}}{10x} \\ \pause
-    Var(u) &= 
+    = \frac{1-   e^{-0.1x}}{10x} \\ 
+    \onslide<4->{ Var(u) &= 
     \int_0^{0.1}\left(e^{-ax}\right)^2\frac{1}{10}da - E(u)^2 =
-   \frac{1 - e^{-0.2ax}}{20x} - \left(\frac{1-   e^{-0.1x}}{10x}\right)^2
+   \frac{1 - e^{-0.2ax}}{20x} - \left(\frac{1-   e^{-0.1x}}{10x}\right)^2}
  \end{align*}
 \end{frame}
 
 \begin{frame}[fragile]
 {Non-trivial models can be analysed using Monte Carlo
 integration}
-% TODO
-% high: swap black on red with white on red or red on white.
-% high u(x)
+
     \begin{figure}
     \includegraphics[width=\textwidth]{MC.png}
   \end{figure}
@@ -238,10 +232,6 @@ Var = np.var(U)
   \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
   \end{align*}
   \begin{center}
-% TODO
-% high: >>> plt.rc("figure", figsize=[6,4])
-% high: >>> plt.xlim(0, 20)
-% high: remove all titles in plots
     \includegraphics[width=0.75\textwidth]{MC_convergence_1D_1.png}
   \end{center}
 \end{frame}
@@ -275,11 +265,8 @@ Var = np.var(U)
 
 \begin{frame}
   \frametitle{Much better convergence properties than Monte Carlo}
-  % TODO
-  % high: 2 plots, same content, different scale >>> plt.xlim(0,5)
-  % low: legend bottom (1) left and (2) right
   \begin{center}
-    \includegraphics[width=0.8\textwidth]{MC_convergence_1D_2.png}
+    \includegraphics[width=0.8\textwidth]{MC_convergence_1D_2_short.png}
   \end{center}
 \end{frame}
 
@@ -376,9 +363,9 @@ Var = np.var(U)
         \onslide<9->{&=
         \sum_{\substack{n=0\\m=0}}^N c_nc_m\inner{P_n,P_m}-c_0^2}
         \\
-        \onslide<6->{&=c_0}
+        \onslide<6->{\E{\hat u_M}&=c_0}
         &
-        \onslide<10->{&=
+        \onslide<10->{\Var{\hat u_M}&=
         \sum_{n=1}^N c_n^2\norm{P_n}}
     \end{align*}
 \end{frame}
@@ -431,12 +418,11 @@ P = cp.Poly(P)
 \begin{frame}
  \frametitle{Most constructors of orthogonal polynomials are
  illposed}
-  %plot the errors as we go to large M
   % TODO
   % high: formula for error
-  % font-size
-    \begin{figure}
-    \includegraphics[width=0.8\textwidth]{gramschmidterror1.png}
+%   \[\varepsilon_E = \int_0^{10}|E(u) - E(\hat{u})|\,dx\]
+     \begin{figure}
+    \includegraphics[width=0.85\textwidth]{gramschmidterror1.png}
   \end{figure}
   
  \end{frame}
@@ -482,13 +468,15 @@ print P
 
 \begin{frame}
  \frametitle{Discretized Stiltjes method is numerically stable}
-    %plot the errors as we go to large M
     % TODO
-    % high: font size
     % high: error-formula
     % med: trunkation
+%  \begin{align*}
+%   \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
+%   \end{align*}
+ 
     \begin{figure}
-    \includegraphics[width=0.8\textwidth]{gramschmidterror2.png}
+    \includegraphics[width=0.85\textwidth]{gramschmidterror2.png}
   \end{figure} 
  \end{frame}
   
@@ -518,10 +506,7 @@ print P
 \frametitle{Convergence of orthogonal polynomial approximation}
 
     % TODO
-    % high: samme farge på plot fra samme metode
-    % high: font size
     % med: truncation
-    % med: legend lower left
   \begin{figure}
     \includegraphics[width=0.8\textwidth]{MC_convergence_1D_3.png}
   \end{figure}
@@ -621,10 +606,14 @@ print cp.E(P[3]*P[3],dist)
 \begin{frame}
  \frametitle{Convergence of a multidimensional problem}
  % TODO
- % high: legend lower left
  % high: error formulae
+  \begin{align*}
+  \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
+  \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
+  \end{align*}
+ 
 \begin{figure}
-    \includegraphics[width=0.85\textwidth]{MC_convergence_2D.png}
+    \includegraphics[width=0.75\textwidth]{MC_convergence_2D.png}
   \end{figure}
 
  \end{frame}
