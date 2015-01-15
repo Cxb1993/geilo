@@ -75,17 +75,19 @@ for n in xrange(1,N+1):
     U_hat = cp.fit_quadrature(P, nodes, weights, solves)
     errorCP.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     varCP.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
-    
 
-pl.plot(totalerrorMC[:],linewidth=2)
-pl.plot(totalvarianceMC[:],linewidth=2)
-pl.plot(K,errorCP,linewidth=2)
-pl.plot(K, varCP,linewidth=2)
+
+pl.rc("figure", figsize=[6,4])
+
+pl.plot(totalerrorMC[:],"b-",linewidth=2)
+pl.plot(totalvarianceMC[:],"b--",linewidth=2)
+pl.plot(K,errorCP,"r-",linewidth=2)
+pl.plot(K, varCP,"r--",linewidth=2)
 pl.xlabel("Samples, k")
 pl.ylabel("Error")
+pl.xlim([0,49])
 pl.yscale('log')
-pl.title("Error in expectation value and variance ")
-pl.legend(["E, MC","Var, MC","E, PC","Var, PC"])
+pl.legend(["E, MC","Var, MC","E, PC","Var, PC"],loc=3)
 pl.savefig("MC_convergence_2D.png")
 
 pl.show()

@@ -13,47 +13,79 @@ plt.savefig("dependent.pdf")
 """
 
 
-
+def u(x,a, I):
+    return I*np.exp(-a*x)
 
 
 C = [[2,1],[1,2]]
-mu = [1.5,1.5]
-Q1 = cp.MvNormal(mu,C)
+mu = np.array([0.5,0.5])
+
+#C = np.array([[1,0],[0.,1]])
+#mu = np.array([0,0])
 
 R = cp.J(cp.Normal(),cp.Normal())
+#R = cp.J(cp.Uniform(),cp.Uniform())
 L =  np.linalg.cholesky(C)
+
+Q1 = cp.MvNormal(mu,C)
 Q = R*L + mu 
 
-print Q
-print Q1
-
 def T(r):
-    return r*L + mu
+    result = np.dot(L,r)
+    i=0
+    for m in mu:
+        result[i] += mu[i]
+        i+=1
+    return result
 
-x = np.linspace(0, 10, 100)
-M = 4
+"""
+sample_R = R.sample(1000)
+plt.scatter(*sample_R)
+plt.show()
+plt.scatter(*T(sample_R))
+plt.show()
+"""
+x = np.linspace(0, 1, 100)
+dt = x[1]-x[0]
+M = 10
 
-P = cp.orth_ttr(M, Q)
-nodes, weights = cp.generate_quadrature(M+1, Q, rule="G")
-solves = [u(x, T(s[0]), T(s[1])) for s in nodes.T]
-U_analytic, c = cp.fit_quadrature(P, nodes, weights, solves, retall=True)
+P = cp.orth_ttr(M, R)
+nodes, weights = cp.generate_quadrature(M+1, R, rule="G")
+nodes_ = T(nodes)
+solves = [u(x, s[0], s[1]) for s in nodes_.T]
+U_analytic, c = cp.fit_quadrature(P, nodes_, weights, solves, retall=True)
 
 
 
+P = cp.orth_ttr(M, R)
+nodes = R.sample(2*len(P), "S")
+nodes_ = T(nodes)
+#nodes_ = nodes
+solves = [u(x, s[0], s[1]) for s in nodes_.T]
+U_analytic = cp.fit_regression(P, nodes_, solves,rule="LS")
 
 
-
-
-N = 3
+N = 5
 error = []
 var = []
 K = []
-for n in range(1,N):
-    P = cp.orth_ttr(n, dist)
-    nodes = dist.sample(2*len(P), "M")
-    K.append(2*len(P))
-    solves = [u(T, s[0], s[1]) for s in nodes.T]
-    U_hat = cp.fit_regression(P, nodes, solves,rule="LS")
+for n in range(1,N+1):
 
-    error.append(dt*np.sum(np.abs(cp.E(U_analytic,dist) - cp.E(U_hat,dist))))
-    var.append(dt*np.sum(np.abs(cp.Var(U_analytic,dist) - cp.Var(U_hat,dist))))
+    P = cp.orth_ttr(n, R)
+    nodes = R.sample(2*len(P), "S")
+    K.append(2*len(P))
+    nodes_ = T(nodes)
+    solves = [u(x, s[0], s[1]) for s in nodes_.T]
+    U_hat = cp.fit_regression(P, nodes_, solves,rule="T")
+    error.append(dt*np.sum(np.abs(cp.E(U_analytic,R) - cp.E(U_hat,R))))
+    var.append(dt*np.sum(np.abs(cp.Var(U_analytic,R) - cp.Var(U_hat,R))))
+
+plt.plot(K,error,linewidth=2)
+plt.plot(K, var,linewidth=2)
+plt.xlabel("Samples, k")
+plt.ylabel("Error")
+plt.yscale('log')
+plt.title("Error in expectation value and variance ")
+plt.legend(["E","Var"])
+plt.savefig("convergence_dependence.png")
+plt.show()

@@ -72,7 +72,7 @@ errorCP = []
 varCP = []
 
 K = []
-N = 10
+N = 15
 
 for k in range(1,N+1):
     P, norm = cp.orth_ttr(k, a, retall=True)
@@ -113,21 +113,24 @@ for k in range(1,N+1):
     errorPoly.append(dt*np.sum(np.abs(E_analytical(x) - cp.E(U_hat,a))))
     varPoly.append(dt*np.sum(np.abs(V_analytical(x) - cp.Var(U_hat,a))))
 
-pl.plot(totalerrorMC, linewidth=2)
-pl.plot(totalvarianceMC, linewidth=2)
 
-pl.plot(K,errorPoly, linewidth=2)
-pl.plot(K,varPoly, linewidth=2)
 
-pl.plot(K,errorCP, linewidth=2)
-pl.plot(K,varCP, linewidth=2)
+
+pl.plot(totalerrorMC, "b-",linewidth=2)
+pl.plot(totalvarianceMC, "b--", linewidth=2)
+pl.rc("figure", figsize=[6,4])
+pl.xlim([0,20])
+#pl.plot(K,errorPoly, "g-", linewidth=2)
+#pl.plot(K,varPoly,"g--", linewidth=2)
+
+pl.plot(K,errorCP,"r-", linewidth=2)
+pl.plot(K,varCP,"r--", linewidth=2)
 
 pl.xlabel("Samples, k")
 pl.ylabel("Error")
 pl.yscale('log')
-pl.title("Error in expectation value and variance ")
-pl.legend(["E, MC","Var, MC","E, Polynomial","Var, Polynomial","E, PC","Var, PC"])
-#pl.savefig("Convergence_repeat.png")
-pl.savefig("MC_convergence_1D_2.png")
+pl.legend(["E, MC","Var, MC","E, PC","Var, PC"], loc=3)
+pl.savefig("Convergence_repeat.png")
+#pl.savefig("MC_convergence_1D_1.png")
 
 pl.show()
