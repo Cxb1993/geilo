@@ -63,7 +63,7 @@ escapeinside=||
 \graphicspath{{./figures/}}
 
 
-\title{Polynomial chaos expansions part 3: Advanced topics}
+\title{Polynomial chaos expansions part 3: Advanced topics - Intrusive gallerkin method}
 \author{Jonathan Feinberg and Simen Tennøe}
 
 
@@ -87,6 +87,7 @@ escapeinside=||
   \pause
   where
    \[a \sim \text{Uniform(0, 0.1)}, \qquad I \sim \text{Uniform(8, 10)}\] 
+   \pause
    And we approximate it with
    \[u \approx \hat u_M = \sum_{n=0}^Nc_nP_n\]
 \end{frame}
@@ -126,23 +127,26 @@ escapeinside=||
  \frac{d}{dx}c_n &= -\frac{E(aP_nP_k)}{E(P_n^2)}c_n\\
  c_n(0) &= \frac{E(IP_k)}{E(P_n^2)}
  \end{align*}
- This is a differential equation that we can solve.
+ This is a differential equation for $c_n$ that we can solve.
 
  \end{frame}
 
  
 \begin{frame}
  \frametitle{We now have two expectation values to calculate, $E(P_nP_k)$}
-\[E(P_nP_k) = E \left(\left[\begin{matrix}
-               P_0^2 &0&0&0&0&0 \\
-               0& P_1^2 &0&0&0&0\\
-               0&0& P_2^2 &0&0&0\\
-               0&0&0& P_3^2 &0&0\\
-	       0&0&0&0& P_4^2 &0\\
-               0&0&0&0&0& P_5^2\\
-               \end{matrix}\right]\right)
-\]
- 
+% \[E(P_nP_k) = E \left(\left[\begin{matrix}
+%                P_0^2 &0&0&0&0&0 \\
+%                0& P_1^2 &0&0&0&0\\
+%                0&0& P_2^2 &0&0&0\\
+%                0&0&0& P_3^2 &0&0\\
+% 	       0&0&0&0& P_4^2 &0\\
+%                0&0&0&0&0& P_5^2\\
+%                \end{matrix}\right]\right)
+% \]
+   \begin{figure}
+  %\caption{Binary matrix of $E(aP_nP_k)$}
+  \includegraphics[width=0.65\textwidth]{binary_matrix1.png}
+ \end{figure}
  \end{frame}
 
 
@@ -155,5 +159,50 @@ escapeinside=||
  \end{frame}
 
  
+ \begin{chaospy}{}
+    \scriptsize
+\begin{lstlisting}[language=python]
+n = 2
+P = cp.orth_ttr(n, dist)
+
+N = len(P)
+q0, q1 = cp.variable(2)
+
+P_nn = cp.outer(P, P)
+E_ank = cp.E(q0*P_nn, dist)
+E_nn = cp.E(P_nn, dist)
+E_ik = cp.E(q1*P, dist)
+
+def f(c_n,x):
+    return -c_n/E_nn*np.sum(E_ank,0)
+
+solver = odespy.RK4(f)
+
+c_0 = sum(E_ik,0)/E_nn
+print c_0
+solver.set_initial_condition(c_0)
+c_n, x_ = solver.solve(x)
+\end{lstlisting}
+\end{chaospy}
+
+
+\begin{frame}
+ \frametitle{Convergence of gallerkin method}
+  \begin{figure}
+  %\caption{Binary matrix of $E(aP_nP_k)$}
+  \includegraphics[width=0.65\textwidth]{convergence_gallerkin.png}
+ \end{figure}
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
 
 \end{document}

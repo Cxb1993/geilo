@@ -22,4 +22,13 @@ result[result>10**-8] = 1
 result[result<=10**-8] = 0
 plt.matshow(result, cmap=plt.cm.gray)
 plt.savefig("binary_matrix.png")
+
+
+result = cp.E(P_nk,dist)
+
+result[result>10**-7] = 1
+result[result<=10**-7] = 0
+plt.matshow(result, cmap=plt.cm.gray)
+plt.savefig("binary_matrix1.png")
+
 plt.show()

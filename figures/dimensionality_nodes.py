@@ -20,6 +20,7 @@ for d in D:
 pl.xlabel("Terms, N")
 pl.ylabel("Nodes, k")
 #pl.title("Number of terms for a polynomial")
+pl.rc("figure", figsize=[6,4])
 
 pl.legend(legend, loc=2)
 pl.axis([1,n,1,500])

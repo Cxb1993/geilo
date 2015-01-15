@@ -63,7 +63,7 @@ escapeinside=||
 \graphicspath{{./figures/}}
 
 
-\title{Polynomial chaos expansions part 3: Advanced topics}
+\title{Polynomial chaos expansions part 3: Advanced topics - Dependent variables}
 \author{Jonathan Feinberg and Simen Tennøe}
 
 
@@ -76,6 +76,13 @@ escapeinside=||
 \end{frame}
 
 
+\begin{frame}
+ \frametitle{Dependence}
+ \begin{figure}
+ \includegraphics[width = 0.9\textwidth]{dependent.png}
+ \end{figure}
+
+ \end{frame}
 
 
 \begin{frame}
@@ -84,11 +91,11 @@ escapeinside=||
  \pause
  \begin{align*}
   \langle P_\mathfrak{i},P_\mathfrak{j}\rangle &= E(P_\mathfrak{i},P_\mathfrak{j})\\
-  \onslide<2-> {&=E(P_{i_1}^{(1)}\cdots P_{i_D}^{(D)}P_{j_1}^{(1)}\cdots P_{j_D}^{(D)})}\\ 
-  \onslide<3-> {&=E(P_{i_1}^{(1)}P_{j_1}^{(1)})\cdots E(P_{i_D}^{(D)}P_{j_D}^{(D)})}\\ 
-  \onslide<4-> {&=\langle P_{i_1}^{(1)}P_{j_1}^{(1)}\rangle\cdots \langle P_{i_D}^{(D)}P_{j_D}^{(D)}\rangle}\\ 
-  \onslide<5-> {&=\norm{P_{i_1}^{(1)}}^2\delta_{i_1j_1}\cdots \norm{P_{i_D}^{(D)}}^2\delta_{i_Dj_D}}\\ 
-  \onslide<6-> { \langle P_\mathfrak{i},P_\mathfrak{j}\rangle &=\norm{P_{\mathfrak{i}}^{(1)}}\delta_{\mathfrak{i}\mathfrak{j}}}
+  \onslide<3-> {&=E(P_{i_1}^{(1)}\cdots P_{i_D}^{(D)}P_{j_1}^{(1)}\cdots P_{j_D}^{(D)})}\\ 
+  \onslide<4-> {&=E(P_{i_1}^{(1)}P_{j_1}^{(1)})\cdots E(P_{i_D}^{(D)}P_{j_D}^{(D)})}\\ 
+  \onslide<5-> {&=\langle P_{i_1}^{(1)}P_{j_1}^{(1)}\rangle\cdots \langle P_{i_D}^{(D)}P_{j_D}^{(D)}\rangle}\\ 
+  \onslide<6-> {&=\norm{P_{i_1}^{(1)}}^2\delta_{i_1j_1}\cdots \norm{P_{i_D}^{(D)}}^2\delta_{i_Dj_D}}\\ 
+  \onslide<7-> { \langle P_\mathfrak{i},P_\mathfrak{j}\rangle &=\norm{P_{\mathfrak{i}}^{(1)}}\delta_{\mathfrak{i}\mathfrak{j}}}
  \end{align*}
  \onslide<7->
 \begin{alert}{But the problem is:}
@@ -98,18 +105,11 @@ escapeinside=||
 \end{frame}
 
 
-\begin{frame}
- \frametitle{Dependence}
- \begin{figure}
- \includegraphics[width = 0.9\textwidth]{dependent.png}
- \end{figure}
-
- \end{frame}
 
  
  
 \begin{chaospy}{Simple transformation code}
- 
+ \scriptsize
  \begin{lstlisting}[language=Python]
 def u(x,a, I):
   return I*np.exp(-a*x)
@@ -119,29 +119,20 @@ mu = np.array([0.5,0.5])
 |\pause|
 R = cp.J(cp.Normal(),cp.Normal())
 L =  np.linalg.cholesky(C)
-Q = R*L + mu 
 |\pause|
 def T(r):
     result = np.dot(L,r)
     for i in range(0,len(mu)):
         result[i] += mu[i]
     return result
-\end{lstlisting}
-\end{chaospy}
 
-\begin{chaospy}{Simple transformation code}
- 
- \begin{lstlisting}[language=Python]
-x = np.linspace(0, 1, 100)
-M = 10
+x = np.linspace(0, 1, 100); M = 10
 |\pause|
 P = cp.orth_ttr(M, R)|\pause|
-nodes, weights = cp.generate_quadrature(M+1, R,
-                                        rule="G")|\pause|
+nodes, weights = cp.generate_quadrature(M+1, R, rule="G")|\pause|
 nodes_ = T(nodes)|\pause|
 solves = [u(x, s[0], s[1]) for s in nodes_.T]|\pause|
-U_analytic = cp.fit_quadrature(P, nodes_,
-                               weights, solves)
+U_analytic = cp.fit_quadrature(P, nodes_, weights, solves)
 \end{lstlisting}
 \end{chaospy}
 
@@ -154,7 +145,7 @@ U_analytic = cp.fit_quadrature(P, nodes_,
 
 
  \begin{frame}
- \frametitle{Rosenblat Transformations}
+ \frametitle{Rosenblatt Transformations}
  \begin{figure}
  \includegraphics[width = 0.9\textwidth]{distributions.png}
  \end{figure}
@@ -163,7 +154,7 @@ U_analytic = cp.fit_quadrature(P, nodes_,
  
  
  \begin{chaospy}{Rosenblatt transformation, code}
- 
+ \scriptsize
  \begin{lstlisting}[language=Python]
 def u(x,a, I):
     return I*np.exp(-a*x)
@@ -176,12 +167,7 @@ dist_Q = cp.MvNormal(mu,C)
 x = np.linspace(0, 1, 100)
 dt = x[1]-x[0]
 M = 5
-\end{lstlisting}
-\end{chaospy}
 
- \begin{chaospy}{Rosenblatt transformation, code}
- 
- \begin{lstlisting}[language=Python]
 P = cp.orth_ttr(M, dist_R)|\pause|
 s_R = dist_R.sample(2*len(P), "M")|\pause|
 s_Q = dist_Q.inv(dist_R.fwd(s_R))|\pause|

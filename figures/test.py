@@ -1,4 +1,16 @@
 import chaospy as cp
+
+
+dist = [3,4]#cp.J(cp.Uniform(),cp.Uniform())
+nodes, weights = cp.generate_quadrature(2, dist, rule="C")
+print nodes
+print weights
+
+
+
+
+
+"""
 I = cp.Uniform(8,10)
 a = cp.Normal(0,0.1)
 dist = cp.J(a,I)
@@ -9,7 +21,7 @@ print P
 P = cp.orth_ttr(3, dist)
 print cp.E(P[1]*P[2],dist)
 print cp.E(P[3]*P[3],dist)
-
+"""
 
 """
 import chaospy as cp

@@ -174,7 +174,7 @@ escapeinside=||
 \begin{frame}
  {Trivial models can be analysed analytically}
  \[
- u(x; a, I) = Ie^{-a(x)}
+ u(x; a, I) = Ie^{-ax}
  \]
 %  \[E(u) = \int_0^{10}\]
 \pause
@@ -451,6 +451,23 @@ P = cp.Poly(P)
    \end{align*}
   \end{frame}
 
+  
+  
+\begin{frame}
+ \frametitle{Askey scheme, organization of orthogonal polynomials}
+ The askey scheme gives a relation between a probability distribution and the corresponding orhogonal polynomial.
+ \begin{center}
+  \begin{tabular}{lll}
+ Distribution & Polynomial & Support \\\hline
+  Gaussian & Hermite & $(-\infty, \infty)$ \\
+  Gamma & Laguerre & $[0,\infty]$ \\
+  Beta & Jacobi & $[a,b]$ \\
+  Uniform & Legendre & $[a,b]$ \\\hline
+   \end{tabular}
+\end{center}  
+ \end{frame}  
+  
+  
 \begin{chaospy}{
     Three terms recursion in Chaospy}
 \begin{lstlisting}[language=python]
@@ -500,7 +517,25 @@ print P
 %  \end{lstlisting}
 %  
 %  \end{chaospy}
-
+\begin{frame}
+ {Repetition of the problem}
+ \[  u(x; a, I) = Ie^{-ax}\]
+\pause
+Initially assume model parameters:
+\begin{align*}
+a &\sim \text{Uniform(0, 0.1)} & I&=1
+\end{align*}
+\pause
+\begin{align*}
+    E(u) &= \frac{1-e^{-0.1x}}{10x} & Var(u) &=
+   \frac{1 - e^{-0.2ax}}{20x} - \left(\frac{1-   e^{-0.1x}}{10x}\right)^2
+ \end{align*}
+ \pause
+   \begin{align*}
+  \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
+  \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
+  \end{align*}
+\end{frame}
 
 \begin{frame}
 \frametitle{Convergence of orthogonal polynomial approximation}
@@ -578,7 +613,7 @@ Single-index\\
   \onslide<4-> {&=
   \norm{P_{n_1}^{(1)}}\delta_{n_1m_1}\cdots\norm{P_{n_D}^{(D)}}\delta_{n_Dm_D}}
   \\\\
-  \onslide<5-> {&=
+  \onslide<5-> {\inner{ \bm P_n, \bm P_m}&=
   \norm{\bm P_n} \delta_{nm}}
 \end{align*}
 
@@ -603,17 +638,34 @@ print cp.E(P[3]*P[3],dist)
 \end{lstlisting}
 \end{chaospy}
  
+ 
+ \begin{frame}
+ {The multidimensional problrm }
+ \[  u(x; a, I) = Ie^{-ax}\]
+\pause
+Initially assume model parameters:
+\begin{align*}
+a &\sim \text{Uniform(0, 0.1)} & I&= \text{Uniform(8, 10)}
+\end{align*}
+ \pause
+   \begin{align*}
+  \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
+  \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
+  \end{align*}
+\end{frame}
+ 
+ 
 \begin{frame}
  \frametitle{Convergence of a multidimensional problem}
  % TODO
  % high: error formulae
-  \begin{align*}
-  \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
-  \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
-  \end{align*}
+%   \begin{align*}
+%   \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
+%   \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
+%   \end{align*}
  
 \begin{figure}
-    \includegraphics[width=0.75\textwidth]{MC_convergence_2D.png}
+    \includegraphics[width=0.85\textwidth]{MC_convergence_2D.png}
   \end{figure}
 
  \end{frame}
