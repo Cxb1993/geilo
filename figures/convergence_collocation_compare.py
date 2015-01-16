@@ -70,11 +70,10 @@ pl.ylabel("Error")
 pl.yscale('log')
 pl.title("Error in expectation value and variance ")
 pl.legend(["Expectation value","Variance", "Expectation value, Hammersley","Variance, Hammersley"])
-pl.savefig(c"osloonvergence_collocation_compare.png")
+#pl.savefig("convergence_collocation_compare.png")
 
 
 
-"""
 pl.figure()
 nodes = dist.sample(100)
 pl.scatter(nodes[0],nodes[1])
@@ -88,7 +87,20 @@ pl.scatter(nodes[0],nodes[1])
 pl.xlabel("a")
 pl.ylabel("I")
 pl.savefig("samples_M.png")
-"""
+
+pl.figure()
+nodes = dist.sample(100, "S")
+pl.scatter(nodes[0],nodes[1])
+pl.xlabel("a")
+pl.ylabel("I")
+pl.savefig("samples_S.png")
+
+pl.figure()
+nodes = dist.sample(100, "S")
+pl.scatter(nodes[0],nodes[1])
+pl.xlabel("a")
+pl.ylabel("I")
+pl.savefig("samples_S.png")
 
 
 pl.show()

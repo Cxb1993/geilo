@@ -162,26 +162,31 @@ escapeinside=||
  \begin{chaospy}{}
     \scriptsize
 \begin{lstlisting}[language=python]
-n = 2
-P = cp.orth_ttr(n, dist)
+def u(x,a, I):
+    return I*np.exp(-a*x)
+|\pause|
+a = cp.Uniform(0,0.1)
+I = cp.Uniform(8,10)
+dist = cp.J(a,I)
+|\pause|
+x = np.linspace(0, 10, 1000)
 
-N = len(P)
-q0, q1 = cp.variable(2)
+P, norm = cp.orth_ttr(n, dist, retall=True, normed=True)|\pause|
 
-P_nn = cp.outer(P, P)
-E_ank = cp.E(q0*P_nn, dist)
-E_nn = cp.E(P_nn, dist)
-E_ik = cp.E(q1*P, dist)
+q0, q1 = cp.variable(2)|\pause|
+P_nk = cp.outer(P, P)|\pause|
+E_ank = cp.E(q0*P_nk, dist)|\pause|
+E_ik = cp.E(q1*P, dist)|\pause|
 
-def f(c_n,x):
-    return -c_n/E_nn*np.sum(E_ank,0)
+def f(c_k, x):
+  return -cp.sum(c_k*E_ank,-1)/norm
+|\pause|
+solver = odespy.RK4(f)|\pause|
+c_0 = E_ik/norm|\pause|
+solver.set_initial_condition(c_0)|\pause|
+c_n, x_ = solver.solve(x)|\pause|
 
-solver = odespy.RK4(f)
-
-c_0 = sum(E_ik,0)/E_nn
-print c_0
-solver.set_initial_condition(c_0)
-c_n, x_ = solver.solve(x)
+U_hat = cp.sum(P*c_n,-1)
 \end{lstlisting}
 \end{chaospy}
 
@@ -190,7 +195,7 @@ c_n, x_ = solver.solve(x)
  \frametitle{Convergence of gallerkin method}
   \begin{figure}
   %\caption{Binary matrix of $E(aP_nP_k)$}
-  \includegraphics[width=0.65\textwidth]{convergence_gallerkin.png}
+  \includegraphics[width=0.85\textwidth]{convergence_gallerkin.png}
  \end{figure}
 \end{frame}
 

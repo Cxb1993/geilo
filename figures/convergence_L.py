@@ -23,7 +23,7 @@ T = np.linspace(0, 10, Nt+1)[1:]
 dt = T[1] - T[0]
 
 pl.figure()
-
+pl.rc("figure", figsize=[6,4])
 N = 6
 
 errorCP = []
@@ -83,18 +83,20 @@ for n in xrange(1,N+1):
     
 pl.plot(K,errorCP,linewidth=2)
 pl.plot(K, varCP,linewidth=2)
-
+pl.ylim(10**-18, 10**2)
 
 
 pl.xlabel("Samples, k")
 pl.ylabel("Error")
 pl.yscale('log')
-pl.title("Error in expectation value and variance ")
-pl.legend(["Expectation value, $L=M-1$","Variance, $L=M-1$","Expectation value, $L=M$","Variance,  $L=M$","Expectation value, $L=M+1$","Variance,  $L=M+1$"],loc=1)
+pl.xlim([5,35])
+#pl.title("Error in expectation value and variance ")
+pl.legend(["E, $L=M-1$","Var, $L=M-1$","Exp, $L=M$","Var,  $L=M$","E, $L=M+1$","Var,  $L=M+1$"],loc=3)
 pl.savefig("convergence_2D_L.png")
-
+pl.clf()
 
 pl.figure()
+pl.rc("figure", figsize=[6,4])
 
 
 N = 5
@@ -103,7 +105,7 @@ varCP = []
 K = []
 for n in xrange(1,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n, dist, rule="G",sparse=True)
+    nodes, weights = cp.generate_quadrature(n-1, dist, rule="G",sparse=True)
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
@@ -121,13 +123,13 @@ varCP = []
 K = []
 for n in xrange(1,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n+1, dist, rule="G",sparse=True)
+    nodes, weights = cp.generate_quadrature(n, dist, rule="G",sparse=True)
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
 
     U_hat = cp.fit_quadrature(P, nodes, weights, solves)
-    errorCP.append(dt*np.sum(np.abs(E_analtyical(T) - cp.E(U_hat,dist))))
+    errorCP.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     varCP.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
     
 pl.plot(K,errorCP,linewidth=2)
@@ -137,8 +139,9 @@ pl.plot(K, varCP,linewidth=2)
 pl.xlabel("Samples, k")
 pl.ylabel("Error")
 pl.yscale('log')
-pl.title("Error in expectation value and variance, sparse ")
-pl.legend(["Expectation value, $L=M-1$","Variance, $L=M-1$","Expectation value, $L=M$","Variance, $L=M$"],loc=1)
+pl.xlim([5,50])
+#Zpl.title("Error in expectation value and variance, sparse ")
+pl.legend(["E, $L=M-1$","Var, $L=M-1$","E, $L=M$","Var, $L=M$"],loc=2)
 pl.savefig("convergence_2D_L_sparse.png")
 
 pl.show()

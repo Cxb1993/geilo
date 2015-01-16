@@ -17,8 +17,8 @@ for d in D:
     pl.plot(N, k(N,d),linewidth=2)
     legend.append("D = %d" % (d))
     
-pl.xlabel("Terms, N")
-pl.ylabel("Nodes, k")
+pl.xlabel("Quadrature order, L")
+pl.ylabel("Total order, k")
 #pl.title("Number of terms for a polynomial")
 pl.rc("figure", figsize=[6,4])
 
