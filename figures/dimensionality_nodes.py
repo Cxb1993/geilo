@@ -18,7 +18,7 @@ for d in D:
     legend.append("D = %d" % (d))
     
 pl.xlabel("Quadrature order, L")
-pl.ylabel("Total order, k")
+pl.ylabel("Total order, K")
 #pl.title("Number of terms for a polynomial")
 pl.rc("figure", figsize=[6,4])
 

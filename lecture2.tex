@@ -283,7 +283,7 @@ print weights
 \end{alert}
 \pause
 \begin{itemize}
-    \item[$K$] Totoal number of quadrature nodes
+    \item[$K$] Total number of quadrature nodes
     \item[$L$] Quadrature order along an axis
 \end{itemize}
  \end{frame}
@@ -363,7 +363,7 @@ Smolyak sparse grid:
     % TODO
     % high: L vs K between GQ full tensor and GQ sparse grid
      \begin{figure}
-  \includegraphics[width=0.6\textwidth]{dimensionality_nodes_gq_sparse.png}
+  \includegraphics[width=0.85\textwidth]{dimensionality_nodes_gq_sparse.png}
  \end{figure}
 \end{frame}
  
@@ -484,14 +484,16 @@ Smolyak sparse grid:
          \begin{center}
                 \includegraphics[width=\textwidth]{convergence_2D_L.png}
 
-                {$L=M-1$, $L=M$, $L=M+1$}
+                {Full tensor grid:\\
+                $L=M-1$, $L=M$, $L=M+1$}
          \end{center}
          \column{.5\textwidth}
 
          \begin{center}
-                \includegraphics[width=1.1\textwidth]{convergence_2D_L_sparse.png}
+                \includegraphics[width=\textwidth]{convergence_2D_L_sparse.png}
 
-                {Sparse grid: $L=M-1$, $L=M$}
+                {Sparse grid:\\
+                $L=M-2$, $L=M-1$, $L=M$}
          \end{center}
      \end{columns}
 \end{frame}
@@ -539,15 +541,15 @@ Smolyak sparse grid:
 \end{frame}
  
  
- \begin{frame}
-  \frametitle{Convergence for Gaussian quadrature vs Legendre}
-  % TODO ???
-  % What Gaussian? What problem?
-  \begin{figure}
-   \includegraphics[width=0.85\textwidth]{convergence_GvsL.png}
-  \end{figure}
-
- \end{frame}
+%  \begin{frame}
+%   \frametitle{Convergence for Gaussian quadrature vs Legendre}
+%   % TODO ???
+%   % What Gaussian? What problem?
+%   \begin{figure}
+%    \includegraphics[width=0.85\textwidth]{convergence_GvsL.png}
+%   \end{figure}
+% 
+%  \end{frame}
 
  
  \begin{frame}
@@ -628,22 +630,37 @@ U_hat = cp.fit_regression(P, nodes, solves)
  \begin{columns}
      \column{.5\textwidth}
      \begin{center}
-                \includegraphics[width=\textwidth]{samples.png}
+                \includegraphics[width=0.7\textwidth]{samples_S.png}
 
                 Sobol sampling, default:
 
                 \scriptsize
                 \verb;nodes = dist.sample(100);
                 \normalsize
+                \includegraphics[width=0.7\textwidth]{samples_H.png}
+
+                Halton sampling:
+
+                \scriptsize
+                \verb;nodes = dist.sample(100,"H");
+                \normalsize
      \end{center}
      \column{.5\textwidth}
      \begin{center}
-                \includegraphics[width=\textwidth]{samples_M.png}
+                \includegraphics[width=0.7\textwidth]{samples_M.png}
 
                 Hammersley sampling
 
                 \scriptsize
                 \verb;nodes = dist.sample(100, "M");
+                \normalsize
+                
+                \includegraphics[width=0.7\textwidth]{samples_LH.png}
+
+                Latin hypercube sampling
+
+                \scriptsize
+                \verb;nodes = dist.sample(100, "LH");
                 \normalsize
      \end{center}
  \end{columns}
@@ -652,7 +669,7 @@ U_hat = cp.fit_regression(P, nodes, solves)
 
 \begin{frame}
  \frametitle{Convergence using different sampling schemes}
- % TODO
+ % TODO  ???
  % All 4 where ' ' and 'L' is done with bootstrapping
  % might want to subtract median reference
  % (Ask me about boostrapping)

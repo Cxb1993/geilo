@@ -14,7 +14,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="smolyak.svg">
+   sodipodi:docname="smolyak.svg"
+   inkscape:export-filename="/home/simen/Dropbox/Phd/geilo/figures/smolyak.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -23,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.2701172"
-     inkscape:cx="180.4726"
-     inkscape:cy="670.99916"
+     inkscape:cx="262.35481"
+     inkscape:cy="702.49232"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -43,7 +46,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -59,7 +62,7 @@
        sodipodi:cy="359.51273"
        sodipodi:cx="42.515762"
        id="path2985"
-       style="fill:#0000ff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
+       style="fill:#ff0000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
        sodipodi:type="arc" />
     <path
        transform="matrix(0.35294119,0,0,0.35294119,91.37426,224.94266)"
@@ -69,7 +72,7 @@
        sodipodi:cy="359.51273"
        sodipodi:cx="42.515762"
        id="path2985-9"
-       style="fill:#0000ff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
+       style="fill:#ff0000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
        sodipodi:type="arc" />
     <path
        transform="matrix(0.35294119,0,0,0.35294119,57.4287,253.88376)"
@@ -79,7 +82,7 @@
        sodipodi:cy="359.51273"
        sodipodi:cx="42.515762"
        id="path2985-1"
-       style="fill:#0000ff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
+       style="fill:#ff0000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
        sodipodi:type="arc" />
     <path
        transform="matrix(0.35294119,0,0,0.35294119,59.003358,192.89745)"
@@ -89,7 +92,7 @@
        sodipodi:cy="359.51273"
        sodipodi:cx="42.515762"
        id="path2985-0"
-       style="fill:#0000ff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
+       style="fill:#ff0000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
        sodipodi:type="arc" />
     <path
        transform="matrix(0.35294119,0,0,0.35294119,58.216029,224.75259)"
@@ -149,7 +152,7 @@
        sodipodi:cy="359.51273"
        sodipodi:cx="42.515762"
        id="path2985-1-00"
-       style="fill:#ff0000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
+       style="fill:#0000ff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
        sodipodi:type="arc" />
     <path
        transform="matrix(0.35294119,0,0,0.35294119,91.150364,192.86577)"
@@ -159,7 +162,7 @@
        sodipodi:cy="359.51273"
        sodipodi:cx="42.515762"
        id="path2985-1-54"
-       style="fill:#ff0000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
+       style="fill:#0000ff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
        sodipodi:type="arc" />
     <path
        transform="matrix(0.35294119,0,0,0.35294119,91.347197,254.01047)"
@@ -169,7 +172,7 @@
        sodipodi:cy="359.51273"
        sodipodi:cx="42.515762"
        id="path2985-1-4"
-       style="fill:#ff0000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
+       style="fill:#0000ff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
        sodipodi:type="arc" />
     <path
        transform="matrix(0.35294119,0,0,0.35294119,26.015509,253.30315)"
@@ -179,7 +182,7 @@
        sodipodi:cy="359.51273"
        sodipodi:cx="42.515762"
        id="path2985-1-3"
-       style="fill:#ff0000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
+       style="fill:#0000ff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:18, 18;stroke-dashoffset:0"
        sodipodi:type="arc" />
     <path
        transform="matrix(0.35294119,0,0,0.35294119,404.98637,257.83456)"

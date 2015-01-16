@@ -8,7 +8,7 @@ i1, i2 = np.mgrid[:100,:100]
 t = t[i1]; s = s[i2]
 
 plt.figure()
-plt.contour(s, t,dist.pdf([t,s]),alpha=0.6)
+plt.contourf(s, t,dist.pdf([t,s]),alpha=0.6)
 plt.savefig("mvnormal.png")
 
 dist = cp.MvLognormal([2,2],[[1,0],[0,1]])
@@ -18,7 +18,7 @@ t = t[i1]; s = s[i2]
 
 
 plt.figure()
-plt.contour(s, t,dist.pdf([t,s]),alpha=0.6)
+plt.contourf(s, t,dist.pdf([t,s]),alpha=0.6)
 plt.savefig("lognormal.png")
 
 
@@ -30,7 +30,7 @@ t = t[i1]; s = s[i2]
 
 
 plt.figure()
-plt.contour(s, t,dist.pdf([t,s]),alpha=0.6)
+plt.contourf(s, t,dist.pdf([t,s]),alpha=0.6)
 plt.savefig("gamma.png")
 
 
@@ -43,7 +43,7 @@ t = t[i1]; s = s[i2]
 
 
 plt.figure()
-plt.contour(s, t,dist.pdf([t,s]),alpha=0.6)
+plt.contourf(s, t,dist.pdf([t,s]),alpha=0.6)
 plt.savefig("normal.png")
 
 

@@ -18,13 +18,15 @@ def u(x,a, I):
 
 
 legend = []
-#plt.rc("figure", figsize=[6,4])
+plt.rc("figure", figsize=[6,4])
 plt.plot(-1,1, "k-")
 plt.plot(-1,1, "k--")
 plt.plot(-1,1, "r")
 plt.plot(-1,1, "b")
 plt.plot(-1,1, "g")
-plt.legend(["E","Var", "D=2","D=3","D=4","D=6"],loc=2)
+plt.legend(["E","Var", "Normal","Uniform","Gamma"],loc=3,prop={"size" :12})
+plt.xlim([5,90])
+plt.ylim([5*10**-5,10**1])
 
 
 
@@ -72,8 +74,8 @@ for n in range(1,N+1):
 
 
     
-plt.plot(K,error,linewidth=2)
-plt.plot(K, var,linewidth=2)
+plt.plot(K,error,"r-",linewidth=2)
+plt.plot(K, var,"r--",linewidth=2)
 
 
 
@@ -106,8 +108,8 @@ for n in range(1,N+1):
 
 
     
-plt.plot(K,error,linewidth=2)
-plt.plot(K, var,linewidth=2)
+plt.plot(K,error,"b-",linewidth=2)
+plt.plot(K, var,"b--",linewidth=2)
 
 
 P = cp.orth_ttr(M, dist_R3)
@@ -137,8 +139,8 @@ for n in range(1,N+1):
 
 
     
-plt.plot(K,error,linewidth=2)
-plt.plot(K, var,linewidth=2)
+plt.plot(K,error,"g-",linewidth=2)
+plt.plot(K, var,"g--",linewidth=2)
 
 
 
@@ -153,10 +155,10 @@ plt.plot(K, var,linewidth=2)
 
 
 
-plt.xlabel("Samples, k")
+plt.xlabel("Samples, K")
 plt.ylabel("Error")
 plt.yscale('log')
-plt.title("Error in expectation value and variance ")
-plt.legend(["E, N","Var, N", "E, U","Var, U", "E, G","Var, G"],loc=3)
+#plt.title("Error in expectation value and variance ")
+#plt.legend(["E, N","Var, N", "E, U","Var, U", "E, G","Var, G"],loc=3)
 plt.savefig("rosenblatt.png")
 plt.show()

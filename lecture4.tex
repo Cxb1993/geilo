@@ -84,6 +84,31 @@ escapeinside=||
 
  \end{frame}
 
+ 
+ \begin{chaospy}{Repetition: Full 2D implementation}
+     \scriptsize
+ \begin{lstlisting}[language=python]
+def u(x,a, I):
+  return I*np.exp(-a*x)
+|\pause|
+a = cp.Uniform(0, 0.1)
+I = cp.Uniform(8, 10)
+dist = cp.J(a,I)|\pause|
+|\pause|
+P = cp.orth_ttr(2, dist)
+|\pause|
+nodes, weights = \
+    cp.generate_quadrature(3, dist, rule="G")
+|\pause|
+x = np.linspace(0, 10, 100)
+solves = [u(x, *node) for node in nodes.T]
+|\pause|
+u_hat = cp.fit_quadrature(P, nodes, weights, solves)
+|\pause|
+mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
+ \end{lstlisting}
+\end{chaospy}
+ 
 
 \begin{frame}
  \frametitle{Dependent variables}
@@ -152,7 +177,7 @@ U_analytic = cp.fit_quadrature(P, nodes0, weights, solves)
  \begin{frame}
  \frametitle{Rosenblatt Transformations}
  \begin{figure}
- \includegraphics[width = 0.9\textwidth]{distributions.png}
+ \includegraphics[width = \textwidth]{distributions.png}
  \end{figure}
 
  \end{frame}

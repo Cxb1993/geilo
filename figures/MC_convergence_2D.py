@@ -5,6 +5,19 @@ import numpy as np
 Nt = 10**2
 N = 50
 
+
+legend = []
+pl.rc("figure", figsize=[6,4])
+pl.plot(-1,1, "k-")
+pl.plot(-1,1, "k--")
+pl.plot(-1,1, "r")
+pl.plot(-1,1, "b")
+#pl.plot(-1,1, "g")
+pl.legend(["E","Var", "Monte Carlo","Polynomial chaos"],loc=3,prop={"size" :12})
+pl.xlim([0,20])
+pl.ylim([10**-16,10**2])
+
+
 def E_analytical(x):
     return 90*(1-np.exp(-0.1*x))/(x)
 
@@ -65,7 +78,7 @@ varCP = []
 K = []
 
 N = 5
-for n in xrange(1,N+1):
+for n in xrange(0,N+1):
     P = cp.orth_ttr(n, dist)
     nodes, weights = cp.generate_quadrature(n+1, dist, rule="G")
     K.append(len(nodes[0]))
@@ -79,15 +92,15 @@ for n in xrange(1,N+1):
 
 pl.rc("figure", figsize=[6,4])
 
-pl.plot(totalerrorMC[:],"b-",linewidth=2)
-pl.plot(totalvarianceMC[:],"b--",linewidth=2)
-pl.plot(K,errorCP,"r-",linewidth=2)
-pl.plot(K, varCP,"r--",linewidth=2)
+pl.plot(totalerrorMC[:],"r-",linewidth=2)
+pl.plot(totalvarianceMC[:],"r--",linewidth=2)
+pl.plot(K,errorCP,"b-",linewidth=2)
+pl.plot(K, varCP,"b--",linewidth=2)
 pl.xlabel("Samples, k")
 pl.ylabel("Error")
 pl.xlim([0,49])
 pl.yscale('log')
-pl.legend(["E, MC","Var, MC","E, PC","Var, PC"],loc=3)
+#pl.legend(["E, MC","Var, MC","E, PC","Var, PC"],loc=3)
 pl.savefig("MC_convergence_2D.png")
 
 pl.show()

@@ -39,9 +39,10 @@ for n in range(1,N):
     error.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     var.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
 
+pl.rc("figure", figsize=[6,4])
     
-pl.plot(K,error,linewidth=2)
-pl.plot(K, var,linewidth=2)
+pl.plot(K,error,"r-",linewidth=2)
+pl.plot(K, var,"r--",linewidth=2)
 pl.xlabel("Samples, k")
 pl.ylabel("Error")
 pl.yscale('log')
