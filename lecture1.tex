@@ -1,6 +1,6 @@
 \documentclass{beamer}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath, pdfpages, pdflscape, lscape, color, listings, hyperref, amssymb, graphicx,textcomp,varioref, afterpage, subcaption, float, bm, tikz} 
+\usepackage{amsmath, pdfpages, pdflscape, lscape, color, listings, hyperref, amssymb, graphicx,textcomp,varioref, afterpage, subcaption, float, bm, tikz}
 
 \global
 \newcommand{\Fig}[1]{Figure \ref{#1}}
@@ -37,7 +37,7 @@
      \node[anchor = center, opacity=.25] (image) at (current page.center) {\includegraphics[scale=0.25]{chaospy_logo.jpg}};
    \end{tikzpicture}
  \begin{frame}[fragile,environment=chaospy]
-   
+
 }
 {
  \end{frame}
@@ -60,13 +60,13 @@
 \definecolor{comments}{RGB}{0,0,113}
 \definecolor{red}{RGB}{160,0,0}
 \definecolor{green}{RGB}{0,150,0}
- 
- 
+
+
  \lstset{
 escapeinside=||
 }
 
- 
+
 \usetheme{kalkulo}
 
 \graphicspath{{./figures/}}
@@ -83,7 +83,7 @@ escapeinside=||
   \maketitle
 \end{frame}
 
-\begin{frame}[fragile]{Lecture will include many examples using the
+\begin{frame}[fragile]{Lectures will include many examples using the
     Chaospy software}
   \begin{center}
      \includegraphics[width=.5\textwidth]{chaospy_logo.jpg}
@@ -100,8 +100,7 @@ escapeinside=||
   \end{alert}
 \end{frame}
 
-\begin{frame}[fragile]{Practicle application involving bloodflow
-    simulations}{}
+\begin{frame}[fragile]{Example: bloodflow simulations}{}
     \begin{columns}
         \column{.5\textwidth}
         \begin{center}
@@ -141,14 +140,14 @@ escapeinside=||
 \section{Introduction}
 
 \begin{frame}[fragile]
-  {Introducing a naive testcase as a working example}
+  {Introducing a testcase as a working example}
   \pause
   \begin{align*}
     \frac{d u(x)}{dx} & =-au(x) & u(0) &= I
   \end{align*}
   \begin{itemize}
     \item[$u$] The quantity of interest
-    \item[$x$] Spatio-temperal locations
+    \item[$x$] Spatial location
     \item[$a,I$] Parameters containting uncertainties
   \end{itemize}
   \pause
@@ -162,7 +161,7 @@ escapeinside=||
 %  \begin{frame}
 %   \frametitle{Introducing the problem}
 %   We start by looking at the 1D problem:
-%   The area if interest is 
+%   The area if interest is
 %   \[x=[0,10]\]
 %  %  We also add the complication
 %  %   \[a = \begin{cases}
@@ -172,7 +171,7 @@ escapeinside=||
 %  \end{frame}
 
 \begin{frame}
- {Trivial models can be analysed analytically}
+ {This model can be analysed analytically}
  \[
  u(x; a, I) = Ie^{-ax}
  \]
@@ -180,22 +179,20 @@ escapeinside=||
 \pause
 Initially assume model parameters:
 \begin{align*}
-a &\sim \text{Uniform(0, 0.1)} & I&=1
+a &\sim \text{Uniform(0, 0.1)} \sim p_a(a) & I&=1\hbox{ (known)}
 \end{align*}
 \pause
   \begin{align*}
-    E(u) &= \int_0^{0.1}e^{-ax}\frac{1}{10}da
-    = -\frac{1}{10x}\left(e^{-0.1x}-1\right)
-    = \frac{1-   e^{-0.1x}}{10x} \\ 
-    \onslide<4->{ Var(u) &= 
-    \int_0^{0.1}\left(e^{-ax}\right)^2\frac{1}{10}da - E(u)^2 =
+    \E(u) &=  \int\limits_{-\infty}^{\infty} u(x;a)p_a(a)da=
+            \int_0^{0.1}e^{-ax}\frac{1}{10}da
+    = \frac{1-   e^{-0.1x}}{10x} \\
+    \onslide<4->{ Var(u) & =\int\limits_{-\infty}^{\infty} (u(x;a)- \E(u))^2p_a(a)da =
    \frac{1 - e^{-0.2ax}}{20x} - \left(\frac{1-   e^{-0.1x}}{10x}\right)^2}
  \end{align*}
 \end{frame}
 
 \begin{frame}[fragile]
-{Non-trivial models can be analysed using Monte Carlo
-integration}
+{In general, models can be analysed using Monte Carlo integration}
 
     \begin{figure}
     \includegraphics[width=\textwidth]{MC.png}
@@ -210,25 +207,25 @@ import numpy as np
 
 def u(x, a):
   return np.exp(-a*x)
-    
+
 |\pause|
-a = cp.Uniform(0.0.1)
-  
-samples_a = a.sample(1000)
+dist_a = cp.Uniform(0.0.1)
+
+samples_a = dist_a.sample(num_samples=1000)
 |\pause|
 x = np.linspace(0, 10, 100)
 |\pause|
-U = [u(x,q) for q in samples_a]
+samples_u = [u(x, a) for a in samples_a]
 |\pause|
-E = np.mean(U)
-Var = np.var(U)
+E = np.mean(samples_u)
+Var = np.var(samples_u)
 \end{lstlisting}
 \end{chaospy}
 
 \begin{frame}
   \frametitle{Convergence of Monte Carlo is slow}
   \begin{align*}
-  \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
+  \varepsilon_E &= \int_0^{10}|\E(u) - \E(\hat{u})|\,dx &
   \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
   \end{align*}
   \begin{center}
@@ -241,13 +238,13 @@ Var = np.var(U)
 \section{Polynomial Chaos}
 
 \begin{frame}
-  \frametitle{Monte Carlo is based on the idea of indirect sampling}
+  \frametitle{Assumption: mapping from input $q$ to output $u$ is smooth}
   \begin{center}
    \includegraphics[width=0.8\textwidth]{mapping.png}
   \end{center}
 \end{frame}
 
-\begin{frame}[fragile]{Using Lagrange polynomials to approximate the model}{}
+\begin{frame}[fragile]{Using Lagrange polynomials to approximate $u(q)$ ($N$-th degree polynomial interpolation)}{}
     \begin{align*}
         u(x;a) &\approx \hat u_M(x;a) =
         \sum_{n=0}^N c_n(x) P_n(a) & N&=M+1,
@@ -264,28 +261,32 @@ Var = np.var(U)
 \end{frame}
 
 \begin{frame}
-  \frametitle{Much better convergence properties than Monte Carlo}
+  \frametitle{The interpolation has much better convergence properties than Monte Carlo!}
   \begin{center}
     \includegraphics[width=0.8\textwidth]{MC_convergence_1D_2_short.png}
   \end{center}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Stochastic analysis of model approximations can be
-  dangerous}
+  \frametitle{Oscillations in Lagrange polynomials (for large $N$) destroy the convergence}
   \begin{center}
     \includegraphics[width=0.8\textwidth]{MC_convergence_1D_2.png}
   \end{center}
 \end{frame}
 
 
+\begin{frame}
+  \frametitle{Let us introduce a better polynomial approximation: Polynomial Chaos (PC) theory}
+
+Fill in poly chaos expression
+
+\end{frame}
 
 \begin{frame}
-  \frametitle{Combining polynomial approximation with uncertainty
-  quantification well requires a better underlying theory}
+  \frametitle{PC employs inner product spaces weighted with the probability distribution}
 
     \begin{align*}
-        \inner{u,v} &= E(u\cdot v) \qquad
+        \inner{u,v} &= \E(u\cdot v) \qquad
         \norm{u} = \sqrt{\inner{u,u}} \\
     \uncover<2->{&= \int f_Q(q)u(x,q)v(x,q)dq}
   \end{align*}
@@ -303,11 +304,11 @@ Var = np.var(U)
 
 \end{frame}
 
-\begin{frame}{Coefficients are Fourier when polynomials are
-    orthogonal}{}
+\begin{frame}{Coefficients are determined by least squares minimization}{}
     \begin{align*}
-        u &= \sum_{n=0}^N c_n P_n \\
-        \onslide<2->{\inner{u,P_k} &=
+        \hat u_M &= \sum_{n=0}^N c_n P_n \\
+        \onslide<2-> \min_{c_0,\ldots,c_N} || u- \hat u_M||_Q^2\\
+          &\vdots\\
         \inner{\sum_{n=0}^N c_n P_n,P_k}}
         & \onslide<2>{k&=0,\dots,N} \\
         \onslide<3->{&=
@@ -320,9 +321,10 @@ Var = np.var(U)
         c_k &= \coef{u}{P_k} &
         k&=0,\dots,N}
     \end{align*}
+$c_k$: Fourier coefficients
 \end{frame}
 
-\begin{frame}{Optimality linked to statistical property}{}
+\begin{frame}{Least squares minimization implies minimization of variance}{}
     \begin{align*}
         (c_0,\dots,c_N)
         &= \argmin_{c_0,\dots,c_N} \norm{u-\hat u_M} \\\\
@@ -338,7 +340,7 @@ Var = np.var(U)
     \end{align*}
 \end{frame}
 
-\begin{frame}{The mean and variance has a simpler form}{}
+\begin{frame}{The mean and variance have a simpler form}{}
     \pause
     \begin{alert}{Assumption:}
         $P_0 = 1$
@@ -373,11 +375,11 @@ Var = np.var(U)
 \begin{frame}
  \frametitle{Construct an orthogonal polynomial expansion using
  Gram-Schmidt orthogonalization}
-%  Assumption: We are in 1D and have $a +~ F_q$ and $I = 1$. 
+%  Assumption: We are in 1D and have $a +~ F_q$ and $I = 1$.
  \[v_0, v_1,...,v_N = 1, q,...,q^N\]
  \pause
  The Gram Schmidt method is
- 
+
  \begin{align*}
     P_0 &= v_0\\
     \uncover<3-> {P_n &= v_n - \sum_{m=0}^{n-1} \frac{\inner{v_n,P_m}}{\norm{P_m}^2}}\\
@@ -389,7 +391,7 @@ Var = np.var(U)
 
 \begin{chaospy}{Gram-Schmidt with chaospy}
 \begin{lstlisting}[language=python]
-M = 5; D = 1; N = M - 1
+M = 5; N = M - 1
 
 a = cp.Uniform(0,0.1)
 |\pause|
@@ -417,21 +419,21 @@ P = cp.Poly(P)
 
 \begin{frame}
  \frametitle{Most constructors of orthogonal polynomials are
- illposed}
+ ill-conditioned}
   % TODO
   % high: formula for error
 %   \[\varepsilon_E = \int_0^{10}|E(u) - E(\hat{u})|\,dx\]
      \begin{figure}
     \includegraphics[width=0.85\textwidth]{gramschmidterror1.png}
   \end{figure}
-  
+
  \end{frame}
 
 
 \begin{frame}
  {The only numerically stable method for
- calculating orthogonal polynomials is through the discretized
- Stiltjes method}
+ calculating orthogonal polynomials is through the three-term discretized
+ Stiltjes recursion}
  \pause
  Three terms recursion relation:
  \begin{align*}
@@ -443,7 +445,7 @@ P = cp.Poly(P)
    \begin{align*}
    A_n &= \frac{\langle qP_n,P_n\rangle_Q}{\norm{P_n}^2}
    &
-  B_n &= 
+  B_n &=
   \begin{cases}
   \frac{\norm{P_n}^2}{\norm{P_{n-1}}^2} & n > 0\\
   \norm{P_n}^2 & n = 0
@@ -451,10 +453,25 @@ P = cp.Poly(P)
    \end{align*}
   \end{frame}
 
-  
-  
 \begin{frame}
- \frametitle{Askey scheme, organization of orthogonal polynomials}
+ \frametitle{Discretized Stiltjes method is numerically stable}
+    % TODO
+    % high: error-formula
+    % med: trunkation
+%  \begin{align*}
+%   \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
+%   \end{align*}
+
+Change TTR to Discretized Stiltjes in the plot!
+
+    \begin{figure}
+    \includegraphics[width=0.85\textwidth]{gramschmidterror2.png}
+  \end{figure}
+ \end{frame}
+
+
+\begin{frame}
+ \frametitle{People have found analytical orthogonal polynomials for many common probability distributions}
  The askey scheme gives a relation between a probability distribution and the corresponding orhogonal polynomial.
  \begin{center}
   \begin{tabular}{lll}
@@ -464,10 +481,10 @@ P = cp.Poly(P)
   Beta & Jacobi & $[a,b]$ \\
   Uniform & Legendre & $[a,b]$ \\\hline
    \end{tabular}
-\end{center}  
- \end{frame}  
-  
-  
+\end{center}
+ \end{frame}
+
+
 \begin{chaospy}{
     Three terms recursion in Chaospy}
 \begin{lstlisting}[language=python]
@@ -483,20 +500,6 @@ print P
 \end{lstlisting}
 \end{chaospy}
 
-\begin{frame}
- \frametitle{Discretized Stiltjes method is numerically stable}
-    % TODO
-    % high: error-formula
-    % med: trunkation
-%  \begin{align*}
-%   \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
-%   \end{align*}
- 
-    \begin{figure}
-    \includegraphics[width=0.85\textwidth]{gramschmidterror2.png}
-  \end{figure} 
- \end{frame}
-  
 
 %  \begin{chaospy}{Finding the Fourier coefficients}
 %   \begin{lstlisting}[language=python]
@@ -515,11 +518,13 @@ print P
 %  u_hat, c = cp.fit_quadrature(P, nodes, weights,
 %                               solves,retall=True)
 %  \end{lstlisting}
-%  
+%
 %  \end{chaospy}
 \begin{frame}
  {Repetition of the problem}
  \[  u(x; a, I) = Ie^{-ax}\]
+Things have changed, but maybe skip formulas and focus on the epsilons!
+
 \pause
 Initially assume model parameters:
 \begin{align*}
@@ -540,6 +545,7 @@ a &\sim \text{Uniform(0, 0.1)} & I&=1
 \begin{frame}
 \frametitle{Convergence of orthogonal polynomial approximation}
 
+Fix legend: Polynomial to Lagrange
     % TODO
     % med: truncation
   \begin{figure}
@@ -549,7 +555,7 @@ a &\sim \text{Uniform(0, 0.1)} & I&=1
 
 
 \begin{frame}
- \frametitle{Extending the theory to multiple dimensions}
+ \frametitle{Next step: Extend the theory to multiple dimensions}
  \pause
   \begin{align*}
   P_n &= P^{(1)}_n, ..., P^{(D)}_{n_D}
@@ -557,9 +563,9 @@ a &\sim \text{Uniform(0, 0.1)} & I&=1
   \end{align*}
   \pause
   \includegraphics[width=\textwidth]{multidim.png}
-   
+
  % \begin{tabular}{l|cccccc}
- % ... &&&&&\\ 
+ % ... &&&&&\\
   % $\mathbf{P}_{4}$& ...&&&& \\
  %   $\mathbf{P}_{3}$ &	$\mathbf{P}_{3}\mathbf{P}_{0}$ & ... && &\\
  %   $\mathbf{P}_{2}$ &	$\mathbf{P}_{2}\mathbf{P}_{0}$ & $\mathbf{P}_{2}\mathbf{P}_{1}$ & ... &&& \\
@@ -571,8 +577,8 @@ a &\sim \text{Uniform(0, 0.1)} & I&=1
 
 
 \begin{frame}
-  \frametitle{Construct polynomial approximation}
-  \begin{columns}[c] 
+  \frametitle{We need a mapping from multiple indices to single index}
+  \begin{columns}[c]
     \column{.5\textwidth}
     \begin{center}
       Multi-index\\
@@ -581,7 +587,7 @@ a &\sim \text{Uniform(0, 0.1)} & I&=1
       $\mathbf{P}_{00}$\\
     $\mathbf{P}_{10} \quad \mathbf{P}_{01}$\\
     $\mathbf{P}_{20} \quad \mathbf{P}_{11}\quad \mathbf{P}_{02}$\\
-    $\mathbf{P}_{30} \quad \mathbf{P}_{21}\quad \mathbf{P}_{12}\quad ...$ 
+    $\mathbf{P}_{30} \quad \mathbf{P}_{21}\quad \mathbf{P}_{12}\quad ...$
   \end{tabular}
     \end{center}
 
@@ -594,7 +600,7 @@ Single-index\\
     $\mathbf{P}_{0}$\\
     $\mathbf{P}_{1} \quad \mathbf{P}_{2}$\\
     $\mathbf{P}_{3} \quad \mathbf{P}_{4}\quad \mathbf{P}_{5}$\\
-    $\mathbf{P}_{6} \quad \mathbf{P}_{7}\quad \mathbf{P}_{8}\quad ...$ 
+    $\mathbf{P}_{6} \quad \mathbf{P}_{7}\quad \mathbf{P}_{8}\quad ...$
   \end{tabular}
 \end{center}
   \end{columns}
@@ -637,13 +643,12 @@ print cp.E(P[3]*P[3],dist)
 0.0888888888903
 \end{lstlisting}
 \end{chaospy}
- 
- 
- \begin{frame}
- {The multidimensional problrm }
+
+
+ \begin{frame}{A two-dimensional problem}
  \[  u(x; a, I) = Ie^{-ax}\]
 \pause
-Initially assume model parameters:
+Uncertain model parameters:
 \begin{align*}
 a &\sim \text{Uniform(0, 0.1)} & I&= \text{Uniform(8, 10)}
 \end{align*}
@@ -653,34 +658,34 @@ a &\sim \text{Uniform(0, 0.1)} & I&= \text{Uniform(8, 10)}
   \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
   \end{align*}
 \end{frame}
- 
- 
+
+
 \begin{frame}
- \frametitle{Convergence of a multidimensional problem}
+ \frametitle{Convergence of the two-dimensional $(a,I)$ problem}
  % TODO
  % high: error formulae
 %   \begin{align*}
 %   \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
 %   \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
 %   \end{align*}
- 
+
 \begin{figure}
     \includegraphics[width=0.85\textwidth]{MC_convergence_2D.png}
   \end{figure}
 
  \end{frame}
 
- 
+
  \begin{chaospy}{Teaser of the full implementation}
      \scriptsize
  \begin{lstlisting}[language=python]
 def u(x,a, I):
   return I*np.exp(-a*x)
-|\pause| 
+|\pause|
 a = cp.Uniform(0, 0.1)
 I = cp.Uniform(8, 10)
 dist = cp.J(a,I)|\pause|
-|\pause| 
+|\pause|
 P = cp.orth_ttr(2, dist)
 |\pause|
 nodes, weights = \
@@ -704,7 +709,7 @@ mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 
 
 \begin{frame}
-  \frametitle{Gibb's Phenomena, discontinues methods are troublesome}
+  \frametitle{Gibb's Phenomena: discontinuities give oscillations}
   \begin{figure}
   \includegraphics[width=0.85\textwidth]{gibbs.png}
   \end{figure}
@@ -719,7 +724,7 @@ mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 
 %\begin{frame}
 %  \frametitle{What happens if we choose the wrong distribution}
-  
+
 %\end{frame}
 
 

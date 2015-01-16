@@ -87,6 +87,8 @@ escapeinside=||
 
 \begin{frame}
  \frametitle{Dependent variables}
+ % TODO
+ % copy code from lecture1
  \[  P_{\mathfrak i} = P_{i_1}^{(1)}P_{i_2}^{(2)}\cdots P_{i_D}^{(D)} \qquad \mathfrak i = (i_1,i_2,...,i_D)\]
  \pause
  \begin{align*}
@@ -111,39 +113,42 @@ escapeinside=||
 \begin{chaospy}{Simple transformation code}
  \scriptsize
  \begin{lstlisting}[language=Python]
+x = np.linspace(0, 1, 100)
 def u(x,a, I):
   return I*np.exp(-a*x)
 
 C = [[2,1],[1,2]]
-mu = np.array([0.5,0.5])
+mu = [0.5,0.5]
 |\pause|
 R = cp.J(cp.Normal(),cp.Normal())
-L =  np.linalg.cholesky(C)
+|\pause|
+L =  np.linalg.cholesky(C)      # C = np.dot(L.T, L)
 |\pause|
 def T(r):
-    result = np.dot(L,r)
-    for i in range(0,len(mu)):
-        result[i] += mu[i]
-    return result
-
-x = np.linspace(0, 1, 100); M = 10
+    return np.dot(L,r) + mu
 |\pause|
 P = cp.orth_ttr(M, R)|\pause|
-nodes, weights = cp.generate_quadrature(M+1, R, rule="G")|\pause|
-nodes_ = T(nodes)|\pause|
-solves = [u(x, s[0], s[1]) for s in nodes_.T]|\pause|
-U_analytic = cp.fit_quadrature(P, nodes_, weights, solves)
+nodes0, weights = cp.generate_quadrature(M+1, R, rule="G")|\pause|
+nodes1 = T(nodes0)
+|\pause|
+solves = [u(x, *node) for node in nodes1.T]
+|\pause|
+U_analytic = cp.fit_quadrature(P, nodes0, weights, solves)
 \end{lstlisting}
 \end{chaospy}
 
 \begin{frame}
  \frametitle{Convergence of transformation}
+ % TODO
+ % Extend to the right
  \begin{figure}
  \includegraphics[width = 0.85\textwidth]{convergence_dependence.png}
  \end{figure}
  \end{frame}
 
 
+ % TODO
+ % use contourf
  \begin{frame}
  \frametitle{Rosenblatt Transformations}
  \begin{figure}
@@ -179,6 +184,8 @@ U_hat = cp.fit_regression(P, s_R, solves,rule="LS")
 
  \begin{frame}
  \frametitle{Convergence of Rosenblatt transformations}
+ % TODO
+ % fix legend
  \begin{figure}
  \includegraphics[width = 0.9\textwidth]{rosenblatt.png}
  \end{figure}
