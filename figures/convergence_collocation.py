@@ -21,7 +21,7 @@ I = cp.Uniform(8, 10)
 dist = cp.J(a,I)
 
 T = np.linspace(0, 10, Nt+1)[1:]
-dt = T[1] - T[0]
+dt = 10./Nt
 
 
 error = []
@@ -43,11 +43,12 @@ pl.rc("figure", figsize=[6,4])
     
 pl.plot(K,error,"r-",linewidth=2)
 pl.plot(K, var,"r--",linewidth=2)
-pl.xlabel("Samples, k")
+pl.xlabel("Samples, K")
 pl.ylabel("Error")
 pl.yscale('log')
+pl.xlim([7,110])
 #pl.title("Error in expectation value and variance ")
-pl.legend(["E","Var"])
+pl.legend(["Mean","Variance"])
 pl.savefig("convergence_collocation.png")
 
 pl.show()

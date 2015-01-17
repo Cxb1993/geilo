@@ -24,7 +24,7 @@ plt.plot(-1,1, "k--")
 plt.plot(-1,1, "r")
 plt.plot(-1,1, "b")
 plt.plot(-1,1, "g")
-plt.legend(["E","Var", "Normal","Uniform","Gamma"],loc=3,prop={"size" :12})
+plt.legend(["mean","Variance", "Normal","Uniform","Gamma"],loc=3,prop={"size" :12})
 plt.xlim([5,90])
 plt.ylim([5*10**-5,10**1])
 

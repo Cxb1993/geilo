@@ -13,7 +13,7 @@ pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
 #pl.plot(-1,1, "g")
-pl.legend(["E","Var", "Monte Carlo","Polynomial chaos"],loc=3,prop={"size" :12})
+pl.legend(["Mean","Variance", "Monte Carlo","Polynomial chaos"],loc=3,prop={"size" :12})
 pl.xlim([0,20])
 pl.ylim([10**-16,10**2])
 

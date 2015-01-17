@@ -26,15 +26,91 @@ dist = cp.J(a,I)
 
 T = np.linspace(0, 10, Nt+1)[1:]
 dt = 10./Nt
+legend = []
+
+pl.plot(-1,1, "k-")
+pl.plot(-1,1, "k--")
+pl.plot(-1,1, "r")
+pl.plot(-1,1, "b")
+pl.plot(-1,1, "g")
+pl.plot(-1,1, "y")
+pl.legend(["Mean","Variance","(Pseudo-)Random","L","Sobol","Hammersley"],loc=3,prop={"size" :12})
+pl.rc("figure", figsize=[6,4])
+pl.xlim([5,55])
+pl.ylim([10**-9,10**0])
+
+N=7
+
+#errorb = np.zeros(Nt)
+#varb = np.zeros(Nt)
+errorb = []
+varb=[]
+for i in range(0,10):
+    
+    error = []
+    var = []
+    K = []
+    for n in range(0,N):
+        P = cp.orth_ttr(n, dist)
+        nodes = dist.sample(2*len(P))
+        K.append(2*len(P))
+        solves = [u(T, s[0], s[1]) for s in nodes.T]
+        U_hat = cp.fit_regression(P, nodes, solves,rule="LS")
+
+        error.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
+        var.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
+
+    errorb.append(error)   
+    varb.append(var)
+
+meanE = np.sum(errorb,0)/10.
+meanVar = np.sum(errorb,0)/10.
+
+pl.plot(K,meanE,"r-", linewidth=2)
+pl.plot(K, meanVar,"r--", linewidth=2)
+
+
+
+"""
+
+errorb = []
+varb=[]
+for i in range(0,10):
+    
+    error = []
+    var = []
+    K = []
+    for n in range(0,N):
+        P = cp.orth_ttr(n, dist)
+        nodes = dist.sample(2*len(P), "L")
+        K.append(2*len(P))
+        solves = [u(T, s[0], s[1]) for s in nodes.T]
+        U_hat = cp.fit_regression(P, nodes, solves,rule="LS")
+
+        error.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
+        var.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
+
+    errorb.append(error)   
+    varb.append(var)
+
+meanE = np.sum(errorb,0)/10.
+meanVar = np.sum(errorb,0)/10.
+
+pl.plot(K,meanE,"b-", linewidth=2)
+pl.plot(K, meanVar,"b--", linewidth=2)
+
+
+
+"""
+
 
 
 error = []
 var = []
 K = []
-for n in range(1,N):
-     
+for n in range(0,N):
     P = cp.orth_ttr(n, dist)
-    nodes = dist.sample(2*len(P))
+    nodes = dist.sample(2*len(P), "S")
     K.append(2*len(P))
     solves = [u(T, s[0], s[1]) for s in nodes.T]
     U_hat = cp.fit_regression(P, nodes, solves,rule="LS")
@@ -42,16 +118,16 @@ for n in range(1,N):
     error.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     var.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
 
-pl.figure()
-pl.plot(K,error,linewidth=2)
-pl.plot(K, var,linewidth=2)
+
+pl.plot(K,error,"g-", linewidth=2)
+pl.plot(K, var,"g--", linewidth=2)
+
 
 
 error = []
 var = []
 K = []
-for n in range(1,N):
-     
+for n in range(0,N):
     P = cp.orth_ttr(n, dist)
     nodes = dist.sample(2*len(P), "M")
     K.append(2*len(P))
@@ -61,18 +137,23 @@ for n in range(1,N):
     error.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     var.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
 
+
+pl.plot(K,error,"y-", linewidth=2)
+pl.plot(K, var,"y--", linewidth=2)
+
+
+
+
+
  
-pl.plot(K,error,linewidth=2)
-pl.plot(K, var,linewidth=2)
 
-
-pl.xlabel("Samples, k")
+pl.xlabel("Samples, K")
 pl.ylabel("Error")
 pl.yscale('log')
-pl.title("Error in expectation value and variance ")
-pl.legend(["Expectation value","Variance", "Expectation value, Hammersley","Variance, Hammersley"])
-#pl.savefig("convergence_collocation_compare.png")
-
+#pl.title("Error in expectation value and variance ")
+#pl.legend(["Expectation value","Variance", "Expectation value, Hammersley","Variance, Hammersley"])
+pl.savefig("convergence_collocation_compare.png")
+"""
 
 
 pl.figure()
@@ -80,7 +161,7 @@ nodes = dist.sample(100)
 pl.scatter(nodes[0],nodes[1])
 pl.xlabel("a")
 pl.ylabel("I")
-pl.savefig("samples_S.png")
+pl.savefig("samples.png")
 
 pl.figure()
 nodes = dist.sample(100, "M")
@@ -90,19 +171,19 @@ pl.ylabel("I")
 pl.savefig("samples_M.png")
 
 pl.figure()
-nodes = dist.sample(100, "H")
+nodes = dist.sample(100, "L")
 pl.scatter(nodes[0],nodes[1])
 pl.xlabel("a")
 pl.ylabel("I")
-pl.savefig("samples_H.png")
+pl.savefig("samples_L.png")
 
 pl.figure()
-nodes = dist.sample(100, "LH")
+nodes = dist.sample(100, "S")
 pl.scatter(nodes[0],nodes[1])
 pl.xlabel("a")
 pl.ylabel("I")
-pl.savefig("samples_LH.png")
-
+pl.savefig("samples_S.png")
+"""
 
 pl.show()
 
