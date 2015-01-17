@@ -690,6 +690,9 @@ U_hat = cp.fit_regression(P, nodes, solves)
     % TODO
     % Plot!
     % SC nested-CC sparsegrid vs. PC with S-rule and LS-fit vs. MC
+      \begin{figure}
+  \includegraphics[width=0.85\textwidth]{MC_convergence_2D_diff.png}
+ \end{figure}
 \end{frame}
 
 \begin{frame}{Which method to choose for your problem}{}
@@ -765,8 +768,8 @@ var = np.var(u_mc,1)
 \begin{alert}
     {Variance based sensitivity:}
  \begin{align*}
-  S_{T_i} &= \frac{E(Var(u | dist \backslash d_i ))}{Var(u)}\\
-\onslide<2->{&= \frac{E(E(u^2 | dist \backslash d_i ) - E((u | dist \backslash d_i )^2))}{Var(u)}}
+  S_{T_i} &= \frac{\E{\Var{u | dist \backslash d_i }}}{\Var{u}}\\
+\onslide<2->{&= \frac{\E{\E{u^2 | dist \backslash d_i } - \E{(u | dist \backslash d_i )^2}}}{\Var{u}}}
 \end{align*} 
 \end{alert}
 
@@ -774,14 +777,31 @@ var = np.var(u_mc,1)
 \begin{alert}{Constructor:}
 
   \verb;S_Ti = cp.Sens_t(U_hat, dist);
-\end{alert}\pause
-
-\begin{alert}
-    {Manual code:} % TODO manual code D=2
-
-  \verb;S_Ti = cp.Sens_t(U_hat, dist);
 \end{alert}
+
+% \begin{alert}
+%     {Manual code:} % TODO manual code D=2
+% 
+%   \verb;S_Ti = cp.Sens_t(U_hat, dist);
+% \end{alert}
 \end{frame}
+
+\begin{chaospy}{Manual code for Variance based sensitivity}
+\scriptsize
+ \begin{lstlisting}[language=python]
+D=2
+zero = [1]*D
+|\pause|
+Sense = np.empty((D,) + U_hat.shape)|\pause|
+V = cp.Var(U_hat, dist)|\pause|
+
+for i in range(D):
+    zero[i] = 0
+    Sense[i] = (V-cp.Var(cp.E_cond(U_hat, zero, dist), dist))/V
+    zero[i] = 1
+ \end{lstlisting}
+
+\end{chaospy}
 
 
 \begin{frame}
@@ -794,6 +814,13 @@ var = np.var(u_mc,1)
 \begin{chaospy}{Polynomial chaos expansions for other metric is
     still possible}
     % TODO Manual code
+    
+\begin{lstlisting}[language=python]
+u_mc =  np.sort(u_mc,1)
+p_10 = u_mc[:,round(0.1*len(u_mc[0,:]))]
+p_90 = u_mc[:,round(0.9*len(u_mc[0,:]))]
+ \end{lstlisting}
+ \pause
   \begin{lstlisting}[language=python]
 p_10 = np.percentile(u_mc,10,1)
 p_90 = np.percentile(u_mc,90,1)
