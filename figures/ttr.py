@@ -53,7 +53,7 @@ for m in M:
     
     
 plt.ylim(10**-9,10**1)
-plt.xlabel("Samples, K")
+plt.xlabel("Evaluations")
 plt.ylabel("Variance")
 plt.rc("figure", figsize=[6,4])
 
