@@ -1,8 +1,8 @@
 import chaospy as cp
 
 
-dist = [3,4]#cp.J(cp.Uniform(),cp.Uniform())
-nodes, weights = cp.generate_quadrature(2, dist, rule="C")
+dist = cp.J(cp.Uniform(),cp.Uniform())
+nodes, weights = cp.generate_quadrature((1,2), dist, rule="G")
 print nodes
 print weights
 

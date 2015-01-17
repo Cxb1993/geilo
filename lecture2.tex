@@ -288,12 +288,25 @@ print weights
 \end{itemize}
  \end{frame}
 
- \begin{frame}{Generating multivariate integration rules in
-     Chaospy}{}
-% TODO
+ \begin{chaospy}{Generating multivariate integration rules in
+     Chaospy}
+     \scriptsize
+ % TODO
 % high: fill in code (using L as input)
 % skip "rule="
- \end{frame}
+\begin{lstlisting}[language=python]
+dist = cp.J(cp.Uniform(),cp.Uniform())
+nodes, weights = cp.generate_quadrature((1,2), dist, rule="G")
+
+print nodes
+[[ 0.21132487  0.21132487  0.21132487  0.78867513  0.78867513  0.78867513]
+ [ 0.11270167  0.5         0.88729833  0.11270167  0.5         0.88729833]]
+ 
+print weights
+ [ 0.13888889  0.22222222  0.13888889  0.13888889  0.22222222  0.13888889]
+\end{lstlisting}
+
+\end{chaospy}
 
 
 %  \begin{frame}
@@ -390,7 +403,7 @@ Smolyak sparse grid:
    \end{tabular}
   \end{table}
   \end{alert}
-  
+  \pause
   \begin{alert}
       {Nested Clenshaw-Curtis:}\\
       \scriptsize
@@ -607,9 +620,10 @@ a = cp.Uniform(0, 0.1)
 I = cp.Uniform(8, 10)
 dist = cp.J(a,I)
 |\pause|
+M = 3
 x = np.linspace(0, 10, 100)
  |\pause|
-P = cp.orth_ttr(n, dist) |\pause|
+P = cp.orth_ttr(M, dist) |\pause|
 nodes = dist.sample(2*len(P)) |\pause|
 solves = [u(T, s[0], s[1]) for s in nodes.T] |\pause|
 U_hat = cp.fit_regression(P, nodes, solves)
