@@ -109,7 +109,7 @@ escapeinside=||
 |\pause| 
 a = cp.Uniform(0, 0.1)
 I = cp.Uniform(8, 10)
-dist = cp.J(a,I)|\pause|
+dist = cp.J(a,I)
 |\pause| 
 P = cp.orth_ttr(2, dist)
 |\pause|
@@ -178,6 +178,7 @@ P_n(q_k)u(x,q_k)f(q_k)\omega_k}
 \begin{lstlisting}[language=python]
 dist = cp.Normal()
 nodes, weights = cp.generate_quadrature(2, dist, rule="G")
+|\pause| 
 print nodes
 [[-1.73205081  0.          1.73205081]]
 print weights
@@ -202,36 +203,36 @@ print weights
 
 \end{chaospy}
  
- \begin{chaospy}{Generating nodes and weights in Chaospy}
-     % TODO
-     % high: add code for 1-D gen_quad
-     % high: list quadrature schemes
-    \scriptsize
-\begin{lstlisting}[language=python]
-dist = cp.Uniform()
-nodes, weights = cp.generate_quadrature(2, dist, rule="G")
-print nodes
-[[ 0.11270167  0.5         0.88729833]]
-print weights
-[ 0.27777778  0.44444444  0.27777778]
-\end{lstlisting}
-\normalsize
- 
-\begin{table}
-\caption{Quadrature rules:} 
-\begin{tabular}{|ll|l|}
-\hline
- Key & & Description\\\hline
-    "Gaussian"& "G" &    Optimal Gaussian quadrature.\\
-    "Legendre"& "E" &    Gauss-Legendre quadrature\\
-    "Clenshaw"& "C" &    Clenshaw-Curtis quadrature.\\
-    "Leja"& ``J" &          Leja quadrature.\\
-    "Genz"& "Z" &        Hermite Genz-Keizter 16 rule.\\
-    "Patterson" & "P"&    Gauss-Patterson quadrature rule.\\\hline
-\end{tabular}
-\end{table}
-
-\end{chaospy}
+%   \begin{chaospy}{Generating nodes and weights in Chaospy}
+%       % TODO
+%       % high: add code for 1-D gen_quad
+%       % high: list quadrature schemes
+%      \scriptsize
+%  \begin{lstlisting}[language=python]
+%  dist = cp.Uniform()
+%  nodes, weights = cp.generate_quadrature(2, dist, rule="G")
+%  print nodes
+%  [[ 0.11270167  0.5         0.88729833]]
+%  print weights
+%  [ 0.27777778  0.44444444  0.27777778]
+%  \end{lstlisting}
+%  \normalsize
+%   
+%  \begin{table}
+%  \caption{Quadrature rules:} 
+%  \begin{tabular}{|ll|l|}
+%  \hline
+%   Key & & Description\\\hline
+%      "Gaussian"& "G" &    Optimal Gaussian quadrature.\\
+%      "Legendre"& "E" &    Gauss-Legendre quadrature\\
+%      "Clenshaw"& "C" &    Clenshaw-Curtis quadrature.\\
+%      "Leja"& ``J" &          Leja quadrature.\\
+%      "Genz"& "Z" &        Hermite Genz-Keizter 16 rule.\\
+%      "Patterson" & "P"&    Gauss-Patterson quadrature rule.\\\hline
+%  \end{tabular}
+%  \end{table}
+%  
+%  \end{chaospy}
  
 %  \begin{chaospy}{Repetition: 2D code}
 %  
@@ -626,7 +627,7 @@ x = np.linspace(0, 10, 100)
 P = cp.orth_ttr(M, dist) |\pause|
 nodes = dist.sample(2*len(P)) |\pause|
 solves = [u(T, s[0], s[1]) for s in nodes.T] |\pause|
-U_hat = cp.fit_regression(P, nodes, solves)
+u_hat = cp.fit_regression(P, nodes, solves)
  \end{lstlisting}
 
 \end{chaospy}
@@ -729,9 +730,12 @@ U_hat = cp.fit_regression(P, nodes, solves)
 \end{frame}
 
 \begin{chaospy}{A proxy model allows for computational cheap statistical analysis}
+    \scriptsize
  \begin{lstlisting}[language=python]
-mean =  cp.E(U_hat,dist)
-var = cp.Var(U_hat,dist)
+u_hat, c = cp.fit_quadrature(P, nodes, weights, solves, retall=True)
+|\pause|
+mean =  cp.E(u_hat,dist)
+var = cp.Var(u_hat,dist)
 |\pause|
 
 mean = c[0]
@@ -739,7 +743,7 @@ var = np.sum(norms[1:]*c[1:].T**2,1)
 |\pause|
 
 s = dist.sample(10**6)
-u_mc = U_hat(*s)
+u_mc = u_hat(*s)
 mean = np.mean(u_mc,1)
 var = np.var(u_mc,1)
 \end{lstlisting}
@@ -769,7 +773,7 @@ var = np.var(u_mc,1)
         \includegraphics[width=\textwidth]{ntnu/STARFiSh-Logo_small_transparent.png}
         \column{.3\textwidth}
         \includegraphics[width=\textwidth]{chaospy_logo.jpg}
-    \end{columns} \pause
+    \end{columns}
     \begin{center}
     \includegraphics[width=.1\textwidth]{figures/south.pdf}
     \end{center}
@@ -795,13 +799,13 @@ var = np.var(u_mc,1)
 \onslide<3->
 \begin{alert}{Constructor:}
 
-  \verb;S_Ti = cp.Sens_t(U_hat, dist);
+  \verb;S_Ti = cp.Sens_t(u_hat, dist);
 \end{alert}
 
 % \begin{alert}
 %     {Manual code:} % TODO manual code D=2
 % 
-%   \verb;S_Ti = cp.Sens_t(U_hat, dist);
+%   \verb;S_Ti = cp.Sens_t(u_hat, dist);
 % \end{alert}
 \end{frame}
 
@@ -811,12 +815,12 @@ var = np.var(u_mc,1)
 D=2
 zero = [1]*D
 |\pause|
-Sense = np.empty((D,) + U_hat.shape)|\pause|
-V = cp.Var(U_hat, dist)|\pause|
+Sense = np.empty((D,) + u_hat.shape)|\pause|
+V = cp.Var(u_hat, dist)|\pause|
 
 for i in range(D):
     zero[i] = 0
-    Sense[i] = (V-cp.Var(cp.E_cond(U_hat, zero, dist), dist))/V
+    Sense[i] = (V-cp.Var(cp.E_cond(u_hat, zero, dist), dist))/V
     zero[i] = 1
  \end{lstlisting}
 
@@ -835,14 +839,11 @@ for i in range(D):
     % TODO Manual code
     
 \begin{lstlisting}[language=python]
-u_mc =  np.sort(u_mc,1)
-p_10 = u_mc[:,round(0.1*len(u_mc[0,:]))]
-p_90 = u_mc[:,round(0.9*len(u_mc[0,:]))]
- \end{lstlisting}
- \pause
-  \begin{lstlisting}[language=python]
-p_10 = np.percentile(u_mc,10,1)
-p_90 = np.percentile(u_mc,90,1)
+Q_samples = dist.samples(10**5)
+u_samples = P(*Q_samples)
+|\pause|
+p_10 = np.percentile(u_sample, 10, axis=0)
+p_90 = np.percentile(u_sample, 90, axis=0)
  \end{lstlisting}
 \end{chaospy}
 
