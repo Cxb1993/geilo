@@ -142,7 +142,7 @@ mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
    \varepsilon_{Var} = \int_0^{10}|Var(u) - Var(\hat{u})|\,dx\]
 
  \begin{figure}
-  \includegraphics[width=0.7\textwidth]{Convergence_repeat.png}
+  \includegraphics[width=0.7\textwidth]{MC_convergence_2D.png}
  \end{figure}
 
 \end{frame}
@@ -393,7 +393,7 @@ Smolyak sparse grid:
   \begin{alert}
       {Clenshaw-Curtis:}\\
       \scriptsize
-    \verb;cp.generate\_quadrature(l, dist, rule="C", growth=False);
+     \verb;cp.generate\_quadrature(l, dist, rule="C", growth=False);
     \normalsize
   \begin{table}
   \begin{tabular}{lcccccccc}
@@ -407,7 +407,7 @@ Smolyak sparse grid:
   \begin{alert}
       {Nested Clenshaw-Curtis:}\\
       \scriptsize
-   \verb;cp.generate\_quadrature(l, dist, rule="C", growth=True);
+    \verb;cp.generate\_quadrature(l, dist, rule="C", growth=True);
     \normalsize
   \begin{table}
   \begin{tabular}{lcccccccc}
@@ -656,7 +656,7 @@ U_hat = cp.fit_regression(P, nodes, solves)
                 \scriptsize
                 \verb;nodes = dist.sample(100);
                 \normalsize
-                \includegraphics[width=0.7\textwidth]{samples_L.png}
+                %\includegraphics[width=0.7\textwidth]{samples_L.png}
 
                 L sampling:
 
@@ -705,7 +705,7 @@ U_hat = cp.fit_regression(P, nodes, solves)
 \end{frame}
 
 
-\begin{frame}{A compare between different methods}{}
+\begin{frame}{A comparison between different methods}{}
     % TODO
     % Plot!
     % SC nested-CC sparsegrid vs. PC with S-rule and LS-fit vs. MC
@@ -846,10 +846,9 @@ p_90 = np.percentile(u_mc,90,1)
  \end{lstlisting}
 \end{chaospy}
 
-\begin{frame}[fragile]
+\begin{frame}
  \frametitle{Confidence interval}
  % TODO
- % low: >>> plt.fill_between
   \begin{figure}
   \includegraphics[width=0.85\textwidth]{percentiles.png}
  \end{figure}

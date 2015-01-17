@@ -13,9 +13,9 @@ pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
 pl.plot(-1,1, "g")
-pl.legend(["E","Var", "Monte Carlo","Nested-CC sparsegrid", "PC with S-rule and LS"],loc=3,prop={"size" :12})
+pl.legend(["Mean","Variance", "Monte Carlo","CC with nested sparse grid", "Least Square with Sobol sampling"],loc=3,prop={"size" :12})
 #pl.xlim([0,20])
-pl.ylim([10**-16,10**4])
+pl.ylim([10**-20,10**4])
 
 
 def E_analytical(x):
