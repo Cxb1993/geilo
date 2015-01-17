@@ -90,7 +90,7 @@ plt.xlabel("Terms, M")
 plt.ylabel("Error")
 #plt.yscale('log')
 #plt.title("Error ")
-plt.legend(["Gram-Schimdt","TTR"],loc=2)
+plt.legend(["Gram-Schimdt","Stiltjes"],loc=2)
 plt.savefig("gramschmidterror2.png")
 
 plt.show()

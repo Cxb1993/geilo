@@ -20,9 +20,19 @@ a = cp.Uniform(0, 0.1)
 I = cp.Uniform(8, 10)
 dist = cp.J(a,I)
 T = np.linspace(0, 10, Nt+1)[1:]
-dt = T[1] - T[0]
+dt = 10./Nt
+pl.rc("figure", figsize=[6,4])
 
-pl.figure()
+pl.figure(1)
+pl.plot(-1,1, "k-")
+pl.plot(-1,1, "k--")
+pl.plot(-1,1, "r")
+pl.plot(-1,1, "b")
+pl.plot(-1,1, "g")
+pl.legend(["E","Var", "$L=M-1$","$L=M$","$L=M+1$"],loc=3,prop={"size" :12})
+#pl.ylim([10**-14,10**2])
+
+
 
 N = 6
 
@@ -31,7 +41,7 @@ varCP = []
 K = []
 for n in xrange(1,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n-1, dist, rule="G")
+    nodes, weights = cp.generate_quadrature(n-1, dist, rule="E")
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
@@ -42,8 +52,8 @@ for n in xrange(1,N+1):
     
 
 
-pl.plot(K,errorCP,linewidth=2)
-pl.plot(K, varCP,linewidth=2)
+pl.plot(K,errorCP,"r-",linewidth=2)
+pl.plot(K, varCP,"r--",linewidth=2)
 
 
 N = 5
@@ -53,7 +63,7 @@ varCP = []
 K = []
 for n in xrange(1,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n, dist, rule="G")
+    nodes, weights = cp.generate_quadrature(n, dist, rule="E")
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
@@ -62,8 +72,8 @@ for n in xrange(1,N+1):
     errorCP.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     varCP.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
 
-pl.plot(K,errorCP,linewidth=2)
-pl.plot(K, varCP,linewidth=2)
+pl.plot(K,errorCP,"b-",linewidth=2)
+pl.plot(K, varCP,"b--",linewidth=2)
 
 
 N = 4
@@ -72,7 +82,7 @@ varCP = []
 K = []
 for n in xrange(1,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n+1, dist, rule="G")
+    nodes, weights = cp.generate_quadrature(n+1, dist, rule="E")
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
@@ -81,29 +91,54 @@ for n in xrange(1,N+1):
     errorCP.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     varCP.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
     
-pl.plot(K,errorCP,linewidth=2)
-pl.plot(K, varCP,linewidth=2)
+pl.plot(K,errorCP,"g-",linewidth=2)
+pl.plot(K, varCP,"g--",linewidth=2)
+#pl.ylim(10**-18, 10**2)
 
 
-
-pl.xlabel("Samples, k")
+pl.xlabel("Samples, K")
 pl.ylabel("Error")
 pl.yscale('log')
-pl.title("Error in expectation value and variance ")
-pl.legend(["Expectation value, $L=M-1$","Variance, $L=M-1$","Expectation value, $L=M$","Variance,  $L=M$","Expectation value, $L=M+1$","Variance,  $L=M+1$"],loc=1)
+pl.xlim([5,35])
+pl.ylim([10**-16,2*10**3])
+
+#pl.title("Error in expectation value and variance ")
+#pl.legend(["E, $L=M-1$","Var, $L=M-1$","Exp, $L=M$","Var,  $L=M$","E, $L=M+1$","Var,  $L=M+1$"],loc=3)
 pl.savefig("convergence_2D_L.png")
 
 
-pl.figure()
 
 
-N = 5
+
+
+
+
+
+
+
+
+
+
+
+
+pl.figure(2)
+pl.plot(-1,1, "k-")
+pl.plot(-1,1, "k--")
+pl.plot(-1,1, "r")
+pl.plot(-1,1, "b")
+pl.plot(-1,1, "g")
+pl.legend(["E","Var", "$L=M-2$","$L=M-1$","$L=M$"],loc=3,prop={"size" :12})
+
+#pl.rc("figure", figsize=[6,4])
+
+
+N = 6
 errorCP = []
 varCP = []
 K = []
-for n in xrange(1,N+1):
+for n in xrange(3,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n, dist, rule="G",sparse=True)
+    nodes, weights = cp.generate_quadrature(n-2, dist, rule="E",sparse=True)
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
@@ -112,33 +147,56 @@ for n in xrange(1,N+1):
     errorCP.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     varCP.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
     
-pl.plot(K,errorCP,linewidth=2)
-pl.plot(K, varCP,linewidth=2)
+pl.plot(K,errorCP,"r-", linewidth=2)
+pl.plot(K, varCP,"r--",linewidth=2)
 
-N = 4
+
+N = 5
 errorCP = []
 varCP = []
 K = []
-for n in xrange(1,N+1):
+for n in xrange(2,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n+1, dist, rule="G",sparse=True)
+    nodes, weights = cp.generate_quadrature(n-1, dist, rule="E",sparse=True)
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
 
     U_hat = cp.fit_quadrature(P, nodes, weights, solves)
-    errorCP.append(dt*np.sum(np.abs(E_analtyical(T) - cp.E(U_hat,dist))))
+    errorCP.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     varCP.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
     
-pl.plot(K,errorCP,linewidth=2)
-pl.plot(K, varCP,linewidth=2)
+pl.plot(K,errorCP,"b-",linewidth=2)
+pl.plot(K, varCP,"b--",linewidth=2)
 
 
-pl.xlabel("Samples, k")
+N = 4
+errorCP = []
+varCP = []
+K = []
+for n in xrange(2,N+1):
+    P = cp.orth_ttr(n, dist)
+    nodes, weights = cp.generate_quadrature(n, dist, rule="E",sparse=True)
+    K.append(len(nodes[0]))
+    i1,i2 = np.mgrid[:len(weights), :Nt]
+    solves = u(T[i2],nodes[0][i1],nodes[1][i1])
+
+    U_hat = cp.fit_quadrature(P, nodes, weights, solves)
+    errorCP.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
+    varCP.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
+    
+pl.plot(K,errorCP,"g-",linewidth=2)
+pl.plot(K, varCP,"g--",linewidth=2)
+
+
+pl.xlabel("Samples, K")
 pl.ylabel("Error")
 pl.yscale('log')
-pl.title("Error in expectation value and variance, sparse ")
-pl.legend(["Expectation value, $L=M-1$","Variance, $L=M-1$","Expectation value, $L=M$","Variance, $L=M$"],loc=1)
+pl.xlim([15,50])
+pl.ylim([10**-16,2*10**3])
+
+#Zpl.title("Error in expectation value and variance, sparse ")
+#pl.legend(["E, $L=M-1$","Var, $L=M-1$","E, $L=M$","Var, $L=M$"],loc=2)
 pl.savefig("convergence_2D_L_sparse.png")
 
 pl.show()

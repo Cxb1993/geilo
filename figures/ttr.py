@@ -47,14 +47,16 @@ for m in M:
         var = cp.Var(U_hat, a)
         Var.append(dt*np.sum(np.abs(V_analytical(x) - var)))
         
-    plt.plot(K,Var)
+    plt.plot(K,Var, linewidth=2)
 
     legend.append("M = %d" % (m))
     
     
 plt.ylim(10**-9,10**1)
-plt.xlabel("k")
+plt.xlabel("Evaluations")
 plt.ylabel("Variance")
+plt.rc("figure", figsize=[6,4])
+
 #plt.title("Orthogonal series expansion of the sign function")
 #legend.append("True function")
 plt.legend(legend, loc=1)

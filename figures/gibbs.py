@@ -21,13 +21,15 @@ for m in range(5,30,5):
 
     
     legend.append("M = %d" % (m))
-    plt.plot(x,U_hat(x))
-    
-plt.plot(x,U(x))
+    plt.plot(x,U_hat(x), linewidth=2)
+
+plt.rc("figure", figsize=[6,4])
+
+plt.plot(x,U(x), linewidth=2)
 plt.ylim(-1.5,1.5)
 plt.xlabel("Y")
 plt.ylabel("X")
-plt.title("Orthogonal series expansion of the sign function")
+#plt.title("Orthogonal series expansion of the sign function")
 legend.append("True function")
 plt.legend(legend, loc=2)
 plt.savefig("gibbs.png")

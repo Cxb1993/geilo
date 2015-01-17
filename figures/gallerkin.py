@@ -16,15 +16,35 @@ def V_analytical(x):
 def u(x,a, I):
     return I*np.exp(-a*x)
 
-a = cp.Uniform(0, 0.1)
-I = cp.Uniform(8, 10)
+a = cp.Uniform(0,0.1)
+I = cp.Uniform(8,10)
 dist = cp.J(a,I)
 
-x = np.linspace(0, 10, 11)[1:]
-dt = x[1] - x[0]
+x = np.linspace(0, 10, 1000)
+dt = 10/1000.
 
-M = 4
-D = 2
+M = 12
+P = cp.orth_ttr(M, dist)
+nodes = dist.sample(10**3)
+solves = [u(x, s[0], s[1]) for s in nodes.T]
+U_analytic = cp.fit_regression(P, nodes, solves,rule="LS")
+#nodes, weights = cp.generate_quadrature(M+1, dist, rule="G")
+#solves = [u(x, s[0], s[1]) for s in nodes.T]
+#U_analytic = cp.fit_quadrature(P, nodes, weights, solves)
+
+
+legend = []
+pl.rc("figure", figsize=[6,4])
+pl.plot(-1,1, "k-")
+pl.plot(-1,1, "k--")
+pl.plot(-1,1, "r")
+pl.plot(-1,1, "b")
+pl.plot(-1,1, "g")
+pl.legend(["E","Var", "Gaussian quadrature","Point collocation","Intrusive Gallerkin"],loc=3,prop={"size" :12})
+pl.xlim([5,30])
+pl.ylim([10**-22,10**0])
+
+
 
 
 N = 4
@@ -39,15 +59,22 @@ for n in xrange(1,N+1):
     K.append(len(nodes[0]))
     solves = [u(x, s[0], s[1]) for s in nodes.T]
     U_hat = cp.fit_quadrature(P, nodes, weights, solves)
-    error.append(dt*np.sum(np.abs(E_analytical(x) - cp.E(U_hat,dist))))
-    var.append(dt*np.sum(np.abs(V_analytical(x) - cp.Var(U_hat,dist))))
+    error.append(dt*np.sum(np.abs(cp.E(U_analytic,dist) - cp.E(U_hat,dist))))
+    var.append(dt*np.sum(np.abs(cp.Var(U_analytic,dist) - cp.Var(U_hat,dist))))
+
+    #error = cp.E(U_hat,dist)
+    #var = cp.Var(U_hat,dist)
     
-pl.figure()
-pl.plot(K,error,linewidth=2)
-pl.plot(K, var,linewidth=2)
+#pl.plot(x,error,linewidth=2)
+#pl.plot(x, var,linewidth=2)
+
+   
+    
+pl.plot(K,error,"r-",linewidth=2)
+pl.plot(K, var,"r--",linewidth=2)
 
 
-N = 6
+N = 5
 
 #Point collocation
 error = []
@@ -58,15 +85,22 @@ for n in range(1,N):
     nodes = dist.sample(2*len(P), "M")
     K.append(2*len(P))
     solves = [u(x, s[0], s[1]) for s in nodes.T]
-    U_hat = cp.fit_regression(P, nodes, solves,rule="LS")
+    U_hat = cp.fit_regression(P, nodes, solves,rule="T")
 
-    error.append(dt*np.sum(np.abs(E_analytical(x) - cp.E(U_hat,dist))))
-    var.append(dt*np.sum(np.abs(V_analytical(x) - cp.Var(U_hat,dist))))
+    error.append(dt*np.sum(np.abs(cp.E(U_analytic,dist) - cp.E(U_hat,dist))))
+    var.append(dt*np.sum(np.abs(cp.Var(U_analytic,dist) - cp.Var(U_hat,dist))))
 
 
-pl.plot(K,error,linewidth=2)
-pl.plot(K, var,linewidth=2)
+    #error = cp.E(U_hat,dist)
+    #var = cp.Var(U_hat,dist)
+    
+#pl.plot(x,error,linewidth=2)
+#pl.plot(x, var,linewidth=2)
 
+   
+    
+pl.plot(K,error,"b-",linewidth=2)
+pl.plot(K, var,"b--",linewidth=2)
 
 
 
@@ -74,51 +108,50 @@ pl.plot(K, var,linewidth=2)
 
 
 #Intrusive Gallerkin
-N= 6
+N= 7
 error = []
 var = []
 K = []
 for n in range(1,N):
 
-    P, norm = cp.orth_ttr(n, dist, retall=True)
+    P, norm = cp.orth_ttr(n, dist, retall=True, normed=True)
 
     q0, q1 = cp.variable(2)
     K.append(len(P))
 
     P_nk = cp.outer(P, P)
     E_ank = cp.E(q0*P_nk, dist)
-    E_nn = cp.E(P_nk, dist)
     E_ik = cp.E(q1*P, dist)
+    sE_ank = cp.sum(E_ank,0)
 
-    def f(c_n,x):
-        return -c_n/norm*np.sum(E_ank,0)
-
+    def f(c_k,x):
+        return -cp.sum(c_k*E_ank,-1)/norm
+        
     solver = odespy.RK4(f)
-    c_0 = sum(E_ik,0)/norm
-    print c_0.shape
+    c_0 = E_ik/norm
     solver.set_initial_condition(c_0)
     c_n, x_ = solver.solve(x)
-    print c_n.shape
+    #print c_n[:,0]
     U_hat = cp.sum(P*c_n,-1)
 
-    #print  cp.E(U_hat,dist)
-    #print  E_analytical(x)
-    #print cp.E(U_hat,dist) - E_analytical(x)
-    #exit()
-    error.append(dt*np.sum(np.abs(E_analytical(x) - cp.E(U_hat,dist))))
-    var.append(dt*np.sum(np.abs(V_analytical(x) - cp.Var(U_hat,dist))))
 
-print error
-print var
-pl.plot(K,error,linewidth=2)
-pl.plot(K, var,linewidth=2)
+    error.append(dt*np.sum(np.abs(cp.E(U_analytic,dist) - c_n[:,0])))
+    var.append(dt*np.sum(np.abs(cp.Var(U_analytic,dist) - cp.Var(U_hat,dist))))
 
+    #error = cp.E(U_hat,dist)
+    #var = cp.Var(U_hat,dist)
+    
+#pl.plot(x,error,linewidth=2)
+#pl.plot(x, var,linewidth=2)
 
-print K
-pl.xlabel("Samples, k")
+    
+pl.plot(K,error,"g-",linewidth=2)
+pl.plot(K, var,"g--",linewidth=2)
+
+pl.xlabel("Samples, K")
 pl.ylabel("Error")
 pl.yscale('log')
-pl.title("Error in expectation value and variance ")
-pl.legend(["E, GQ","Var, GQ", "E, PC","Var, PC,", "E, IG","Var, IG"])
+#pl.title("Error in expectation value and variance ")
+#pl.legend(["E, GQ","Var, GQ", "E, PC","Var, PC,", "E, IG","Var, IG"])
 pl.savefig("convergence_gallerkin.png")
 pl.show()

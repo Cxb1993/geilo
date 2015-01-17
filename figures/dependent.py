@@ -65,7 +65,7 @@ solves = [u(x, s[0], s[1]) for s in nodes_.T]
 U_analytic = cp.fit_regression(P, nodes_, solves,rule="LS")
 
 
-N = 5
+N = 8
 error = []
 var = []
 K = []
@@ -79,13 +79,15 @@ for n in range(1,N+1):
     U_hat = cp.fit_regression(P, nodes_, solves,rule="T")
     error.append(dt*np.sum(np.abs(cp.E(U_analytic,R) - cp.E(U_hat,R))))
     var.append(dt*np.sum(np.abs(cp.Var(U_analytic,R) - cp.Var(U_hat,R))))
+plt.rc("figure", figsize=[6,4])
 
-plt.plot(K,error,linewidth=2)
-plt.plot(K, var,linewidth=2)
-plt.xlabel("Samples, k")
+plt.plot(K,error,"r-",linewidth=2)
+plt.plot(K, var,"r--",linewidth=2)
+plt.xlabel("Samples, K")
 plt.ylabel("Error")
 plt.yscale('log')
-plt.title("Error in expectation value and variance ")
+plt.xlim([6,90])
+#plt.title("Error in expectation value and variance ")
 plt.legend(["E","Var"])
 plt.savefig("convergence_dependence.png")
 plt.show()

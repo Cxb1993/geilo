@@ -104,22 +104,22 @@ escapeinside=||
     % TODO
     % high: make it 2-D problem
  \begin{lstlisting}[language=python]
-def u(x,a):
-  return np.exp(-ax)
-|\pause|
-a = cp.Uniform(0,0.1)
-x = np.linspace(0, 10, 100)
-|\pause|
-m = 2
-P = cp.orth_ttr(m, a)
+ def u(x,a, I):
+  return I*np.exp(-a*x)
+|\pause| 
+a = cp.Uniform(0, 0.1)
+I = cp.Uniform(8, 10)
+dist = cp.J(a,I)|\pause|
+|\pause| 
+P = cp.orth_ttr(2, dist)
 |\pause|
 nodes, weights = \
-    cp.generate_quadrature(m+1, a, rule="G")
+    cp.generate_quadrature(3, dist, rule="G")
 
+x = np.linspace(0, 10, 100)
 solves = [u(x, *node) for node in nodes.T]
 
-u_hat, c = cp.fit_quadrature(P, nodes, weights,
-                             solves,retall=True)
+u_hat = cp.fit_quadrature(P, nodes, weights, solves)
 
 mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 \end{lstlisting}
@@ -133,8 +133,16 @@ mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
  % high: include error formula
  % med: legend lower right
  % med: figsize
+%  \begin{center}
+%   $   \varepsilon_E = \int_0^{10}|E(u) - E(\hat{u})|\,dx \qquad
+%    \varepsilon_{Var} = \int_0^{10}|Var(u) - Var(\hat{u})|\,dx$
+%  \end{center}
+\scriptsize
+\[   \varepsilon_E = \int_0^{10}|E(u) - E(\hat{u})|\,dx \qquad
+   \varepsilon_{Var} = \int_0^{10}|Var(u) - Var(\hat{u})|\,dx\]
+
  \begin{figure}
-  \includegraphics[width=0.85\textwidth]{Convergence_repeat.png}
+  \includegraphics[width=0.7\textwidth]{Convergence_repeat.png}
  \end{figure}
 
 \end{frame}
@@ -160,12 +168,70 @@ P_n(q_k)u(x,q_k)f(q_k)\omega_k}
  \end{frame}
 
 
- \begin{frame}{Generating nodes and weights in Chaospy}{}
+     
+\begin{chaospy}{Generating nodes and weights in Chaospy}
      % TODO
      % high: add code for 1-D gen_quad
      % high: list quadrature schemes
- \end{frame}
+    \scriptsize
+\onslide<1->
+\begin{lstlisting}[language=python]
+dist = cp.Normal()
+nodes, weights = cp.generate_quadrature(2, dist, rule="G")
+print nodes
+[[-1.73205081  0.          1.73205081]]
+print weights
+[ 0.16666667  0.66666667  0.16666667]
+\end{lstlisting}
+\normalsize
+\onslide<2->
+ 
+\begin{table}
+\caption{Quadrature rules:} 
+\begin{tabular}{|ll|l|}
+\hline
+ Key & & Description\\\hline
+    "Gaussian"& "G" &    Optimal Gaussian quadrature.\\
+    "Legendre"& "E" &    Gauss-Legendre quadrature\\
+    "Clenshaw"& "C" &    Clenshaw-Curtis quadrature.\\
+    "Leja"& ``J" &          Leja quadrature.\\
+    "Genz"& "Z" &        Hermite Genz-Keizter 16 rule.\\
+    "Patterson" & "P"&    Gauss-Patterson quadrature rule.\\\hline
+\end{tabular}
+\end{table}
 
+\end{chaospy}
+ 
+ \begin{chaospy}{Generating nodes and weights in Chaospy}
+     % TODO
+     % high: add code for 1-D gen_quad
+     % high: list quadrature schemes
+    \scriptsize
+\begin{lstlisting}[language=python]
+dist = cp.Uniform()
+nodes, weights = cp.generate_quadrature(2, dist, rule="G")
+print nodes
+[[ 0.11270167  0.5         0.88729833]]
+print weights
+[ 0.27777778  0.44444444  0.27777778]
+\end{lstlisting}
+\normalsize
+ 
+\begin{table}
+\caption{Quadrature rules:} 
+\begin{tabular}{|ll|l|}
+\hline
+ Key & & Description\\\hline
+    "Gaussian"& "G" &    Optimal Gaussian quadrature.\\
+    "Legendre"& "E" &    Gauss-Legendre quadrature\\
+    "Clenshaw"& "C" &    Clenshaw-Curtis quadrature.\\
+    "Leja"& ``J" &          Leja quadrature.\\
+    "Genz"& "Z" &        Hermite Genz-Keizter 16 rule.\\
+    "Patterson" & "P"&    Gauss-Patterson quadrature rule.\\\hline
+\end{tabular}
+\end{table}
+
+\end{chaospy}
  
 %  \begin{chaospy}{Repetition: 2D code}
 %  
@@ -217,7 +283,7 @@ P_n(q_k)u(x,q_k)f(q_k)\omega_k}
 \end{alert}
 \pause
 \begin{itemize}
-    \item[$K$] Totoal number of quadrature nodes
+    \item[$K$] Total number of quadrature nodes
     \item[$L$] Quadrature order along an axis
 \end{itemize}
  \end{frame}
@@ -270,7 +336,7 @@ Smolyak sparse grid:
 
 \begin{frame}
  \frametitle{Example of a Smolyak node placement}
-    % TODO
+    % TODO ???
     % high: røde prikkene er plassert feil
  \begin{figure}
   \includegraphics[width=\textwidth]{smolyak.png}
@@ -293,9 +359,12 @@ Smolyak sparse grid:
  \end{figure}
 \end{frame}
 
-\begin{frame}{Compare between number of nodes using}{}
+\begin{frame}{Comparison between number of nodes using full tensor grid and sparse grid}{}
     % TODO
     % high: L vs K between GQ full tensor and GQ sparse grid
+     \begin{figure}
+  \includegraphics[width=0.85\textwidth]{dimensionality_nodes_gq_sparse.png}
+ \end{figure}
 \end{frame}
  
 %  \begin{frame} 
@@ -311,7 +380,7 @@ Smolyak sparse grid:
   \begin{alert}
       {Clenshaw-Curtis:}\\
       \scriptsize
- \verb;cp.generate\_quadrature(l, dist, rule="C", growth=False);
+    \verb;cp.generate\_quadrature(l, dist, rule="C", growth=False);
     \normalsize
   \begin{table}
   \begin{tabular}{lcccccccc}
@@ -325,7 +394,7 @@ Smolyak sparse grid:
   \begin{alert}
       {Nested Clenshaw-Curtis:}\\
       \scriptsize
-  \verb;cp.generate\_quadrature(l, dist, rule="C", growth=True);
+   \verb;cp.generate\_quadrature(l, dist, rule="C", growth=True);
     \normalsize
   \begin{table}
   \begin{tabular}{lcccccccc}
@@ -358,7 +427,7 @@ Smolyak sparse grid:
 
 %   \begin{frame}
 %   \frametitle{Clenshaw-Curtis quadrature vs Gaussian quadrature}
-%   % TODO
+%   % TODO ???
 %   % med: smaller figsize
 %   % med: order (3,3)
 %   \begin{columns}
@@ -407,7 +476,7 @@ Smolyak sparse grid:
   
   \begin{frame}
  \frametitle{Difference }
- % TODO
+ % TODO ???
  % effect not capture for sparse. Need M-2 at least
  % in full tensor: >>> plt.ylim(10**-14, 10**2)
      \begin{columns}
@@ -415,14 +484,16 @@ Smolyak sparse grid:
          \begin{center}
                 \includegraphics[width=\textwidth]{convergence_2D_L.png}
 
-                {$L=M-1$, $L=M$, $L=M+1$}
+                {Full tensor grid:\\
+                $L=M-1$, $L=M$, $L=M+1$}
          \end{center}
          \column{.5\textwidth}
 
          \begin{center}
                 \includegraphics[width=\textwidth]{convergence_2D_L_sparse.png}
 
-                {Sparse grid: $L=M-1$, $L=M$}
+                {Sparse grid:\\
+                $L=M-2$, $L=M-1$, $L=M$}
          \end{center}
      \end{columns}
 \end{frame}
@@ -470,15 +541,15 @@ Smolyak sparse grid:
 \end{frame}
  
  
- \begin{frame}
-  \frametitle{Convergence for Gaussian quadrature vs Legendre}
-  % TODO
-  % What Gaussian? What problem?
-  \begin{figure}
-   \includegraphics[width=0.85\textwidth]{convergence_GvsL.png}
-  \end{figure}
-
- \end{frame}
+%  \begin{frame}
+%   \frametitle{Convergence for Gaussian quadrature vs Legendre}
+%   % TODO ???
+%   % What Gaussian? What problem?
+%   \begin{figure}
+%    \includegraphics[width=0.85\textwidth]{convergence_GvsL.png}
+%   \end{figure}
+% 
+%  \end{frame}
 
  
  \begin{frame}
@@ -520,8 +591,9 @@ Smolyak sparse grid:
 \end{frame}
 
 \begin{chaospy}{Code for least square minimization}
-    % TODO
+    % TODO 
     % remove "H" and rule="LS" and simulate again again.
+    \scriptsize
  \begin{lstlisting}[language=python]
 def u(x, a, I):
   return I*np.exp(-a*x)
@@ -533,10 +605,9 @@ dist = cp.J(a,I)
 x = np.linspace(0, 10, 100)
  |\pause|
 P = cp.orth_ttr(n, dist) |\pause|
-nodes = dist.sample(2*len(P), "H") |\pause|
+nodes = dist.sample(2*len(P)) |\pause|
 solves = [u(T, s[0], s[1]) for s in nodes.T] |\pause|
-U_hat = cp.fit_regression(P, nodes, solves,
-                          rule="LS")
+U_hat = cp.fit_regression(P, nodes, solves)
  \end{lstlisting}
 
 \end{chaospy}
@@ -559,22 +630,37 @@ U_hat = cp.fit_regression(P, nodes, solves,
  \begin{columns}
      \column{.5\textwidth}
      \begin{center}
-                \includegraphics[width=\textwidth]{samples.png}
+                \includegraphics[width=0.7\textwidth]{samples_S.png}
 
                 Sobol sampling, default:
 
                 \scriptsize
                 \verb;nodes = dist.sample(100);
                 \normalsize
+                \includegraphics[width=0.7\textwidth]{samples_H.png}
+
+                Halton sampling:
+
+                \scriptsize
+                \verb;nodes = dist.sample(100,"H");
+                \normalsize
      \end{center}
      \column{.5\textwidth}
      \begin{center}
-                \includegraphics[width=\textwidth]{samples_M.png}
+                \includegraphics[width=0.7\textwidth]{samples_M.png}
 
                 Hammersley sampling
 
                 \scriptsize
                 \verb;nodes = dist.sample(100, "M");
+                \normalsize
+                
+                \includegraphics[width=0.7\textwidth]{samples_LH.png}
+
+                Latin hypercube sampling
+
+                \scriptsize
+                \verb;nodes = dist.sample(100, "LH");
                 \normalsize
      \end{center}
  \end{columns}
@@ -583,7 +669,7 @@ U_hat = cp.fit_regression(P, nodes, solves,
 
 \begin{frame}
  \frametitle{Convergence using different sampling schemes}
- % TODO
+ % TODO  ???
  % All 4 where ' ' and 'L' is done with bootstrapping
  % might want to subtract median reference
  % (Ask me about boostrapping)
@@ -604,6 +690,9 @@ U_hat = cp.fit_regression(P, nodes, solves,
     % TODO
     % Plot!
     % SC nested-CC sparsegrid vs. PC with S-rule and LS-fit vs. MC
+      \begin{figure}
+  \includegraphics[width=0.85\textwidth]{MC_convergence_2D_diff.png}
+ \end{figure}
 \end{frame}
 
 \begin{frame}{Which method to choose for your problem}{}
@@ -679,8 +768,8 @@ var = np.var(u_mc,1)
 \begin{alert}
     {Variance based sensitivity:}
  \begin{align*}
-  S_{T_i} &= \frac{E(Var(u | dist \backslash d_i ))}{Var(u)}\\
-\onslide<2->{&= \frac{E(E(u^2 | dist \backslash d_i ) - E((u | dist \backslash d_i )^2))}{Var(u)}}
+  S_{T_i} &= \frac{\E{\Var{u | dist \backslash d_i }}}{\Var{u}}\\
+\onslide<2->{&= \frac{\E{\E{u^2 | dist \backslash d_i } - \E{(u | dist \backslash d_i )^2}}}{\Var{u}}}
 \end{align*} 
 \end{alert}
 
@@ -688,14 +777,31 @@ var = np.var(u_mc,1)
 \begin{alert}{Constructor:}
 
   \verb;S_Ti = cp.Sens_t(U_hat, dist);
-\end{alert}\pause
-
-\begin{alert}
-    {Manual code:} % TODO manual code D=2
-
-  \verb;S_Ti = cp.Sens_t(U_hat, dist);
 \end{alert}
+
+% \begin{alert}
+%     {Manual code:} % TODO manual code D=2
+% 
+%   \verb;S_Ti = cp.Sens_t(U_hat, dist);
+% \end{alert}
 \end{frame}
+
+\begin{chaospy}{Manual code for Variance based sensitivity}
+\scriptsize
+ \begin{lstlisting}[language=python]
+D=2
+zero = [1]*D
+|\pause|
+Sense = np.empty((D,) + U_hat.shape)|\pause|
+V = cp.Var(U_hat, dist)|\pause|
+
+for i in range(D):
+    zero[i] = 0
+    Sense[i] = (V-cp.Var(cp.E_cond(U_hat, zero, dist), dist))/V
+    zero[i] = 1
+ \end{lstlisting}
+
+\end{chaospy}
 
 
 \begin{frame}
@@ -708,6 +814,13 @@ var = np.var(u_mc,1)
 \begin{chaospy}{Polynomial chaos expansions for other metric is
     still possible}
     % TODO Manual code
+    
+\begin{lstlisting}[language=python]
+u_mc =  np.sort(u_mc,1)
+p_10 = u_mc[:,round(0.1*len(u_mc[0,:]))]
+p_90 = u_mc[:,round(0.9*len(u_mc[0,:]))]
+ \end{lstlisting}
+ \pause
   \begin{lstlisting}[language=python]
 p_10 = np.percentile(u_mc,10,1)
 p_90 = np.percentile(u_mc,90,1)

@@ -14,10 +14,12 @@ for m in M:
     N = [cp.terms(m, d) for d in D]
     pl.plot(D,N,linewidth=2)
     legend.append("M = %d" % (m))
-    
+
+pl.rc("figure", figsize=[6,4])
+
 pl.xlabel("Dimensions, D")
 pl.ylabel("Terms, N")
-pl.title("Number of terms for a polynomial")
+#pl.title("Number of terms for a polynomial")
 pl.legend(legend, loc=2)
 pl.axis([1,d,1,500])
 pl.savefig("dimensionality.png")

@@ -22,6 +22,13 @@
 \newcommand{\coef}[2]{\frac{\langle #1,#2\rangle_Q}{\norm{#2}^}}
 
 
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+\newcommand{\E}[1]{\mbox{E}\!\left(#1\right)}
+\newcommand{\Var}[1]{\mbox{Var}\!\left(#1\right)}
+\newcommand{\Cov}[1]{\mbox{Cov}\!\left(#1\right)}
+
 \newenvironment{test}[1]
 {
  \usebackgroundtemplate{}
@@ -84,6 +91,31 @@ escapeinside=||
 
  \end{frame}
 
+ 
+ \begin{chaospy}{Repetition: Full 2D implementation}
+     \scriptsize
+ \begin{lstlisting}[language=python]
+def u(x,a, I):
+  return I*np.exp(-a*x)
+|\pause|
+a = cp.Uniform(0, 0.1)
+I = cp.Uniform(8, 10)
+dist = cp.J(a,I)|\pause|
+|\pause|
+P = cp.orth_ttr(2, dist)
+|\pause|
+nodes, weights = \
+    cp.generate_quadrature(3, dist, rule="G")
+|\pause|
+x = np.linspace(0, 10, 100)
+solves = [u(x, *node) for node in nodes.T]
+|\pause|
+u_hat = cp.fit_quadrature(P, nodes, weights, solves)
+|\pause|
+mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
+ \end{lstlisting}
+\end{chaospy}
+ 
 
 \begin{frame}
  \frametitle{Dependent variables}
@@ -93,15 +125,15 @@ escapeinside=||
  \pause
  \begin{align*}
   \langle P_\mathfrak{i},P_\mathfrak{j}\rangle &= E(P_\mathfrak{i},P_\mathfrak{j})\\
-  \onslide<3-> {&=E(P_{i_1}^{(1)}\cdots P_{i_D}^{(D)}P_{j_1}^{(1)}\cdots P_{j_D}^{(D)})}\\ 
-  \onslide<4-> {&=E(P_{i_1}^{(1)}P_{j_1}^{(1)})\cdots E(P_{i_D}^{(D)}P_{j_D}^{(D)})}\\ 
+  \onslide<3-> {&=\E{P_{i_1}^{(1)}\cdots P_{i_D}^{(D)}P_{j_1}^{(1)}\cdots P_{j_D}^{(D)}}}\\ 
+  \onslide<4-> {&=\E{P_{i_1}^{(1)}P_{j_1}^{(1)}}\cdots \E{P_{i_D}^{(D)}P_{j_D}^{(D)}}}\\ 
   \onslide<5-> {&=\langle P_{i_1}^{(1)}P_{j_1}^{(1)}\rangle\cdots \langle P_{i_D}^{(D)}P_{j_D}^{(D)}\rangle}\\ 
   \onslide<6-> {&=\norm{P_{i_1}^{(1)}}^2\delta_{i_1j_1}\cdots \norm{P_{i_D}^{(D)}}^2\delta_{i_Dj_D}}\\ 
   \onslide<7-> { \langle P_\mathfrak{i},P_\mathfrak{j}\rangle &=\norm{P_{\mathfrak{i}}^{(1)}}\delta_{\mathfrak{i}\mathfrak{j}}}
  \end{align*}
  \onslide<7->
 \begin{alert}{But the problem is:}
-\[E(uv) \neq E(u)E(v) \qquad \text{when $u$ and $v$ are dependent}\]
+\[\E{uv} \neq \E{u}\E{v} \qquad \text{when $u$ and $v$ are dependent}\]
  \end{alert}
 
 \end{frame}
@@ -152,7 +184,7 @@ U_analytic = cp.fit_quadrature(P, nodes0, weights, solves)
  \begin{frame}
  \frametitle{Rosenblatt Transformations}
  \begin{figure}
- \includegraphics[width = 0.9\textwidth]{distributions.png}
+ \includegraphics[width = \textwidth]{distributions.png}
  \end{figure}
 
  \end{frame}

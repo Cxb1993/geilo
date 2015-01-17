@@ -3,7 +3,7 @@ import pylab as pl
 import numpy as np
 
 Nt = 10**2
-N = 50
+N = 100
 
 
 legend = []
@@ -12,10 +12,10 @@ pl.plot(-1,1, "k-")
 pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
-#pl.plot(-1,1, "g")
-pl.legend(["E","Var", "Monte Carlo","Polynomial chaos"],loc=3,prop={"size" :12})
-pl.xlim([0,20])
-pl.ylim([10**-16,10**2])
+pl.plot(-1,1, "g")
+pl.legend(["E","Var", "Monte Carlo","Nested-CC sparsegrid", "PC with S-rule and LS"],loc=3,prop={"size" :12})
+#pl.xlim([0,20])
+pl.ylim([10**-16,10**4])
 
 
 def E_analytical(x):
@@ -69,7 +69,7 @@ for i in xrange(reruns):
     
        
 totalerrorMC = np.divide(totalerrorMC, reruns)
-totalvarianceMC = np.divide(totalvarianceMC, reruns)
+ptotalvarianceMC = np.divide(totalvarianceMC, reruns)
 
 
 errorCP = []
@@ -77,10 +77,10 @@ varCP = []
 
 K = []
 
-N = 5
+N = 3
 for n in xrange(0,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n+1, dist, rule="G")
+    nodes, weights = cp.generate_quadrature(n+1, dist, rule="C",nested=True,growth=True)
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
@@ -89,18 +89,38 @@ for n in xrange(0,N+1):
     errorCP.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
     varCP.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
 
+pl.plot(K,errorCP,"b-",linewidth=2)
+pl.plot(K, varCP,"b--",linewidth=2)
 
+N=9
+error = []
+var=[]
+K = []
+for k in xrange(0,N+1):
+    P = cp.orth_ttr(k, dist)
+    nodes = dist.sample(2*len(P), "S")
+    K.append(2*len(P))
+    solves = [u(T, *s) for s in nodes.T]
+    U_hat = cp.fit_regression(P, nodes, solves,rule="LS")
+
+    error.append(dt*np.sum(np.abs(E_analytical(T) - cp.E(U_hat,dist))))
+    var.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))    
+
+
+pl.plot(K,error,"g-",linewidth=2)
+pl.plot(K, var,"g--",linewidth=2)
+
+
+    
 pl.rc("figure", figsize=[6,4])
 
 pl.plot(totalerrorMC[:],"r-",linewidth=2)
 pl.plot(totalvarianceMC[:],"r--",linewidth=2)
-pl.plot(K,errorCP,"b-",linewidth=2)
-pl.plot(K, varCP,"b--",linewidth=2)
-pl.xlabel("Evaluations")
+pl.xlabel("Samples, K")
 pl.ylabel("Error")
-pl.xlim([0,49])
+pl.xlim([0,100])
 pl.yscale('log')
 #pl.legend(["E, MC","Var, MC","E, PC","Var, PC"],loc=3)
-pl.savefig("MC_convergence_2D.png")
+pl.savefig("MC_convergence_2D_diff.png")
 
 pl.show()

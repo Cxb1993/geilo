@@ -5,8 +5,19 @@ import numpy as np
 Nt = 10**2
 
 
+legend = []
+pl.rc("figure", figsize=[6,4])
+pl.plot(-1,1, "k-")
+pl.plot(-1,1, "k--")
+pl.plot(-1,1, "r")
+pl.plot(-1,1, "b")
+pl.plot(-1,1, "g")
+pl.legend(["E","Var", "Monte Carlo","Legendre","Polynomial chaos"],loc=3,prop={"size" :12})
+pl.xlim([0,20])
+pl.ylim([10**-20,10**1])
+
 def E_analytical(x):
-    #return (1-np.exp(-10*x))/(10*x)
+    #return (1-np.exp(10*x))/(10*x)
     #return np.exp(-10*x)*(np.exp(-5*x)-1)/(5*x)
     out = 10*(1-np.exp(-0.1*x))/(x)
     out[x==0] = 11
@@ -26,7 +37,11 @@ def u(x,a):
  
 a = cp.Uniform(0, 0.1)
 x = np.linspace(0, 10, Nt)[1:]
-dt = x[1] - x[0]
+dt = 10./(Nt-1)
+
+
+
+
 
 
 N = 22
@@ -74,7 +89,7 @@ varCP = []
 K = []
 N = 15
 
-for k in range(1,N+1):
+for k in range(0,N+1):
     P, norm = cp.orth_ttr(k, a, retall=True)
     N = len(P)
     nodes, weights = cp.generate_quadrature(2*k, a, rule="E")
@@ -116,21 +131,19 @@ for k in range(1,N+1):
 
 
 
-pl.plot(totalerrorMC, "b-",linewidth=2)
-pl.plot(totalvarianceMC, "b--", linewidth=2)
-pl.rc("figure", figsize=[6,4])
-pl.xlim([0,20])
-#pl.plot(K,errorPoly, "g-", linewidth=2)
-#pl.plot(K,varPoly,"g--", linewidth=2)
+pl.plot(totalerrorMC, "r-",linewidth=2)
+pl.plot(totalvarianceMC, "r--", linewidth=2)
+pl.plot(K,errorPoly, "b-", linewidth=2)
+pl.plot(K,varPoly,"b--", linewidth=2)
 
-pl.plot(K,errorCP,"r-", linewidth=2)
-pl.plot(K,varCP,"r--", linewidth=2)
+pl.plot(K,errorCP,"g-", linewidth=2)
+pl.plot(K,varCP,"g--", linewidth=2)
 
-pl.xlabel("Samples, k")
+pl.xlabel("Evaluations")
 pl.ylabel("Error")
 pl.yscale('log')
-pl.legend(["E, MC","Var, MC","E, PC","Var, PC"], loc=3)
-pl.savefig("Convergence_repeat.png")
-#pl.savefig("MC_convergence_1D_1.png")
+#pl.legend(["E, MC","Var, MC","E, PC","Var, PC"], loc=3)
+#pl.savefig("Convergence_repeat.png")
+pl.savefig("MC_convergence_1D_2.png")
 
 pl.show()

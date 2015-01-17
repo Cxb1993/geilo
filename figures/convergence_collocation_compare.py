@@ -4,6 +4,7 @@ import numpy as np
 
 cp.seed(1124)
 #cp.seed(9125593)
+pl.rc("figure", figsize=[6,4])
 
 Nt = 10**2
 N = 10
@@ -24,7 +25,7 @@ I = cp.Uniform(8, 10)
 dist = cp.J(a,I)
 
 T = np.linspace(0, 10, Nt+1)[1:]
-dt = T[1] - T[0]
+dt = 10./Nt
 
 
 error = []
@@ -70,17 +71,16 @@ pl.ylabel("Error")
 pl.yscale('log')
 pl.title("Error in expectation value and variance ")
 pl.legend(["Expectation value","Variance", "Expectation value, Hammersley","Variance, Hammersley"])
-pl.savefig(c"osloonvergence_collocation_compare.png")
+#pl.savefig("convergence_collocation_compare.png")
 
 
 
-"""
 pl.figure()
 nodes = dist.sample(100)
 pl.scatter(nodes[0],nodes[1])
 pl.xlabel("a")
 pl.ylabel("I")
-pl.savefig("samples.png")
+pl.savefig("samples_S.png")
 
 pl.figure()
 nodes = dist.sample(100, "M")
@@ -88,7 +88,20 @@ pl.scatter(nodes[0],nodes[1])
 pl.xlabel("a")
 pl.ylabel("I")
 pl.savefig("samples_M.png")
-"""
+
+pl.figure()
+nodes = dist.sample(100, "H")
+pl.scatter(nodes[0],nodes[1])
+pl.xlabel("a")
+pl.ylabel("I")
+pl.savefig("samples_H.png")
+
+pl.figure()
+nodes = dist.sample(100, "LH")
+pl.scatter(nodes[0],nodes[1])
+pl.xlabel("a")
+pl.ylabel("I")
+pl.savefig("samples_LH.png")
 
 
 pl.show()
