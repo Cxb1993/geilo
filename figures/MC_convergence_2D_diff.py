@@ -13,9 +13,9 @@ pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
 pl.plot(-1,1, "g")
-pl.legend(["Mean","Variance", "Monte Carlo","CC with nested sparse grid", "Least Square with Sobol sampling"],loc=3,prop={"size" :12})
+pl.legend(["Mean","Variance", "Monte Carlo","Gaussian Quadrature, full tensor grid", "Least Square with Sobol sampling"],loc=3,prop={"size" :12})
 #pl.xlim([0,20])
-pl.ylim([10**-20,10**4])
+pl.ylim([10**-28,10**4])
 
 
 def E_analytical(x):
@@ -77,10 +77,10 @@ varCP = []
 
 K = []
 
-N = 3
+N = 8
 for n in xrange(0,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n+1, dist, rule="C",nested=True,growth=True)
+    nodes, weights = cp.generate_quadrature(n+1, dist, rule="G")
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
