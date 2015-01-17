@@ -393,7 +393,7 @@ Smolyak sparse grid:
   \begin{alert}
       {Clenshaw-Curtis:}\\
       \scriptsize
-     \verb;cp.generate\_quadrature(l, dist, rule="C", growth=False);
+%      \verb;cp.generate\_quadrature(l, dist, rule="C", growth=False);
     \normalsize
   \begin{table}
   \begin{tabular}{lcccccccc}
@@ -407,7 +407,7 @@ Smolyak sparse grid:
   \begin{alert}
       {Nested Clenshaw-Curtis:}\\
       \scriptsize
-    \verb;cp.generate\_quadrature(l, dist, rule="C", growth=True);
+%     \verb;cp.generate\_quadrature(l, dist, rule="C", growth=True);
     \normalsize
   \begin{table}
   \begin{tabular}{lcccccccc}
@@ -651,21 +651,12 @@ U_hat = cp.fit_regression(P, nodes, solves)
      \begin{center}
                 \includegraphics[width=0.7\textwidth]{samples.png}
 
-                (Pseudo-)Random sampling, default:
+                (Pseudo-)Random sampling:
 
                 \scriptsize
                 \verb;nodes = dist.sample(100);
                 \normalsize
-                %\includegraphics[width=0.7\textwidth]{samples_L.png}
-
-                L sampling:
-
-                \scriptsize
-                \verb;nodes = dist.sample(100,"L");
-                \normalsize
-     \end{center}
-     \column{.5\textwidth}
-     \begin{center}
+                
                 \includegraphics[width=0.7\textwidth]{samples_M.png}
 
                 Hammersley sampling
@@ -674,6 +665,19 @@ U_hat = cp.fit_regression(P, nodes, solves)
                 \verb;nodes = dist.sample(100, "H");
                 \normalsize
                 
+     \end{center}
+     \column{.5\textwidth}
+     \begin{center}
+                  \includegraphics[width=0.7\textwidth]{samples_L.png}
+
+                Latin Hypercube sampling:
+
+                \scriptsize
+                \verb;nodes = dist.sample(100, "L");
+                \normalsize
+
+     
+		
                 \includegraphics[width=0.7\textwidth]{samples_S.png}
 
                 Sobol sampling
