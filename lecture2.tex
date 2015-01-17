@@ -475,27 +475,32 @@ Smolyak sparse grid:
   
   
   \begin{frame}
- \frametitle{Difference }
+ \frametitle{Difference between sparse grid and non nested sparse grid}
+ \begin{center}
+                 \includegraphics[width=0.85\textwidth]{convergence_2D_L_sparse.png}
+
+ %                 $L=M-2$, $L=M-1$, $L=M$}
+          \end{center}
  % TODO ???
  % effect not capture for sparse. Need M-2 at least
  % in full tensor: >>> plt.ylim(10**-14, 10**2)
-     \begin{columns}
-         \column{.5\textwidth}
-         \begin{center}
-                \includegraphics[width=\textwidth]{convergence_2D_L.png}
-
-                {Full tensor grid:\\
-                $L=M-1$, $L=M$, $L=M+1$}
-         \end{center}
-         \column{.5\textwidth}
-
-         \begin{center}
-                \includegraphics[width=\textwidth]{convergence_2D_L_sparse.png}
-
-                {Sparse grid:\\
-                $L=M-2$, $L=M-1$, $L=M$}
-         \end{center}
-     \end{columns}
+%      \begin{columns}
+%          \column{.5\textwidth}
+%          \begin{center}
+%                 \includegraphics[width=\textwidth]{convergence_2D_L.png}
+% 
+%                 {Full tensor grid:}
+% %                 $L=M-1$, $L=M$, $L=M+1$}
+%          \end{center}
+%          \column{.5\textwidth}
+% 
+%          \begin{center}
+%                 \includegraphics[width=\textwidth]{convergence_2D_L_sparse.png}
+% 
+%                 {Sparse grid:}
+% %                 $L=M-2$, $L=M-1$, $L=M$}
+%          \end{center}
+%      \end{columns}
 \end{frame}
   
   
@@ -623,26 +628,26 @@ U_hat = cp.fit_regression(P, nodes, solves)
 
 
   \begin{frame}[fragile]
- \frametitle{Different sampling schemes}
+ \frametitle{(Pseudo-)Random sampling schemes}
  % TODO
  % compare 4 schemes: ' ', 'M', 'S', 'L'
  % remove margins
  \begin{columns}
      \column{.5\textwidth}
      \begin{center}
-                \includegraphics[width=0.7\textwidth]{samples_S.png}
+                \includegraphics[width=0.7\textwidth]{samples.png}
 
-                Sobol sampling, default:
+                (Pseudo-)Random sampling, default:
 
                 \scriptsize
                 \verb;nodes = dist.sample(100);
                 \normalsize
-                \includegraphics[width=0.7\textwidth]{samples_H.png}
+                \includegraphics[width=0.7\textwidth]{samples_L.png}
 
-                Halton sampling:
+                L sampling:
 
                 \scriptsize
-                \verb;nodes = dist.sample(100,"H");
+                \verb;nodes = dist.sample(100,"L");
                 \normalsize
      \end{center}
      \column{.5\textwidth}
@@ -652,15 +657,15 @@ U_hat = cp.fit_regression(P, nodes, solves)
                 Hammersley sampling
 
                 \scriptsize
-                \verb;nodes = dist.sample(100, "M");
+                \verb;nodes = dist.sample(100, "H");
                 \normalsize
                 
-                \includegraphics[width=0.7\textwidth]{samples_LH.png}
+                \includegraphics[width=0.7\textwidth]{samples_S.png}
 
-                Latin hypercube sampling
+                Sobol sampling
 
                 \scriptsize
-                \verb;nodes = dist.sample(100, "LH");
+                \verb;nodes = dist.sample(100, "S");
                 \normalsize
      \end{center}
  \end{columns}
@@ -709,7 +714,7 @@ U_hat = cp.fit_regression(P, nodes, solves)
     \end{tabular}
 \end{frame}
 
-\begin{chaospy}{Model approximation created; Now what?}
+\begin{chaospy}{A proxy model allows for computational cheap statistical analysis}
  \begin{lstlisting}[language=python]
 mean =  cp.E(U_hat,dist)
 var = cp.Var(U_hat,dist)

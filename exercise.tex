@@ -81,10 +81,10 @@ escapeinside=||
 \[s(t) = vt\]
 \pause
 where the velocity is measured to
-\[v \sim \text{Normal(5, 0.1)}\]
+\[v \sim \text{Normal(5, 1)}\]
 \pause
 \begin{alert}{Task:}
- Find the expectation value and variance in the time interval $t=[0,1]$  and plot them, use Gaussian Quadrature.
+ Find the expectation value and variance in the time interval $t=[0,10]$  and plot them, use Gaussian Quadrature.
 \end{alert}
 
 \end{frame}
@@ -96,21 +96,39 @@ where the velocity is measured to
  \[s(t) = v_0t + \frac{1}{2}at^2\]
 \pause
 The initial velocity and acceleration is measured to
-\[v_0 \sim \text{Uniform(1, 2)} \qquad a \sim \text{Beta(2, 0.5)}\]
+\[v_0 \sim \text{Uniform(1, 2)} \qquad a \sim \text{Beta(2, 2)}\]
 \pause
 \begin{alert}{Task:}
-Find the expectation value and variance in the time interval $t=[0,1]$  and plot them.
+Find the expectation value and variance in the time interval $t=[0,10]$  and plot them. Use:
 \begin{itemize}
-    \item Classical Monte Carlo integration
-    \item Quasi-Monte Carlo using \underline{S}obol sequence
-    \item Pseudo-spectral projection with full tensor grid \underline{G}aussian quadrature
-    \item Pseudo-spectral projection with \underline{C}lenshaw-Curtis and Smolyak sparse grid
+    \item Classical Monte Carlo integration.
+    \item Quasi-Monte Carlo using \underline{S}obol sequence.
+    \item Pseudo-spectral projection with full tensor grid \underline{G}aussian quadrature.
+    \item Pseudo-spectral projection with \underline{C}lenshaw-Curtis and Smolyak sparse grid.
     \item Point collocation with random samples and least squares
-        minimization
-    \item Point collocation with Ha\underline{m}mersley samples and
-        \underline{T}ikhonov regularization
+        minimization.
+    \item Point collocation with Ha\underline{m}mersley samples and \underline{T}ikhonov regularization.
 \end{itemize}
 \end{alert}
 \end{frame}
+
+% \begin{frame}
+% \frametitle{Traveling with constant acceleration}
+% \scriptsize
+%  Distance when traveling with constant acceleration is
+%  \[s(t) = v_0t + \frac{1}{2}at^2\]
+% \pause
+% The initial velocity and acceleration is measured to
+% \[v_0 \sim \text{Uniform(1, 2)} \qquad a \sim \text{Beta(2, 2)}\]
+% \pause
+% \begin{alert}{Task:}
+% Find the expectation value and variance in the time interval $t=[0,10]$  and plot them. 
+% \begin{itemize}
+%     \item 
+% \end{itemize}
+% \end{alert}
+% \end{frame}
+
+
 
 \end{document}
