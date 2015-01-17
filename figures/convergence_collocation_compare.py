@@ -34,7 +34,7 @@ pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
 pl.plot(-1,1, "g")
 pl.plot(-1,1, "y")
-pl.legend(["Mean","Variance","(Pseudo-)Random","L","Sobol","Hammersley"],loc=3,prop={"size" :12})
+pl.legend(["Mean","Variance","(Pseudo-)Random","Latin Hypercube","Sobol","Hammersley"],loc=3,prop={"size" :12})
 pl.rc("figure", figsize=[6,4])
 pl.xlim([5,55])
 pl.ylim([10**-9,10**0])
@@ -71,7 +71,7 @@ pl.plot(K, meanVar,"r--", linewidth=2)
 
 
 
-"""
+
 
 errorb = []
 varb=[]
@@ -82,7 +82,7 @@ for i in range(0,10):
     K = []
     for n in range(0,N):
         P = cp.orth_ttr(n, dist)
-        nodes = dist.sample(2*len(P), "L")
+        nodes = dist.sample(2*len(P), "LH")
         K.append(2*len(P))
         solves = [u(T, s[0], s[1]) for s in nodes.T]
         U_hat = cp.fit_regression(P, nodes, solves,rule="LS")
@@ -100,8 +100,6 @@ pl.plot(K,meanE,"b-", linewidth=2)
 pl.plot(K, meanVar,"b--", linewidth=2)
 
 
-
-"""
 
 
 
@@ -153,7 +151,7 @@ pl.yscale('log')
 #pl.title("Error in expectation value and variance ")
 #pl.legend(["Expectation value","Variance", "Expectation value, Hammersley","Variance, Hammersley"])
 pl.savefig("convergence_collocation_compare.png")
-"""
+
 
 
 pl.figure()
@@ -171,7 +169,7 @@ pl.ylabel("I")
 pl.savefig("samples_M.png")
 
 pl.figure()
-nodes = dist.sample(100, "L")
+nodes = dist.sample(100, "LH")
 pl.scatter(nodes[0],nodes[1])
 pl.xlabel("a")
 pl.ylabel("I")
@@ -183,7 +181,7 @@ pl.scatter(nodes[0],nodes[1])
 pl.xlabel("a")
 pl.ylabel("I")
 pl.savefig("samples_S.png")
-"""
+
 
 pl.show()
 
