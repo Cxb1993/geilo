@@ -803,9 +803,18 @@ var = np.var(u_mc,1)
 \onslide<3->
 \begin{alert}{Constructor:}
 
+    \scriptsize
   \verb;S_Ti = cp.Sens_t(u_hat, dist);
 \end{alert}
+\onslide<4->
 
+\begin{alert}{Manual code:}
+
+    \scriptsize
+\verb;sense_a = (V-cp.Var(cp.E_cond(u_hat, [0,1], dist), dist))/V;
+
+\verb;sense_I = (V-cp.Var(cp.E_cond(u_hat, [1,0], dist), dist))/V;
+\end{alert}
 % \begin{alert}
 %     {Manual code:} % TODO manual code D=2
 % 
@@ -813,22 +822,22 @@ var = np.var(u_mc,1)
 % \end{alert}
 \end{frame}
 
-\begin{chaospy}{Manual code for Variance based sensitivity}
-\scriptsize
- \begin{lstlisting}[language=python]
-D=2
-zero = [1]*D
-|\pause|
-Sense = np.empty((D,) + u_hat.shape)|\pause|
-V = cp.Var(u_hat, dist)|\pause|
-
-for i in range(D):
-    zero[i] = 0
-    Sense[i] = (V-cp.Var(cp.E_cond(u_hat, zero, dist), dist))/V
-    zero[i] = 1
- \end{lstlisting}
-
-\end{chaospy}
+%  \begin{chaospy}{Manual code for Variance based sensitivity}
+%  \scriptsize
+%   \begin{lstlisting}[language=python]
+%  D=2
+%  zero = [1]*D
+%  |\pause|
+%  Sense = np.empty((D,) + u_hat.shape)|\pause|
+%  V = cp.Var(u_hat, dist)|\pause|
+%  
+%  for i in range(D):
+%      zero[i] = 0
+%      Sense[i] = (V-cp.Var(cp.E_cond(u_hat, zero, dist), dist))/V
+%      zero[i] = 1
+%   \end{lstlisting}
+%  
+%  \end{chaospy}
 
 
 \begin{frame}
