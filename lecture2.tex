@@ -853,17 +853,21 @@ for i in range(D):
 
 
 \begin{frame}
- \frametitle{Variance based sensitivity of our naive example}
+ \frametitle{Variance based sensitivity of our example}
   \begin{figure}
   \includegraphics[width=0.85\textwidth]{sens.png}
  \end{figure}
 \end{frame}
 
-\begin{chaospy}{Polynomial chaos expansions for other metric is
-    still possible}
+\begin{chaospy}{Various statistical metrics are easy to construct in Chaospy}
     % TODO Manual code
 
+Some statistical metrics have anayltical formulas, others can easily be
+implemented:
+
 \begin{lstlisting}[language=python]
+# Monte Carlo on the surrogate model
+
 Q_samples = dist.samples(10**5)
 u_samples = P(*Q_samples)
 |\pause|
