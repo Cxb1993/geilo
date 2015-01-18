@@ -29,19 +29,19 @@ pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
 #pl.plot(-1,1, "g")
-pl.legend(["Mean","Variance", "Not nested","Nested","$L=M+1$"],loc=3,prop={"size" :12})
+pl.legend(["Mean","Variance", "Not nested","Nested","$L=M+1$"],loc=1,prop={"size" :12})
 #pl.ylim([10**-14,10**2])
 
 
 
-N = 5
+N = 7
 
 errorCP = []
 varCP = []
 K = []
 for n in xrange(0,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n+1, dist, rule="E",sparse=True,growth=False)
+    nodes, weights = cp.generate_quadrature(n, dist, rule="E",sparse=True,growth=False)
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
@@ -134,13 +134,13 @@ pl.savefig("convergence_2D_L.png")
 #pl.rc("figure", figsize=[6,4])
 
 
-N = 4
+N = 7
 errorCP = []
 varCP = []
 K = []
 for n in xrange(0,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n+1, dist, rule="E",sparse=True,growth=True)
+    nodes, weights = cp.generate_quadrature(n, dist, rule="C",sparse=True,growth=True)
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])
@@ -195,8 +195,8 @@ pl.plot(K, varCP,"g--",linewidth=2)
 pl.xlabel("Samples, K")
 pl.ylabel("Error")
 pl.yscale('log')
-pl.xlim([0,150])
-pl.ylim([10**-16,2*10**2])
+pl.xlim([0,100])
+#pl.ylim([10**-16,2*10**2])
 
 #Zpl.title("Error in expectation value and variance, sparse ")
 #pl.legend(["E, $L=M-1$","Var, $L=M-1$","E, $L=M$","Var, $L=M$"],loc=2)
