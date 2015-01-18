@@ -116,7 +116,7 @@ pl.rc("figure", figsize=[6,4])
 
 pl.plot(totalerrorMC[:],"r-",linewidth=2)
 pl.plot(totalvarianceMC[:],"r--",linewidth=2)
-pl.xlabel("Samples, K")
+pl.xlabel("Nodes, K")
 pl.ylabel("Error")
 pl.xlim([0,100])
 pl.yscale('log')

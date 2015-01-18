@@ -108,9 +108,9 @@ nodes, weights = \
     cp.generate_quadrature(3, dist, rule="G")
 |\pause|
 x = np.linspace(0, 10, 100)
-solves = [u(x, *node) for node in nodes.T]
+samples_u = [u(x, *node) for node in nodes.T]
 |\pause|
-u_hat = cp.fit_quadrature(P, nodes, weights, solves)
+u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 |\pause|
 mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
  \end{lstlisting}
@@ -163,9 +163,9 @@ P = cp.orth_ttr(M, R)|\pause|
 nodes0, weights = cp.generate_quadrature(M+1, R, rule="G")|\pause|
 nodes1 = T(nodes0)
 |\pause|
-solves = [u(x, *node) for node in nodes1.T]
+samples_u = [u(x, *node) for node in nodes1.T]
 |\pause|
-U_analytic = cp.fit_quadrature(P, nodes0, weights, solves)
+U_analytic = cp.fit_quadrature(P, nodes0, weights, samples_u)
 \end{lstlisting}
 \end{chaospy}
 
@@ -209,8 +209,8 @@ P = cp.orth_ttr(M, dist_R)|\pause|
 s_R = dist_R.sample(2*len(P), "M")|\pause|
 s_Q = dist_Q.inv(dist_R.fwd(s_R))|\pause|
 
-solves = [u(x, s[0], s[1]) for s in s_Q.T]|\pause|
-U_hat = cp.fit_regression(P, s_R, solves,rule="LS")
+samples_u = [u(x, s[0], s[1]) for s in s_Q.T]|\pause|
+U_hat = cp.fit_regression(P, s_R, samples_u, rule="LS")
 \end{lstlisting}
 \end{chaospy}
 

@@ -86,8 +86,8 @@ M = 5
 
 P = cp.orth_ttr(M, v)
 nodes, weights = cp.generate_quadrature(M+1, v, rule="G")
-solves = [s(t, n) for n in nodes.T]
-U_hat = cp.fit_quadrature(P, nodes, weights, solves)
+samples_u = [s(t, n) for n in nodes.T]
+U_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
 E = cp.E(U_hat, v)
 Var = cp.Var(U_hat, v)
@@ -182,8 +182,8 @@ M = 5
 
 P = cp.orth_ttr(M, dist)
 nodes, weights = cp.generate_quadrature(M+1, dist, rule="G")
-solves = [s(t, *n) for n in nodes.T]
-U_hat = cp.fit_quadrature(P, nodes, weights, solves)
+samples_u = [s(t, *n) for n in nodes.T]
+U_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
 E = cp.E(U_hat, dist)
 Var = cp.Var(U_hat, dist)
@@ -217,8 +217,8 @@ M = 5
 P = cp.orth_ttr(M, dist)
 nodes, weights = cp.generate_quadrature(M+1, dist, rule="C" \
                                         , sparse=True)
-solves = [s(t, *n) for n in nodes.T]
-U_hat = cp.fit_quadrature(P, nodes, weights, solves)
+samples_u = [s(t, *n) for n in nodes.T]
+U_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
 E = cp.E(U_hat, dist)
 Var = cp.Var(U_hat, dist)
@@ -250,8 +250,8 @@ M = 5
 
 P = cp.orth_ttr(M, dist)
 nodes = dist.sample(2*len(P))
-solves = [s(t, *n) for n in nodes.T]
-U_hat = cp.fit_regression(P, nodes, solves,rule="LS")
+samples_u = [s(t, *n) for n in nodes.T]
+U_hat = cp.fit_regression(P, nodes, samples_u, rule="LS")
 
 E = cp.E(U_hat, dist)
 Var = cp.Var(U_hat, dist)
@@ -283,8 +283,8 @@ M = 5
 
 P = cp.orth_ttr(M, dist)
 nodes = dist.sample(2*len(P), "M")
-solves = [s(t, *n) for n in nodes.T]
-U_hat = cp.fit_regression(P, nodes, solves,rule="T")
+samples_u = [s(t, *n) for n in nodes.T]
+U_hat = cp.fit_regression(P, nodes, samples_u, rule="T")
 
 E = cp.E(U_hat, dist)
 Var = cp.Var(U_hat, dist)

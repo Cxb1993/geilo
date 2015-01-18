@@ -92,7 +92,7 @@ plt.plot(K, var,"b--",linewidth=2)
 
 
 
-plt.xlabel("Samples, K")
+plt.xlabel("Nodes, K")
 plt.ylabel("Error")
 plt.yscale('log')
 plt.xlim([0,50])

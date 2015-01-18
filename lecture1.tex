@@ -461,7 +461,7 @@ P = cp.Poly(P)
 %   \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
 %   \end{align*}
 
-Change TTR to Discretized Stiltjes in the plot!
+%Change TTR to Discretized Stiltjes in the plot!
 
     \begin{figure}
     \includegraphics[width=0.85\textwidth]{gramschmidterror2.png}
@@ -471,7 +471,7 @@ Change TTR to Discretized Stiltjes in the plot!
 
 \begin{frame}
  \frametitle{People have found analytical orthogonal polynomials for many common probability distributions}
- The askey scheme gives a relation between a probability distribution and the corresponding orhogonal polynomial.
+ %The askey scheme gives a relation between a probability distribution and the corresponding orhogonal polynomial.
  \begin{center}
   \begin{tabular}{lll}
  Distribution & Polynomial & Support \\\hline
@@ -489,12 +489,10 @@ Change TTR to Discretized Stiltjes in the plot!
 \begin{lstlisting}[language=python]
 import chaospy as cp
 
-M = 3
 a = cp.Normal()
-P = cp.orth_ttr(M, a)
+P = cp.orth_ttr(3, a)
 
 print P
-
 [1.0, q0, q0^2-1.0, q0^3-3.0q0]
 \end{lstlisting}
 \end{chaospy}
@@ -520,20 +518,25 @@ print P
 %
 %  \end{chaospy}
 \begin{frame}
- {Repetition of the problem}
- \[  u(x; a, I) = Ie^{-ax}\]
-Things have changed, but maybe skip formulas and focus on the epsilons!
-
+{Repetition of the problem}
+ \[
+ u(x; a, I) = Ie^{-ax}
+ \]
+%  \[E(u) = \int_0^{10}\]
 \pause
 Initially assume model parameters:
 \begin{align*}
-a &\sim \text{Uniform(0, 0.1)} & I&=1
+a &\sim \text{Uniform(0, 0.1)} \sim p_a(a) & I&=1\hbox{ (known)}
 \end{align*}
 \pause
-\begin{align*}
-    E(u) &= \frac{1-e^{-0.1x}}{10x} & Var(u) &=
-   \frac{1 - e^{-0.2ax}}{20x} - \left(\frac{1-   e^{-0.1x}}{10x}\right)^2
+  \begin{align*}
+      \E{u} &= \frac{1-   e^{-0.1x}}{10x} &
+     \Var{u} & = \frac{1 - e^{-0.2ax}}{20x} - \left(\frac{1-   e^{-0.1x}}{10x}\right)^2
  \end{align*}
+
+
+%Things have changed, but maybe skip formulas and focus on the epsilons!
+
  \pause
    \begin{align*}
   \varepsilon_E &= \int_0^{10}|E(u) - E(\hat{u})|\,dx &
@@ -544,7 +547,7 @@ a &\sim \text{Uniform(0, 0.1)} & I&=1
 \begin{frame}
 \frametitle{Convergence of orthogonal polynomial approximation}
 
-Fix legend: Polynomial to Lagrange
+%Fix legend: Polynomial to Lagrange
     % TODO
     % med: truncation
   \begin{figure}
@@ -691,9 +694,9 @@ nodes, weights = \
     cp.generate_quadrature(3, dist, rule="G")
 
 x = np.linspace(0, 10, 100)
-solves = [u(x, *node) for node in nodes.T]
+samples_u = [u(x, *node) for node in nodes.T]
 
-u_hat = cp.fit_quadrature(P, nodes, weights, solves)
+u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
 mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
  \end{lstlisting}

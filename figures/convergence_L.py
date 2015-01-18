@@ -29,7 +29,7 @@ pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
 #pl.plot(-1,1, "g")
-pl.legend(["Mean","Variance", "Not nested","Nested","$L=M+1$"],loc=1,prop={"size" :12})
+pl.legend(["Mean","Variance", "Non nested","Nested","$L=M+1$"],loc=1,prop={"size" :12})
 #pl.ylim([10**-14,10**2])
 
 
@@ -98,7 +98,7 @@ pl.plot(K, varCP,"g--",linewidth=2)
 """
 
 
-pl.xlabel("Samples, K")
+pl.xlabel("Nodes, K")
 pl.ylabel("Error")
 pl.yscale('log')
 #pl.xlim([5,35])
@@ -192,7 +192,7 @@ pl.plot(K, varCP,"g--",linewidth=2)
 """
 
 
-pl.xlabel("Samples, K")
+pl.xlabel("Nodes, K")
 pl.ylabel("Error")
 pl.yscale('log')
 pl.xlim([0,100])

@@ -28,13 +28,13 @@ T = np.linspace(0, 10, Nt+1)[1:]
 dt = 10./Nt
 legend = []
 
-pl.plot(-1,1, "k-")
-pl.plot(-1,1, "k--")
+#pl.plot(-1,1, "k-")
+#pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
 pl.plot(-1,1, "g")
 pl.plot(-1,1, "y")
-pl.legend(["Mean","Variance","(Pseudo-)Random","Latin Hypercube","Sobol","Hammersley"],loc=3,prop={"size" :12})
+pl.legend(["(Pseudo-)Random, $[p_{05}, p_{95}]$","Latin Hyperscube, $[p_{05}, p_{95}]$","Sobol","Hammersley"],loc=3,prop={"size" :12})
 pl.rc("figure", figsize=[6,4])
 pl.xlim([5,55])
 pl.ylim([10**-9,10**0])
@@ -63,11 +63,19 @@ for i in range(0,10):
     errorb.append(error)   
     varb.append(var)
 
+errorb = np.array(errorb)
+varb = np.array(varb)
+
+p_10 = np.percentile(errorb,5,0)
+p_90 = np.percentile(errorb,95,0)
+print p_90.shape
+print len(K)
 meanE = np.sum(errorb,0)/10.
 meanVar = np.sum(errorb,0)/10.
 
-pl.plot(K,meanE,"r-", linewidth=2)
-pl.plot(K, meanVar,"r--", linewidth=2)
+pl.fill_between(K,p_10,p_90,facecolor="red",alpha=0.4)
+#pl.plot(K,meanE,"r-", linewidth=2)
+#pl.plot(K, meanVar,"r--", linewidth=2)
 
 
 
@@ -96,8 +104,21 @@ for i in range(0,10):
 meanE = np.sum(errorb,0)/10.
 meanVar = np.sum(errorb,0)/10.
 
-pl.plot(K,meanE,"b-", linewidth=2)
-pl.plot(K, meanVar,"b--", linewidth=2)
+errorb = np.array(errorb)
+varb = np.array(varb)
+
+p_10 = np.percentile(errorb,5,0)
+p_90 = np.percentile(errorb,95,0)
+print p_90.shape
+print len(K)
+meanE = np.sum(errorb,0)/10.
+meanVar = np.sum(errorb,0)/10.
+
+pl.fill_between(K,p_10,p_90,facecolor="blue",alpha=0.4)
+
+
+#pl.plot(K,meanE,"b-", linewidth=2)
+#pl.plot(K, meanVar,"b--", linewidth=2)
 
 
 
@@ -117,8 +138,8 @@ for n in range(0,N):
     var.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
 
 
-pl.plot(K,error,"g-", linewidth=2)
-pl.plot(K, var,"g--", linewidth=2)
+#pl.plot(K,error,"g-", linewidth=2)
+pl.plot(K, var,"g-", linewidth=2)
 
 
 
@@ -136,8 +157,8 @@ for n in range(0,N):
     var.append(dt*np.sum(np.abs(V_analytical(T) - cp.Var(U_hat,dist))))
 
 
-pl.plot(K,error,"y-", linewidth=2)
-pl.plot(K, var,"y--", linewidth=2)
+#pl.plot(K,error,"y-", linewidth=2)
+pl.plot(K, var,"y-", linewidth=2)
 
 
 
@@ -145,14 +166,14 @@ pl.plot(K, var,"y--", linewidth=2)
 
  
 
-pl.xlabel("Samples, K")
+pl.xlabel("Nodes, K")
 pl.ylabel("Error")
 pl.yscale('log')
 #pl.title("Error in expectation value and variance ")
 #pl.legend(["Expectation value","Variance", "Expectation value, Hammersley","Variance, Hammersley"])
 pl.savefig("convergence_collocation_compare.png")
 
-
+pl.show()
 
 pl.figure()
 nodes = dist.sample(100)
@@ -183,7 +204,7 @@ pl.ylabel("I")
 pl.savefig("samples_S.png")
 
 
-pl.show()
+#pl.show()
 
 
 
