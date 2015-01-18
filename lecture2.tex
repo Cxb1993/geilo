@@ -85,7 +85,7 @@ escapeinside=||
 \end{frame}
 
 \begin{frame}
- \frametitle{Repetition of our naive problem}
+ \frametitle{Repetition of our model problem}
   We have a simple differential equation
   \begin{align*}
     \frac{d u(x)}{dx} & =-au(x),\qquad u(0) = I
@@ -94,7 +94,7 @@ escapeinside=||
   with the solution
   \[u(x) = Ie^{-ax}\]
   \pause
-  where
+  with two random input variables:
    \[a \sim \text{Uniform(0, 0.1)}, \qquad I \sim \text{Uniform(8, 10)}\]
   Want to compute$\E(u)$ and $\Var(u)$
 \end{frame}
@@ -161,10 +161,11 @@ With $\hat u_M(x;q) = \sum_{n=0}^N c_n(x) P_n(q)$ and orthogonal polynomials, le
 \onslide<2-> {&=\frac{1}{\norm{P_n}^2} \int u(x,q)P_n(q)f_Q(q)dq} \onslide<3-> {\approx\\
 \hat{c}_n(x) &= \frac{1}{\norm{P_n}^2} \sum_{k=0}^K
 P_n(q_k)u(x,q_k)f(q_k)\omega_k}
-\end{align*}\pause\pause
-\begin{itemize}
-    \item[$q_k$] quadrature nodes
-\item[$\omega_k$] quadrature weights
+\end{align*}
+\pause
+The numerical integral approximation is named \emph{pseudo-spectral method}
+\pause
+$q_k$ quadrature nodes, $\omega_k$ quadrature weights
 \end{itemize}
 
  \end{frame}
@@ -189,8 +190,6 @@ print weights
 \normalsize
 \onslide<2->
 
-\begin{table}
-\caption{Quadrature rules:}
 \begin{tabular}{|ll|l|}
 \hline
  Key & & Description\\\hline
@@ -201,7 +200,6 @@ print weights
     "Genz"& "Z" &        Hermite Genz-Keizter 16 rule.\\
     "Patterson" & "P"&    Gauss-Patterson quadrature rule.\\\hline
 \end{tabular}
-\end{table}
 
 \end{chaospy}
 
@@ -298,7 +296,7 @@ print weights
 % high: fill in code (using L as input)
 % skip "rule="
 \begin{lstlisting}[language=python]
-dist = cp.J(cp.Uniform(),cp.Uniform())
+dist = cp.J(cp.Uniform(),cp.Uniform())  # joint multivariate dist
 nodes, weights = cp.generate_quadrature((1,2), dist, rule="G")
 
 print nodes
@@ -321,7 +319,7 @@ print weights
 
 
 \begin{frame}
- \frametitle{Tensor products are sensitive to the curse of dimensionality}
+ \frametitle{No.~of quadrature points $K$ grows exponentially with dimension $D$}
  % TODO
  % high: Axes label: "quadrature order, L" vs "Total order, K"
  \begin{figure}
@@ -331,7 +329,7 @@ print weights
 
 \begin{frame}
  \frametitle{Smolyak sparse grids can drastically reduce the
- number of samples}
+ number of nodes}
  \pause
 Full tensor basis:
 \begin{table}
@@ -362,7 +360,7 @@ Smolyak sparse grid:
 
 
 \begin{frame}[fragile]
- \frametitle{Creating sparsegrid nodes in Chaospy}
+ \frametitle{Creating sparse grid nodes in Chaospy}
  \begin{lstlisting}[language=python]
   nodes, weights =
    cp.generate_quadrature(k, dist, rule="G",
@@ -375,7 +373,7 @@ Smolyak sparse grid:
  \end{figure}
 \end{frame}
 
-\begin{frame}{Comparison between number of nodes using full tensor grid and sparse grid}{}
+\begin{frame}{For low dimension $D$, tensor grid is best; for high dimension $D$, sparse grid is more efficient}{}
     % TODO
     % high: L vs K between GQ full tensor and GQ sparse grid
      \begin{figure}
@@ -390,8 +388,8 @@ Smolyak sparse grid:
 %   \end{frame}
 
  \begin{frame}
-  \frametitle{Nested sparse grids uses overlapping nodes to reduce
-  the number of nodes further}
+  \frametitle{Nested sparse grids use overlapping nodes to further reduce
+  the number of nodes}
 
   \begin{alert}
       {Clenshaw-Curtis:}\\
@@ -465,6 +463,8 @@ Smolyak sparse grid:
  \begin{frame}
   \frametitle{Comparing the three methods}
 
+Rydd opp denne!!!!!!!!!!!!!!
+
  \begin{figure}
   \includegraphics[width=0.85\textwidth]{dimensionality_nodes_nested.png}
  \end{figure}
@@ -491,7 +491,7 @@ Smolyak sparse grid:
 
 
   \begin{frame}
- \frametitle{Difference between sparse grid and non nested sparse grid}
+ \frametitle{Difference between sparse grid and non-nested sparse grid}
  \begin{center}
                  \includegraphics[width=0.85\textwidth]{convergence_2D_L_sparse.png}
 
@@ -522,11 +522,10 @@ Smolyak sparse grid:
 
 
  \begin{frame}
-  \frametitle{Definition of Gaussian quadrature}
-  \begin{align*}
-   \int W(q)u(x,q)dq &\approx \sum_k \omega_k u(x,q_k)\\
-   \intertext{for a weighting function $W(q)$}
-   \uncover<2-> {\int f(q)u(x,q)dq \approx \sum_k \omega_k u(x,q_k)}
+  \frametitle{Gaussian qudrature approximates integrals with weighting functions}
+\[  \int W(q)u(x,q)dq &\approx \sum_k \omega_k u(x,q_k) \]
+We need weighting function $W(q)$ to be the joint probability distribution $f_q(q)$
+\[ \int f_q(q)u(x,q)dq \approx \sum_k \omega_k u(x,q_k)} \]
     \end{align*}
    \end{frame}
 
@@ -572,10 +571,28 @@ Smolyak sparse grid:
 %
 %  \end{frame}
 
+ \begin{frame}
+  \frametitle{The point collocation method is alternative to the
+  pseudo-spectral method}
+
+\begin{enumerate}
+\item Pseduo-spectral method:
+\begin{enumerate}
+\item Determine polynomial approximation of model by least squares
+minimization in a space weighted with the probability distribution
+\item Approximate integrals in $c_n$ by quadrature rules
+\end{enumerate}
+\item Point collocation method:
+\begin{enumerate}
+\item Determine polynomial approximation of model by least squares
+minimization in a vector space as in regression (or overdetermined matrix systems)
+\item Need to choose a set of nodes (regression points)
+\end{enumerate}
+\end{enumerate}
+\end{frame}
 
  \begin{frame}
-  \frametitle{Point collocation method, the alternative to
-  pseudo-spectral method}
+  \frametitle{The point collocation method: estimate $c_n$ using linear regression}
   \pause
   \begin{align*}
       \bm c &=
@@ -645,7 +662,7 @@ u_hat = cp.fit_regression(P, nodes, solves)
 
 
   \begin{frame}[fragile]
- \frametitle{(Pseudo-)Random sampling schemes}
+ \frametitle{(Pseudo-)Random sampling schemes for choosing nodes}
  % TODO
  % compare 4 schemes: ' ', 'M', 'S', 'L'
  % remove margins
@@ -712,7 +729,7 @@ u_hat = cp.fit_regression(P, nodes, solves)
 \end{frame}
 
 
-\begin{frame}{A comparison between different methods}{}
+\begin{frame}{What is best of pseudo-spectral and point collocation method? It's problem dependent!}{}
     % TODO
     % Plot!
     % SC nested-CC sparsegrid vs. PC with S-rule and LS-fit vs. MC
@@ -735,10 +752,11 @@ u_hat = cp.fit_regression(P, nodes, solves)
     \end{tabular}
 \end{frame}
 
-\begin{chaospy}{A proxy model allows for computational cheap statistical analysis}
+\begin{chaospy}{A surrogate model allows for computational cheap statistical analysis}
     \scriptsize
  \begin{lstlisting}[language=python]
-u_hat, c = cp.fit_quadrature(P, nodes, weights, solves, retall=True)
+u_hat, c = cp.fit_quadrature(P, nodes, weights, solves,
+                            retall=True)
 |\pause|
 mean =  cp.E(u_hat,dist)
 var = cp.Var(u_hat,dist)
@@ -748,8 +766,8 @@ mean = c[0]
 var = np.sum(norms[1:]*c[1:].T**2,1)
 |\pause|
 
-s = dist.sample(10**6)
-u_mc = u_hat(*s)
+samples_q = dist.sample(10**6)
+samples_u = u_hat(*samples_q)
 mean = np.mean(u_mc,1)
 var = np.var(u_mc,1)
 \end{lstlisting}
@@ -771,7 +789,7 @@ var = np.var(u_mc,1)
 %   \end{columns}
 %  \end{frame}
 
-\begin{frame}{Modelling bloodflow requires sensitivity analysis}{}
+\begin{frame}{Modeling bloodflow requires sensitivity analysis}{}
     \begin{columns}
         \column{.3\textwidth}
         \includegraphics[width=\textwidth]{ntnu/ID-10015904.jpg}
@@ -792,8 +810,7 @@ var = np.var(u_mc,1)
     \end{frame}
 
 \begin{frame}[fragile]
- \frametitle{Polynomial chaos expansion designed for everything
- based on expected value $E$}
+ \frametitle{Want to have a sensitivity measure to judge the impact of various input parameters}
 \begin{alert}
     {Variance based sensitivity:}
  \begin{align*}
@@ -803,7 +820,7 @@ var = np.var(u_mc,1)
 \end{alert}
 
 \onslide<3->
-\begin{alert}{Constructor:}
+\begin{alert}{Chaospy:}
 
   \verb;S_Ti = cp.Sens_t(u_hat, dist);
 \end{alert}
@@ -815,18 +832,20 @@ var = np.var(u_mc,1)
 % \end{alert}
 \end{frame}
 
-\begin{chaospy}{Manual code for Variance based sensitivity}
+\begin{chaospy}{One can easily construct such tailored sensitivity measures in Chaospy}
 \scriptsize
  \begin{lstlisting}[language=python]
+# Manual code
+
 D=2
 zero = [1]*D
 |\pause|
-Sense = np.empty((D,) + u_hat.shape)|\pause|
+sensetivities = np.empty((D,) + u_hat.shape)|\pause|
 V = cp.Var(u_hat, dist)|\pause|
 
 for i in range(D):
     zero[i] = 0
-    Sense[i] = (V-cp.Var(cp.E_cond(u_hat, zero, dist), dist))/V
+    sensetivities[i] = (V-cp.Var(cp.E_cond(u_hat, zero, dist), dist))/V
     zero[i] = 1
  \end{lstlisting}
 
