@@ -77,10 +77,10 @@ varCP = []
 
 K = []
 
-N = 8
+N = 7
 for n in xrange(0,N+1):
     P = cp.orth_ttr(n, dist)
-    nodes, weights = cp.generate_quadrature(n+1, dist, rule="G")
+    nodes, weights = cp.generate_quadrature(2**n+1, dist, rule="G")
     K.append(len(nodes[0]))
     i1,i2 = np.mgrid[:len(weights), :Nt]
     solves = u(T[i2],nodes[0][i1],nodes[1][i1])

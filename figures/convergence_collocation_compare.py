@@ -34,7 +34,7 @@ pl.plot(-1,1, "r")
 pl.plot(-1,1, "y")
 pl.plot(-1,1, "k")
 pl.plot(-1,1, "b")
-pl.legend(["(Pseudo-)Random, $[p_{05}, p_{95}]$","Latin Hyperscube, $[p_{05}, p_{95}]$","Sobol","Hammersley"],loc=3,prop={"size" :12})
+pl.legend(["(Pseudo-)Random, $[p_{05}, p_{95}]$","Latin Hyperscube, $[p_{05}, p_{95}]$","Sobol","Halton"],loc=3,prop={"size" :12})
 pl.rc("figure", figsize=[6,4])
 pl.xlim([5,55])
 pl.ylim([10**-9,10**0])
@@ -148,7 +148,7 @@ var = []
 K = []
 for n in range(0,N):
     P = cp.orth_ttr(n, dist)
-    nodes = dist.sample(2*len(P), "M")
+    nodes = dist.sample(2*len(P), "H")
     K.append(2*len(P))
     solves = [u(T, s[0], s[1]) for s in nodes.T]
     U_hat = cp.fit_regression(P, nodes, solves,rule="LS")
@@ -174,7 +174,7 @@ pl.yscale('log')
 pl.savefig("convergence_collocation_compare.png")
 
 pl.show()
-"""
+
 pl.figure()
 nodes = dist.sample(100)
 pl.scatter(nodes[0],nodes[1])
@@ -183,11 +183,11 @@ pl.ylabel("I")
 pl.savefig("samples.png")
 
 pl.figure()
-nodes = dist.sample(100, "M")
+nodes = dist.sample(100, "H")
 pl.scatter(nodes[0],nodes[1])
 pl.xlabel("a")
 pl.ylabel("I")
-pl.savefig("samples_M.png")
+pl.savefig("samples_H.png")
 
 pl.figure()
 nodes = dist.sample(100, "LH")
@@ -205,7 +205,7 @@ pl.savefig("samples_S.png")
 
 
 #pl.show()
-"""
+
 
 
 
