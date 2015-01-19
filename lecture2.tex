@@ -473,9 +473,16 @@ Smolyak sparse grid:
    For nested Clenshaw-Curtis
    \begin{figure}
     \includegraphics<1>[width=0.85\textwidth]{LvsM2.png}
-    \includegraphics<2>[width=0.85\textwidth]{LvsM1.png}
-   \end{figure}
+    \includegraphics<2->[width=0.85\textwidth]{LvsM1.png}
+   \end{figure} \pause \pause
 
+   \begin{alert}{Suggestion:}
+
+       \begin{tabular}{ll}
+       Linear growth rule: & $L=2M-1$ \\
+       Exponential growth rule: & $L=2^M-1$ \\
+       \end{tabular}
+   \end{alert}
 
   %\begin{tabular}{lccccccccccc}
   % Order, M & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\\\
@@ -575,7 +582,7 @@ We need weighting function $W(q)$ to be the joint probability distribution $f_Q(
   pseudo-spectral method}
 
 \begin{enumerate}[<+->]
-\item Pseduo-spectral method:
+\item Psuedo-spectral method:
 \begin{enumerate}[<+->]
 \item Determine polynomial approximation of model by least squares
 minimization in a space weighted with the probability distribution
@@ -643,7 +650,7 @@ x = np.linspace(0, 10, 100)
  |\pause|
 P = cp.orth_ttr(3, dist) |\pause|
 nodes = dist.sample(2*len(P)) |\pause|
-samples_u = [u(T, s[0], s[1]) for s in nodes.T] |\pause|
+samples_u = [u(T, *node) for node in nodes.T] |\pause|
 u_hat = cp.fit_regression(P, nodes, samples_u)
  \end{lstlisting}
 
@@ -719,12 +726,12 @@ u_hat = cp.fit_regression(P, nodes, samples_u)
  \end{figure}
 \end{frame}
 
-\begin{frame}{Too few nodes can lead to inversion instabilities}
-    % TODO
-    % fix M and D
-    % find K such that problem is unstable with LS and stable with T
-    % 2 plots: LS and T separated with \pause
-\end{frame}
+%  \begin{frame}{Too few nodes can lead to inversion instabilities}
+%      % TODO
+%      % fix M and D
+%      % find K such that problem is unstable with LS and stable with T
+%      % 2 plots: LS and T separated with \pause
+%  \end{frame}
 
 
 \begin{frame}{What is best of pseudo-spectral and point collocation method? It's problem dependent!}{}
@@ -753,8 +760,8 @@ u_hat = cp.fit_regression(P, nodes, samples_u)
 \begin{chaospy}{A surrogate model allows for computational cheap statistical analysis}
     \scriptsize
  \begin{lstlisting}[language=python]
-u_hat, c = cp.fit_quadrature(P, nodes, weights, solves,
-                            retall=True)
+u_hat, c = cp.fit_quadrature(
+        P, nodes, weights, solves, retall=True)
 |\pause|
 mean =  cp.E(u_hat,dist)
 var = cp.Var(u_hat,dist)
