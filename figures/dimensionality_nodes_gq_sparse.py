@@ -59,7 +59,7 @@ pl.rc("figure", figsize=[6,4])
     
 
 pl.xlabel("Quadrature order, L")
-pl.ylabel("Total order, K")
+pl.ylabel("Number of nodes, K")
 pl.yscale('log')
 pl.xlim([1,8])
 pl.ylim([10**0,10**6])

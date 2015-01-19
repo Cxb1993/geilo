@@ -1,6 +1,6 @@
 \documentclass{beamer}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath, pdfpages, pdflscape, lscape, color, listings, hyperref, amssymb, graphicx,textcomp,varioref, afterpage, subcaption, float, bm, tikz, multicol} 
+\usepackage{amsmath, pdfpages, pdflscape, lscape, color, listings, hyperref, amssymb, graphicx,textcomp,varioref, afterpage, subcaption, float, bm, tikz, multicol}
 
 \global
 \newcommand{\Fig}[1]{Figure \ref{#1}}
@@ -39,7 +39,7 @@
      \node[anchor = center, opacity=.25] (image) at (current page.center) {\includegraphics[scale=0.25]{chaospy_logo.jpg}};
    \end{tikzpicture}
  \begin{frame}[fragile,enviroment=chaospy]
-   
+
 }
 {
  \end{frame}
@@ -66,13 +66,13 @@ escapeinside=||
 \definecolor{comments}{RGB}{0,0,113}
 \definecolor{red}{RGB}{160,0,0}
 \definecolor{green}{RGB}{0,150,0}
- 
+
 \usetheme{kalkulo}
 
 \graphicspath{{./figures/}}
 
 
-\title{Polynomial chaos expansions part 2: Practical Implementation}
+\title{Polynomial chaos expansions part 2: Practical implementation}
 \author{Jonathan Feinberg and Simen Tennøe}
 
 
@@ -85,41 +85,41 @@ escapeinside=||
 \end{frame}
 
 \begin{frame}
- \frametitle{Repetition of our naive problem}
+ \frametitle{Repetition of our model problem}
   We have a simple differential equation
   \begin{align*}
-    \frac{d u(x)}{dx} & =-au(x),\qquad u(0) = I,
+    \frac{d u(x)}{dx} & =-au(x),\qquad u(0) = I
   \end{align*}
   \pause
-  With the solution:
+  with the solution
   \[u(x) = Ie^{-ax}\]
   \pause
-  where
-   \[a \sim \text{Uniform(0, 0.1)}, \qquad I \sim \text{Uniform(8, 10)}\] 
+  with two random input variables:
+   \[a \sim \text{Uniform(0, 0.1)}, \qquad I \sim \text{Uniform(8, 10)}\]
+  Want to compute $\E{u}$ and $\Var{u}$
 \end{frame}
 
 
-\begin{chaospy}{Repetion of teaser from last lecture}
+\begin{chaospy}{Teaser: this is all the code we need}
     \scriptsize
     % TODO
     % high: make it 2-D problem
  \begin{lstlisting}[language=python]
  def u(x,a, I):
   return I*np.exp(-a*x)
-|\pause| 
-a = cp.Uniform(0, 0.1)
-I = cp.Uniform(8, 10)
+|\pause|
+dist_a = cp.Uniform(0, 0.1)
+dist_I = cp.Uniform(8, 10)
 dist = cp.J(a,I)
-|\pause| 
+|\pause|
 P = cp.orth_ttr(2, dist)
 |\pause|
-nodes, weights = \
-    cp.generate_quadrature(3, dist, rule="G")
+nodes, weights = cp.generate_quadrature(3, dist)
 
 x = np.linspace(0, 10, 100)
-solves = [u(x, *node) for node in nodes.T]
+samples_u = [u(x, *node) for node in nodes.T]
 
-u_hat = cp.fit_quadrature(P, nodes, weights, solves)
+u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
 mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 \end{lstlisting}
@@ -150,25 +150,27 @@ mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 
 
 \begin{frame}
- \frametitle{Introducing the pseudo-spectral approach}
+ \frametitle{The computational essence of polynomial chaos}
+With $\hat u_M(x;q) = \sum_{n=0}^N c_n(x) P_n(q)$ and orthogonal polynomials, least squares minimization leads to a formula for $c_n$:
  % TODO
  % med: subscript all f and F with Q, e.g. f_Q and F_Q
 
  \begin{align*}
      c_n(x) &= \frac{\inner{ u,P_n}}{\norm{P_n}^2}\\
-\onslide<2-> {&=\frac{1}{\norm{P_n}^2} \int u(x,q)P_n(q)f_Q(q)dq} \onslide<3-> {\approx\\
+\onslide<2-> {&=\frac{1}{\norm{P_n}^2} \int u(x;q)P_n(q)f_Q(q)dq} \onslide<3-> {\approx\\
 \hat{c}_n(x) &= \frac{1}{\norm{P_n}^2} \sum_{k=0}^K
-P_n(q_k)u(x,q_k)f(q_k)\omega_k}
-\end{align*}\pause\pause
-\begin{itemize}
-    \item[$q_k$] quadrature nodes
-\item[$\omega_k$] quadrature weights
-\end{itemize}
+P_n(q_k)u(x;q_k)f(q_k)\omega_k}
+\end{align*}
+\onslide<4->
+The numerical integral approximation is named \emph{pseudo-spectral method}.\\
 
- \end{frame}
+\onslide<3->
+$q_k$ quadrature nodes, $\omega_k$ quadrature weights
+
+\end{frame}
 
 
-     
+
 \begin{chaospy}{Generating nodes and weights in Chaospy}
      % TODO
      % high: add code for 1-D gen_quad
@@ -178,17 +180,15 @@ P_n(q_k)u(x,q_k)f(q_k)\omega_k}
 \begin{lstlisting}[language=python]
 dist = cp.Normal()
 nodes, weights = cp.generate_quadrature(2, dist, rule="G")
-|\pause| 
+|\pause|
 print nodes
 [[-1.73205081  0.          1.73205081]]
 print weights
 [ 0.16666667  0.66666667  0.16666667]
 \end{lstlisting}
 \normalsize
-\onslide<2->
- 
-\begin{table}
-\caption{Quadrature rules:} 
+\onslide<3->
+
 \begin{tabular}{|ll|l|}
 \hline
  Key & & Description\\\hline
@@ -199,10 +199,9 @@ print weights
     "Genz"& "Z" &        Hermite Genz-Keizter 16 rule.\\
     "Patterson" & "P"&    Gauss-Patterson quadrature rule.\\\hline
 \end{tabular}
-\end{table}
 
 \end{chaospy}
- 
+
 %   \begin{chaospy}{Generating nodes and weights in Chaospy}
 %       % TODO
 %       % high: add code for 1-D gen_quad
@@ -217,9 +216,9 @@ print weights
 %  [ 0.27777778  0.44444444  0.27777778]
 %  \end{lstlisting}
 %  \normalsize
-%   
+%
 %  \begin{table}
-%  \caption{Quadrature rules:} 
+%  \caption{Quadrature rules:}
 %  \begin{tabular}{|ll|l|}
 %  \hline
 %   Key & & Description\\\hline
@@ -231,20 +230,20 @@ print weights
 %      "Patterson" & "P"&    Gauss-Patterson quadrature rule.\\\hline
 %  \end{tabular}
 %  \end{table}
-%  
+%
 %  \end{chaospy}
- 
+
 %  \begin{chaospy}{Repetition: 2D code}
-%  
+%
 %   \begin{lstlisting}[language=python]
 %  def u(x,a, I):
 %    return I*np.exp(-a*x)
-%  |\pause| 
+%  |\pause|
 %  a = cp.Uniform(0, 0.1); I = cp.Uniform(8, 10)
 %  dist = cp.J(a,I)|\pause|
 %  x = np.linspace(0, 10, 100)
 %  m = 2
-%  |\pause| 
+%  |\pause|
 %  P = cp.orth_ttr(m, dist)|\pause|
 %  nodes, weights = cp.generate_quadrature(m+1, dist,
 %                                          rule="G")|\pause|
@@ -264,7 +263,7 @@ print weights
    $\Pi_2$ &&$\bullet$&&$\bullet$ &&$\bullet$&& \\
    \end{tabular}
 \end{table}  \pause
-  
+
 \begin{alert}
     {Multivariate combinations:}
   \[\Pi_{11} = \begin{array}{cccc}
@@ -296,15 +295,15 @@ print weights
 % high: fill in code (using L as input)
 % skip "rule="
 \begin{lstlisting}[language=python]
-dist = cp.J(cp.Uniform(),cp.Uniform())
+dist = cp.J(cp.Uniform(),cp.Uniform())  # joint multivariate dist
 nodes, weights = cp.generate_quadrature((1,2), dist, rule="G")
-
+|\pause|
 print nodes
-[[ 0.21132487  0.21132487  0.21132487  0.78867513  0.78867513  0.78867513]
- [ 0.11270167  0.5         0.88729833  0.11270167  0.5         0.88729833]]
- 
+[[0.2113248 0.2113248 0.2113248 0.7886751 0.7886751 0.7886751]
+ [0.1127016 0.5       0.8872983 0.1127016 0.5       0.8872983]]
+
 print weights
- [ 0.13888889  0.22222222  0.13888889  0.13888889  0.22222222  0.13888889]
+ [0.1388888 0.2222222 0.1388889 0.1388889 0.2222222 0.1388889]
 \end{lstlisting}
 
 \end{chaospy}
@@ -319,7 +318,7 @@ print weights
 
 
 \begin{frame}
- \frametitle{Tensor products are sensitive to the curse of dimensionality}
+ \frametitle{Number of quadrature nodes $K$ grows exponentially with dimension $D$}
  % TODO
  % high: Axes label: "quadrature order, L" vs "Total order, K"
  \begin{figure}
@@ -329,7 +328,7 @@ print weights
 
 \begin{frame}
  \frametitle{Smolyak sparse grids can drastically reduce the
- number of samples}
+ number of nodes}
  \pause
 Full tensor basis:
 \begin{table}
@@ -360,9 +359,9 @@ Smolyak sparse grid:
 
 
 \begin{frame}[fragile]
- \frametitle{Creating sparsegrid nodes in Chaospy}
+ \frametitle{Creating sparse grid nodes in Chaospy}
  \begin{lstlisting}[language=python]
-  nodes, weights = 
+  nodes, weights =
    cp.generate_quadrature(k, dist, rule="G",
                           sparse=True)
  \end{lstlisting}
@@ -373,28 +372,28 @@ Smolyak sparse grid:
  \end{figure}
 \end{frame}
 
-\begin{frame}{Comparison between number of nodes using full tensor grid and sparse grid}{}
+\begin{frame}{For low dimension $D$, tensor grid is best; for high dimension $D$, sparse grid is more efficient}{}
     % TODO
     % high: L vs K between GQ full tensor and GQ sparse grid
      \begin{figure}
   \includegraphics[width=0.85\textwidth]{dimensionality_nodes_gq_sparse.png}
  \end{figure}
 \end{frame}
- 
-%  \begin{frame} 
+
+%  \begin{frame}
 %    \begin{figure}
 %    \includegraphics[width=0.85\textwidth]{dimensionality_nodes_sparse.png}
 %   \end{figure}
 %   \end{frame}
- 
+
  \begin{frame}
-  \frametitle{Nested sparse grids uses overlapping nodes to reduce
-  the number of nodes further}
-  
+  \frametitle{Nested sparse grids use overlapping nodes to further reduce
+  the number of nodes}
+
   \begin{alert}
       {Clenshaw-Curtis:}\\
       \scriptsize
-%      \verb;cp.generate\_quadrature(l, dist, rule="C", growth=False);
+%       \verb;cp.generate\_quadrature(l, dist, rule="C", growth=False);
     \normalsize
   \begin{table}
   \begin{tabular}{lcccccccc}
@@ -408,7 +407,7 @@ Smolyak sparse grid:
   \begin{alert}
       {Nested Clenshaw-Curtis:}\\
       \scriptsize
-%     \verb;cp.generate\_quadrature(l, dist, rule="C", growth=True);
+%      \verb;cp.generate\_quadrature(l, dist, rule="C", growth=True);
     \normalsize
   \begin{table}
   \begin{tabular}{lcccccccc}
@@ -418,7 +417,7 @@ Smolyak sparse grid:
    \end{tabular}
   \end{table}
   \end{alert}
- 
+
   \end{frame}
 
 \begin{frame}
@@ -448,36 +447,36 @@ Smolyak sparse grid:
 %       \column{.5\textwidth}
 %  \begin{center}
 %                  \includegraphics[width=\textwidth]{nodes_C.png}
-%  
+%
 %                  {Clenshaw-Curtis quadrature}
 %  \end{center}
 %       \column{.5\textwidth}
 %       \begin{center}
 %                  \includegraphics[width=\textwidth]{nodes_G.png}
-%  
+%
 %                  {Gaussian quadrature}
 %       \end{center}
 %   \end{columns}
 %  \end{frame}
- 
+
  \begin{frame}
   \frametitle{Comparing the three methods}
 
  \begin{figure}
-  \includegraphics[width=0.85\textwidth]{dimensionality_nodes_nested.png}
+  \includegraphics[width=0.85\textwidth]{dimensionality_nodes_nested2.png}
  \end{figure}
  \end{frame}
 
-  
+
   \begin{frame}
    \frametitle{Mapping between polynomial order $M$ and quadrature order $L$}
    For nested Clenshaw-Curtis
    \begin{figure}
-    \includegraphics<1>[width=0.85\textwidth]{LvsM1.png}
-    \includegraphics<2>[width=0.85\textwidth]{LvsM.png}
+    \includegraphics<1>[width=0.85\textwidth]{LvsM2.png}
+    \includegraphics<2>[width=0.85\textwidth]{LvsM1.png}
    \end{figure}
 
-   
+
   %\begin{tabular}{lccccccccccc}
   % Order, M & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\\\
   % Quad  & 1 & 4 & 9 & 16 & 25 & 36 & 49 & 64 & 81 \\\\
@@ -486,10 +485,10 @@ Smolyak sparse grid:
 
   \end{frame}
 
-  
-  
+
+
   \begin{frame}
- \frametitle{Difference between sparse grid and non nested sparse grid}
+ \frametitle{Nested sparse grid converges faster than a non nested sparse grid}%Difference between sparse grid and non-nested sparse grid}
  \begin{center}
                  \includegraphics[width=0.85\textwidth]{convergence_2D_L_sparse.png}
 
@@ -502,33 +501,34 @@ Smolyak sparse grid:
 %          \column{.5\textwidth}
 %          \begin{center}
 %                 \includegraphics[width=\textwidth]{convergence_2D_L.png}
-% 
+%
 %                 {Full tensor grid:}
 % %                 $L=M-1$, $L=M$, $L=M+1$}
 %          \end{center}
 %          \column{.5\textwidth}
-% 
+%
 %          \begin{center}
 %                 \includegraphics[width=\textwidth]{convergence_2D_L_sparse.png}
-% 
+%
 %                 {Sparse grid:}
 % %                 $L=M-2$, $L=M-1$, $L=M$}
 %          \end{center}
 %      \end{columns}
 \end{frame}
-  
-  
-  
- \begin{frame}
-  \frametitle{Definition of Gaussian quadrature}
-  \begin{align*}
-   \int W(q)u(x,q)dq &\approx \sum_k \omega_k u(x,q_k)\\
-   \intertext{for a weighting function $W(q)$}
-   \uncover<2-> {\int f(q)u(x,q)dq \approx \sum_k \omega_k u(x,q_k)}
-    \end{align*}
-   \end{frame}
 
- 
+
+
+ \begin{frame}
+  \frametitle{Gaussian qudrature approximates integrals with weighting functions}
+\[  \int W(q)u(x,q)dq \approx \sum_k \omega_k u(x,q_k) \]
+\pause
+We need weighting function $W(q)$ to be the joint probability distribution $f_Q(q)$
+\pause
+\[ \int f_Q(q)u(x,q)dq \approx \sum_k \omega_k u(x,q_k) \]
+%     \end{align*}
+    \end{frame}
+
+
   \begin{frame}
  \frametitle{Nodes for different probability distributions}
  \begin{columns}
@@ -558,8 +558,8 @@ Smolyak sparse grid:
      \end{center}
  \end{columns}
 \end{frame}
- 
- 
+
+
 %  \begin{frame}
 %   \frametitle{Convergence for Gaussian quadrature vs Legendre}
 %   % TODO ???
@@ -567,16 +567,34 @@ Smolyak sparse grid:
 %   \begin{figure}
 %    \includegraphics[width=0.85\textwidth]{convergence_GvsL.png}
 %   \end{figure}
-% 
+%
 %  \end{frame}
 
- 
  \begin{frame}
-  \frametitle{Point collocation method, the alternative to
+  \frametitle{The point collocation method is alternative to the
   pseudo-spectral method}
+
+\begin{enumerate}[<+->]
+\item Pseduo-spectral method:
+\begin{enumerate}[<+->]
+\item Determine polynomial approximation of model by least squares
+minimization in a space weighted with the probability distribution
+\item Approximate integrals in $c_n$ by quadrature rules
+\end{enumerate}
+\item Point collocation method:
+\begin{enumerate}[<+->]
+\item Determine polynomial approximation of model by least squares
+minimization in a vector space as in regression (or overdetermined matrix systems)
+\item Need to choose a set of nodes (regression points)
+\end{enumerate}
+\end{enumerate}
+\end{frame}
+
+ \begin{frame}
+  \frametitle{The point collocation method: estimate $c_n$ using linear regression}
   \pause
   \begin{align*}
-      \bm c &= 
+      \bm c &=
       \begin{bmatrix}
           c_0(x)\\\vdots\\c_N(x)
       \end{bmatrix}
@@ -598,7 +616,7 @@ Smolyak sparse grid:
       \bm{\hat c} &= \argmin_{\bm c} \|\bm P\bm c -\bm u\|_2^2 \\
       \onslide<4>{&= (\bm P^T\bm P)^{-1} \bm P^T \bm u}
   \end{align*}
- 
+
  \end{frame}
 
 \begin{frame}
@@ -606,11 +624,11 @@ Smolyak sparse grid:
  \begin{figure}
   \includegraphics[width=0.85\textwidth]{sampling.pdf}
  \end{figure}
- 
+
 \end{frame}
 
 \begin{chaospy}{Code for least square minimization}
-    % TODO 
+    % TODO
     % remove "H" and rule="LS" and simulate again again.
     \scriptsize
  \begin{lstlisting}[language=python]
@@ -621,13 +639,12 @@ a = cp.Uniform(0, 0.1)
 I = cp.Uniform(8, 10)
 dist = cp.J(a,I)
 |\pause|
-M = 3
 x = np.linspace(0, 10, 100)
  |\pause|
-P = cp.orth_ttr(M, dist) |\pause|
+P = cp.orth_ttr(3, dist) |\pause|
 nodes = dist.sample(2*len(P)) |\pause|
-solves = [u(T, s[0], s[1]) for s in nodes.T] |\pause|
-u_hat = cp.fit_regression(P, nodes, solves)
+samples_u = [u(T, s[0], s[1]) for s in nodes.T] |\pause|
+u_hat = cp.fit_regression(P, nodes, samples_u)
  \end{lstlisting}
 
 \end{chaospy}
@@ -643,33 +660,33 @@ u_hat = cp.fit_regression(P, nodes, solves)
 
 
   \begin{frame}[fragile]
- \frametitle{(Pseudo-)Random sampling schemes}
+ \frametitle{(Pseudo-)Random sampling schemes for choosing nodes}
  % TODO
  % compare 4 schemes: ' ', 'M', 'S', 'L'
  % remove margins
  \begin{columns}
      \column{.5\textwidth}
      \begin{center}
-                \includegraphics[width=0.7\textwidth]{samples.png}
+                \includegraphics[width=0.65\textwidth]{samples.png}
 
                 (Pseudo-)Random sampling:
 
                 \scriptsize
                 \verb;nodes = dist.sample(100);
                 \normalsize
-                
-                \includegraphics[width=0.7\textwidth]{samples_M.png}
+
+                \includegraphics[width=0.65\textwidth]{samples_M.png}
 
                 Hammersley sampling
 
                 \scriptsize
                 \verb;nodes = dist.sample(100, "H");
                 \normalsize
-                
+
      \end{center}
      \column{.5\textwidth}
      \begin{center}
-                  \includegraphics[width=0.7\textwidth]{samples_L.png}
+                  \includegraphics[width=0.65\textwidth]{samples_L.png}
 
                 Latin Hypercube sampling:
 
@@ -677,9 +694,9 @@ u_hat = cp.fit_regression(P, nodes, solves)
                 \verb;nodes = dist.sample(100, "L");
                 \normalsize
 
-     
-		
-                \includegraphics[width=0.7\textwidth]{samples_S.png}
+
+
+                \includegraphics[width=0.65\textwidth]{samples_S.png}
 
                 Sobol sampling
 
@@ -702,7 +719,7 @@ u_hat = cp.fit_regression(P, nodes, solves)
  \end{figure}
 \end{frame}
 
-\begin{frame}{Too few samples can lead to inversion instabilities}
+\begin{frame}{Too few nodes can lead to inversion instabilities}
     % TODO
     % fix M and D
     % find K such that problem is unstable with LS and stable with T
@@ -710,7 +727,7 @@ u_hat = cp.fit_regression(P, nodes, solves)
 \end{frame}
 
 
-\begin{frame}{A comparison between different methods}{}
+\begin{frame}{What is best of pseudo-spectral and point collocation method? It's problem dependent!}{}
     % TODO
     % Plot!
     % SC nested-CC sparsegrid vs. PC with S-rule and LS-fit vs. MC
@@ -733,23 +750,25 @@ u_hat = cp.fit_regression(P, nodes, solves)
     \end{tabular}
 \end{frame}
 
-\begin{chaospy}{A proxy model allows for computational cheap statistical analysis}
+\begin{chaospy}{A surrogate model allows for computational cheap statistical analysis}
     \scriptsize
  \begin{lstlisting}[language=python]
-u_hat, c = cp.fit_quadrature(P, nodes, weights, solves, retall=True)
+u_hat, c = cp.fit_quadrature(P, nodes, weights, solves,
+                            retall=True)
 |\pause|
 mean =  cp.E(u_hat,dist)
 var = cp.Var(u_hat,dist)
+norms = mean**2
 |\pause|
 
 mean = c[0]
 var = np.sum(norms[1:]*c[1:].T**2,1)
 |\pause|
 
-s = dist.sample(10**6)
-u_mc = u_hat(*s)
-mean = np.mean(u_mc,1)
-var = np.var(u_mc,1)
+samples_q = dist.sample(10**6)
+samples_u = u_hat(*samples_q)
+mean = np.mean(samples_u,1)
+var = np.var(samples_u,1)
 \end{lstlisting}
 \end{chaospy}
 
@@ -769,7 +788,7 @@ var = np.var(u_mc,1)
 %   \end{columns}
 %  \end{frame}
 
-\begin{frame}{Modelling bloodflow requires sensitivity analysis}{}
+\begin{frame}{Modeling bloodflow requires sensitivity analysis}{}
     \begin{columns}
         \column{.3\textwidth}
         \includegraphics[width=\textwidth]{ntnu/ID-10015904.jpg}
@@ -790,30 +809,34 @@ var = np.var(u_mc,1)
     \end{frame}
 
 \begin{frame}[fragile]
- \frametitle{Polynomial chaos expansion designed for everything
- based on expected value $E$}
+ \frametitle{Want to have a sensitivity measure to judge the impact of various input parameters}
 \begin{alert}
     {Variance based sensitivity:}
  \begin{align*}
-  S_{T_i} &= \frac{\E{\Var{u | dist \backslash d_i }}}{\Var{u}}\\
-\onslide<2->{&= \frac{\E{\E{u^2 | dist \backslash d_i } - \E{(u | dist \backslash d_i )^2}}}{\Var{u}}}
-\end{align*} 
+     S_{T_i} &= \frac{\E{\Var{u \mid \bm{Q} \setminus Q_i }}}{\Var{u}}\\
+  \onslide<2->{&= 1 - \frac{\Var{\E{u\mid \bm Q\setminus Q_i}}}{\Var{u}}}
+\end{align*}
 \end{alert}
 
 \onslide<3->
-\begin{alert}{Constructor:}
+\begin{alert}{Chaospy:}
 
     \scriptsize
-  \verb;S_Ti = cp.Sens_t(u_hat, dist);
+    \begin{verbatim}
+sensitivity_Q = cp.Sens_t(u_hat, dist)
+    \end{verbatim}
 \end{alert}
 \onslide<4->
 
 \begin{alert}{Manual code:}
-
     \scriptsize
-\verb;sense_a = (V-cp.Var(cp.E_cond(u_hat, [0,1], dist), dist))/V;
+    \begin{verbatim}
 
-\verb;sense_I = (V-cp.Var(cp.E_cond(u_hat, [1,0], dist), dist))/V;
+V = cp.Var(u_hat, dist)
+sensetivity_a = 1-cp.Var(cp.E_cond(u_hat, [0,1], dist), dist)/V
+sensetivity_I = 1-cp.Var(cp.E_cond(u_hat, [1,0], dist), dist)/V
+
+    \end{verbatim}
 \end{alert}
 % \begin{alert}
 %     {Manual code:} % TODO manual code D=2
@@ -838,25 +861,53 @@ var = np.var(u_mc,1)
 %   \end{lstlisting}
 %  
 %  \end{chaospy}
+%   \begin{alert}
+%       {Manual code:} % TODO manual code D=2
+%  
+%     \verb;sense_a = (V-cp.Var(cp.E_cond(u_hat, [0,1], dist), dist))/V;
+%   \verb;sense_I = (V-cp.Var(cp.E_cond(u_hat, [1,0], dist), dist))/V;
+%   \end{alert}
+%  \end{frame}
+
+% \begin{chaospy}{One can easily construct such tailored sensitivity measures in Chaospy}
+% \scriptsize
+%  \begin{lstlisting}[language=python]
+% # Manual code
+% 
+% D=2
+% zero = [1]*D
+% |\pause|
+% sensetivities = np.empty((D,) + u_hat.shape)|\pause|
+% V = cp.Var(u_hat, dist)|\pause|
+% 
+% for i in range(D):
+%     zero[i] = 0
+%     sensetivities[i] = (V-cp.Var(cp.E_cond(u_hat, zero, dist), dist))/V
+%     zero[i] = 1
+%  \end{lstlisting}
+% 
+% \end{chaospy}
 
 
 \begin{frame}
- \frametitle{Variance based sensitivity of our naive example}
+ \frametitle{Variance based sensitivity of our example}
   \begin{figure}
   \includegraphics[width=0.85\textwidth]{sens.png}
  \end{figure}
 \end{frame}
 
-\begin{chaospy}{Polynomial chaos expansions for other metric is
-    still possible}
+\begin{chaospy}{Various statistical metrics are easy to construct in Chaospy}
     % TODO Manual code
-    
+
+Some statistical metrics have analytical formulas, others can easily be
+implemented by using Monte Carlo on the surrogate model:
+% Monte Carlo on the surrogate model
 \begin{lstlisting}[language=python]
-Q_samples = dist.samples(10**5)
-u_samples = P(*Q_samples)
+samples_Q = dist.samples(10**5)
+samples_u = P(*samples_Q)
 |\pause|
-p_10 = np.percentile(u_sample, 10, axis=0)
-p_90 = np.percentile(u_sample, 90, axis=0)
+p_10 = np.percentile(samples_u, 10, axis=0)
+p_90 = np.percentile(samples_u, 90, axis=0)
  \end{lstlisting}
 \end{chaospy}
 
@@ -866,7 +917,7 @@ p_90 = np.percentile(u_sample, 90, axis=0)
   \begin{figure}
   \includegraphics[width=0.85\textwidth]{percentiles.png}
  \end{figure}
- 
+
 \end{frame}
 
 
@@ -877,17 +928,17 @@ x = np.linspace(0, 10, 100)
 def u(x, a, I):
   return I*np.exp(-a*x)
 |\pause|
-a = cp.Uniform(0, 0.1)
-I = cp.Uniform(8, 10)
-dist = cp.J(a,I)
+dist_a = cp.Uniform(0, 0.1)
+dist_I = cp.Uniform(8, 10)
+dist = cp.J(dist_a, dist_I)
 |\pause|
 P = cp.orth_ttr(M, dist)
 |\pause|
 nodes, weights = cp.generate_quadrature(M+1, dist)
 |\pause|
-solves = [u(x, s[0], s[1]) for s in nodes.T]
+samples_u = [u(x, *node) for node in nodes.T]
 |\pause|
-u_hat= cp.fit_quadrature(P, nodes, weights, solves)
+u_hat= cp.fit_quadrature(P, nodes, weights, samples_u)
 |\pause|
 mean = cp.E(u_hat, dist)
 var = cp.Var(u_hat, dist)

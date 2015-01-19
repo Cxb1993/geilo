@@ -43,7 +43,7 @@ pl.rc("figure", figsize=[6,4])
     
 pl.plot(K,error,"r-",linewidth=2)
 pl.plot(K, var,"r--",linewidth=2)
-pl.xlabel("Samples, K")
+pl.xlabel("Nodes, K")
 pl.ylabel("Error")
 pl.yscale('log')
 pl.xlim([7,110])

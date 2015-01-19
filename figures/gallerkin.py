@@ -148,7 +148,7 @@ for n in range(1,N):
 pl.plot(K,error,"g-",linewidth=2)
 pl.plot(K, var,"g--",linewidth=2)
 
-pl.xlabel("Samples, K")
+pl.xlabel("Nodes, K")
 pl.ylabel("Error")
 pl.yscale('log')
 #pl.title("Error in expectation value and variance ")

@@ -155,7 +155,7 @@ plt.plot(K, var,"g--",linewidth=2)
 
 
 
-plt.xlabel("Samples, K")
+plt.xlabel("Nodes, K")
 plt.ylabel("Error")
 plt.yscale('log')
 #plt.title("Error in expectation value and variance ")
