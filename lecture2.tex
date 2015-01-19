@@ -45,8 +45,10 @@
  \end{frame}
 }
 
-\lstset{
-escapeinside=||
+ \lstset{
+escapeinside={||},
+basicstyle=\ttfamily\footnotesize, 
+columns=fixed
 }
 
 
@@ -295,15 +297,17 @@ print weights
 % high: fill in code (using L as input)
 % skip "rule="
 \begin{lstlisting}[language=python]
-dist = cp.J(cp.Uniform(), cp.Uniform())  # joint multivariate dist
-nodes, weights = cp.generate_quadrature((1,2), dist, rule="G")
+# joint multivariate dist
+dist = cp.J(cp.Uniform(), cp.Uniform()) 
+nodes, weights = cp.generate_quadrature((1,2), \
+			    dist, rule="G")
 |\pause|
 print nodes
-[[0.2113248 0.2113248 0.2113248 0.7886751 0.7886751 0.7886751]
- [0.1127016 0.5       0.8872983 0.1127016 0.5       0.8872983]]
+[[0.211324 0.211324 0.211324 0.788675 0.788675 0.788675]
+ [0.112701 0.5      0.887298 0.112701 0.5      0.887298]]
 
 print weights
- [0.1388888 0.2222222 0.1388889 0.1388889 0.2222222 0.1388889]
+ [0.138888 0.222222 0.138889 0.138889 0.222222 0.138889]
 \end{lstlisting}
 
 \end{chaospy}

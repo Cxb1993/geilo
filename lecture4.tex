@@ -43,10 +43,12 @@
  \end{frame}
 }
 
-\lstset{
-escapeinside=||
-}
 
+ \lstset{
+escapeinside={||},
+basicstyle=\ttfamily\footnotesize, 
+columns=fixed
+}
 
 \newenvironment{chaospy}[1]
 {\color{gray!30!black}
@@ -70,7 +72,7 @@ escapeinside=||
 \graphicspath{{./figures/}}
 
 
-\title{Polynomial chaos expansions part 3: Advanced topics - Dependent variables}
+\title{Polynomial chaos expansions part 4: Dependent variables}
 \author{Jonathan Feinberg and Simen Tennøe}
 
 
@@ -152,10 +154,8 @@ def u(x,a, I):
 C = [[2,1],[1,2]]
 mu = [0.5,0.5]
 |\pause|
-R = cp.J(cp.Normal(), cp.Normal())
-|\pause|
-L =  np.linalg.cholesky(C)      # C = np.dot(L.T, L)
-|\pause|
+R = cp.J(cp.Normal(), cp.Normal())|\pause|
+L =  np.linalg.cholesky(C)      # C = np.dot(L.T, L) |\pause|
 def T(r):
     return np.dot(L,r) + mu
 |\pause|
@@ -163,9 +163,9 @@ P = cp.orth_ttr(M, R)|\pause|
 nodes0, weights = cp.generate_quadrature(M+1, R, rule="G")|\pause|
 nodes1 = T(nodes0)
 |\pause|
-samples_u = [u(x, *node) for node in nodes1.T]
-|\pause|
-U_analytic = cp.fit_quadrature(P, nodes0, weights, samples_u)
+samples_u = [u(x, *node) for node in nodes1.T]|\pause|
+U_analytic = cp.fit_quadrature(P, nodes0,\
+			      weights, samples_u)
 \end{lstlisting}
 \end{chaospy}
 
