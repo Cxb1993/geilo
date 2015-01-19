@@ -31,9 +31,9 @@ legend = []
 #pl.plot(-1,1, "k-")
 #pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
-pl.plot(-1,1, "b")
-pl.plot(-1,1, "g")
 pl.plot(-1,1, "y")
+pl.plot(-1,1, "k")
+pl.plot(-1,1, "b")
 pl.legend(["(Pseudo-)Random, $[p_{05}, p_{95}]$","Latin Hyperscube, $[p_{05}, p_{95}]$","Sobol","Hammersley"],loc=3,prop={"size" :12})
 pl.rc("figure", figsize=[6,4])
 pl.xlim([5,55])
@@ -45,7 +45,7 @@ N=7
 #varb = np.zeros(Nt)
 errorb = []
 varb=[]
-for i in range(0,10):
+for i in range(0,100):
     
     error = []
     var = []
@@ -73,7 +73,7 @@ print len(K)
 meanE = np.sum(errorb,0)/10.
 meanVar = np.sum(errorb,0)/10.
 
-pl.fill_between(K,p_10,p_90,facecolor="red",alpha=0.4)
+pl.fill_between(K,p_10,p_90,facecolor="red",alpha=0.3,lw=0)
 #pl.plot(K,meanE,"r-", linewidth=2)
 #pl.plot(K, meanVar,"r--", linewidth=2)
 
@@ -83,7 +83,7 @@ pl.fill_between(K,p_10,p_90,facecolor="red",alpha=0.4)
 
 errorb = []
 varb=[]
-for i in range(0,10):
+for i in range(0,100):
     
     error = []
     var = []
@@ -114,7 +114,7 @@ print len(K)
 meanE = np.sum(errorb,0)/10.
 meanVar = np.sum(errorb,0)/10.
 
-pl.fill_between(K,p_10,p_90,facecolor="blue",alpha=0.4)
+pl.fill_between(K,p_10,p_90,facecolor="yellow",alpha=0.3,lw=0)
 
 
 #pl.plot(K,meanE,"b-", linewidth=2)
@@ -139,7 +139,7 @@ for n in range(0,N):
 
 
 #pl.plot(K,error,"g-", linewidth=2)
-pl.plot(K, var,"g-", linewidth=2)
+pl.plot(K, var,"k-", linewidth=2)
 
 
 
@@ -158,7 +158,7 @@ for n in range(0,N):
 
 
 #pl.plot(K,error,"y-", linewidth=2)
-pl.plot(K, var,"y-", linewidth=2)
+pl.plot(K, var,"b-", linewidth=2)
 
 
 
@@ -174,7 +174,7 @@ pl.yscale('log')
 pl.savefig("convergence_collocation_compare.png")
 
 pl.show()
-
+"""
 pl.figure()
 nodes = dist.sample(100)
 pl.scatter(nodes[0],nodes[1])
@@ -205,6 +205,7 @@ pl.savefig("samples_S.png")
 
 
 #pl.show()
+"""
 
 
 
