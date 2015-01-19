@@ -98,15 +98,15 @@ pl.plot(K, varCP,"g--",linewidth=2)
 """
 
 
-pl.xlabel("Nodes, K")
-pl.ylabel("Error")
-pl.yscale('log')
+#pl.xlabel("Nodes, K")
+#pl.ylabel("Error")#
+#pl.yscale('log')
 #pl.xlim([5,35])
 #pl.ylim([10**-16,2*10**3])
 
 #pl.title("Error in expectation value and variance ")
 #pl.legend(["E, $L=M-1$","Var, $L=M-1$","Exp, $L=M$","Var,  $L=M$","E, $L=M+1$","Var,  $L=M+1$"],loc=3)
-pl.savefig("convergence_2D_L.png")
+#pl.savefig("convergence_2D_L.png")
 
 
 
@@ -200,6 +200,6 @@ pl.xlim([0,100])
 
 #Zpl.title("Error in expectation value and variance, sparse ")
 #pl.legend(["E, $L=M-1$","Var, $L=M-1$","E, $L=M$","Var, $L=M$"],loc=2)
-pl.savefig("convergence_2D_L_sparse.png")
+#pl.savefig("convergence_2D_L_sparse.png")
 
 pl.show()
