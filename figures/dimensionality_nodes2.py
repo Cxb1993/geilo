@@ -20,7 +20,7 @@ pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
 pl.plot(-1,1, "g")
-pl.legend(["Gaussian Legendre, sparse grid","Gaussian Legendre, nested sparse grid","Clenshaw-Curtis, nested sparse grid", "D=2","D=3","D=4"],loc=2,prop={"size" :12})
+pl.legend(["Gaussian Legendre, linear growth","Gaussian Legendre, exponential growth","Clenshaw-Curtis, exponential growth", "D=2","D=3","D=4"],loc=2,prop={"size" :12})
 pl.xlim([1,17])
 
 L = pl.arange(m+1, l+1)
