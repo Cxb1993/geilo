@@ -39,8 +39,10 @@
  \end{frame}
 }
 
-\lstset{
-escapeinside=||
+ \lstset{
+escapeinside={||},
+basicstyle=\ttfamily\footnotesize, 
+columns=fixed
 }
 
 
@@ -79,21 +81,20 @@ escapeinside=||
 \end{frame}
 
 \begin{frame}
- \frametitle{Repetition: The problem}
+ \frametitle{Repetition of our model problem}
   We have a simple differential equation
   \begin{align*}
-    \frac{d u(x)}{dx} & =-au(x),\qquad u(0) = I,
+    \frac{d u(x)}{dx} & =-au(x),\qquad u(0) = I
   \end{align*}
   \pause
-  With the solution:
-  \[u(x) = Ie^{-a(x)}\]
+  with the solution
+  \[u(x) = Ie^{-ax}\]
   \pause
-  where
-   \[a \sim \text{Uniform(0, 0.1)}, \qquad I \sim \text{Uniform(8, 10)}\] 
-   \pause
-   And we approximate it with
-   \[u \approx \hat u_M = \sum_{n=0}^Nc_nP_n\]
+  with two random input variables:
+   \[a \sim \text{Uniform(0, 0.1)}, \qquad I \sim \text{Uniform(8, 10)}\]
+  Want to compute $\E{u}$ and $\Var{u}$
 \end{frame}
+
 
 \begin{frame}
  \frametitle{Calculating initial condition using intrusive Galerkin}
