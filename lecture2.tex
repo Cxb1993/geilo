@@ -760,16 +760,17 @@ u_hat = cp.fit_regression(P, nodes, samples_u)
 \begin{chaospy}{A surrogate model allows for computational cheap statistical analysis}
     \scriptsize
  \begin{lstlisting}[language=python]
-u_hat, c = cp.fit_quadrature(
+u_hat, c_hat = cp.fit_quadrature(
         P, nodes, weights, solves, retall=True)
 |\pause|
-mean =  cp.E(u_hat,dist)
-var = cp.Var(u_hat,dist)
-norms = mean**2
+mean =  cp.E(u_hat, dist)
+var = cp.Var(u_hat, dist)
 |\pause|
 
-mean = c[0]
-var = np.sum(norms[1:]*c[1:].T**2,1)
+mean = c_hat[0]
+norms2 = cp.E(P**2, dist)[1:]
+c2 = c_hat[1:]**2
+var = np.sum(c2*norms2)
 |\pause|
 
 samples_q = dist.sample(10**6)
