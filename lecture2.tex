@@ -105,7 +105,7 @@ escapeinside=||
     % TODO
     % high: make it 2-D problem
  \begin{lstlisting}[language=python]
- def u(x,a, I):
+def u(x, a, I):
   return I*np.exp(-a*x)
 |\pause|
 dist_a = cp.Uniform(0, 0.1)
@@ -295,7 +295,7 @@ print weights
 % high: fill in code (using L as input)
 % skip "rule="
 \begin{lstlisting}[language=python]
-dist = cp.J(cp.Uniform(),cp.Uniform())  # joint multivariate dist
+dist = cp.J(cp.Uniform(), cp.Uniform())  # joint multivariate dist
 nodes, weights = cp.generate_quadrature((1,2), dist, rule="G")
 |\pause|
 print nodes
@@ -642,9 +642,9 @@ minimization in a vector space as in regression (or overdetermined matrix system
 def u(x, a, I):
   return I*np.exp(-a*x)
  |\pause|
-a = cp.Uniform(0, 0.1)
-I = cp.Uniform(8, 10)
-dist = cp.J(a,I)
+dist_a = cp.Uniform(0, 0.1)
+dist_I = cp.Uniform(8, 10)
+dist = cp.J(dist_a, dist_I)
 |\pause|
 x = np.linspace(0, 10, 100)
  |\pause|
@@ -682,9 +682,9 @@ u_hat = cp.fit_regression(P, nodes, samples_u)
                 \verb;nodes = dist.sample(100);
                 \normalsize
 
-                \includegraphics[width=0.65\textwidth]{samples_M.png}
+                \includegraphics[width=0.65\textwidth]{samples_H.png}
 
-                Hammersley sampling
+                Halton sampling
 
                 \scriptsize
                 \verb;nodes = dist.sample(100, "H");
@@ -713,6 +713,27 @@ u_hat = cp.fit_regression(P, nodes, samples_u)
      \end{center}
  \end{columns}
 \end{frame}
+
+\begin{frame}{Sampling schemes in Chaospy}
+\begin{center}
+
+ \begin{tabular}{lll}
+     Key &    Name              &  Nested\\\hline
+    K &    Korobov            & no\\
+    R &    (Pseudo-)Random    & no\\
+    L &    Latin hypercube    & no\\
+    S &    Sobol              & yes\\
+    H &    Halton             & yes\\
+    M&     Hammersley         & yes \\\hline
+  C &    Clenshaw Curtis    & no\\
+    G &    Gaussian quadrature& no\\
+    E & Gauss-Legendre & no\\\hline
+ \end{tabular}
+
+\end{center}
+
+\end{frame}
+
 
 
 \begin{frame}
@@ -940,9 +961,9 @@ dist_a = cp.Uniform(0, 0.1)
 dist_I = cp.Uniform(8, 10)
 dist = cp.J(dist_a, dist_I)
 |\pause|
-P = cp.orth_ttr(M, dist)
+P = cp.orth_ttr(3, dist)
 |\pause|
-nodes, weights = cp.generate_quadrature(M+1, dist)
+nodes, weights = cp.generate_quadrature(4, dist)
 |\pause|
 samples_u = [u(x, *node) for node in nodes.T]
 |\pause|

@@ -392,16 +392,16 @@ Var = np.var(samples_u)
 \begin{lstlisting}[language=python]
 M = 5; N = M - 1
 
-a = cp.Uniform(0,0.1)
+dist_a = cp.Uniform(0, 0.1)
 |\pause|
-v = cp.basis(0,M,1)
+v = cp.basis(0, M, 1)
 P = [v[0]]
 |\pause|
-for n in xrange(1,N):
+for n in xrange(1, N):
     p = v[n]
-    for m in xrange(0,n):
-        p -= P[m]*cp.E(v[n]*P[m],a)
-                            /cp.E(P[m]**2,a)
+    for m in xrange(0, n):
+        p -= P[m]*cp.E(v[n]*P[m], dist_a)
+                            /cp.E(P[m]**2, dist_a)
     P.append(p)
 P = cp.Poly(P)
  \end{lstlisting}
@@ -487,10 +487,8 @@ P = cp.Poly(P)
 \begin{chaospy}{
     Three terms recursion in Chaospy}
 \begin{lstlisting}[language=python]
-import chaospy as cp
-
-a = cp.Normal()
-P = cp.orth_ttr(3, a)
+dist_a = cp.Normal()
+P = cp.orth_ttr(3, dist_a)
 
 print P
 [1.0, q0, q0^2-1.0, q0^3-3.0q0]
@@ -630,9 +628,9 @@ Single-index\\
 
  \begin{chaospy}{Creating multivariate orthogonal polynomials in Chaospy}
 \begin{lstlisting}[language=python]
-a = cp.Uniform(0, 0.1)
-I = cp.Uniform(8, 10)
-dist = cp.J(a,I)
+dist_a = cp.Uniform(0, 0.1)
+dist_I = cp.Uniform(8, 10)
+dist = cp.J(dist_a, dist_I)
 |\pause|
 P = cp.orth_ttr(1, dist)
 print P
@@ -684,8 +682,8 @@ a &\sim \text{Uniform(0, 0.1)} & I&= \text{Uniform(8, 10)}
 def u(x,a, I):
   return I*np.exp(-a*x)
 |\pause|
-a = cp.Uniform(0, 0.1)
-I = cp.Uniform(8, 10)
+dist_a = cp.Uniform(0, 0.1)
+dist_I = cp.Uniform(8, 10)
 dist = cp.J(a,I)|\pause|
 |\pause|
 P = cp.orth_ttr(2, dist)

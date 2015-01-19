@@ -98,9 +98,9 @@ escapeinside=||
 def u(x,a, I):
   return I*np.exp(-a*x)
 |\pause|
-a = cp.Uniform(0, 0.1)
-I = cp.Uniform(8, 10)
-dist = cp.J(a,I)|\pause|
+dist_a = cp.Uniform(0, 0.1)
+dist_I = cp.Uniform(8, 10)
+dist = cp.J(dist_a, dist_I)
 |\pause|
 P = cp.orth_ttr(2, dist)
 |\pause|
@@ -152,7 +152,7 @@ def u(x,a, I):
 C = [[2,1],[1,2]]
 mu = [0.5,0.5]
 |\pause|
-R = cp.J(cp.Normal(),cp.Normal())
+R = cp.J(cp.Normal(), cp.Normal())
 |\pause|
 L =  np.linalg.cholesky(C)      # C = np.dot(L.T, L)
 |\pause|
@@ -204,7 +204,7 @@ dist_Q = cp.MvNormal(mu,C)
 x = np.linspace(0, 1, 100)
 dt = x[1]-x[0]
 M = 5
-
+|\pause|
 P = cp.orth_ttr(M, dist_R)|\pause|
 s_R = dist_R.sample(2*len(P), "M")|\pause|
 s_Q = dist_Q.inv(dist_R.fwd(s_R))|\pause|
