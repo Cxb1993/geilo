@@ -1,6 +1,6 @@
 \documentclass{beamer}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath, pdfpages, pdflscape, lscape, color, listings, hyperref, amssymb, graphicx,textcomp,varioref, afterpage, subcaption, float, bm, tikz, multicol} 
+\usepackage{amsmath, pdfpages, pdflscape, lscape, color, listings, hyperref, amssymb, graphicx,textcomp,varioref, afterpage, subcaption, float, bm, tikz, multicol}
 
 \global
 \newcommand{\Fig}[1]{Figure \ref{#1}}
@@ -37,7 +37,7 @@
      \node[anchor = center, opacity=.25] (image) at (current page.center) {\includegraphics[scale=0.25]{chaospy_logo.jpg}};
    \end{tikzpicture}
  \begin{frame}[fragile,enviroment=chaospy]
-   
+
 }
 {
  \end{frame}
@@ -46,7 +46,7 @@
 
  \lstset{
 escapeinside={||},
-basicstyle=\ttfamily\footnotesize, 
+basicstyle=\ttfamily\footnotesize,
 columns=fixed
 }
 
@@ -66,7 +66,7 @@ columns=fixed
 \definecolor{comments}{RGB}{0,0,113}
 \definecolor{red}{RGB}{160,0,0}
 \definecolor{green}{RGB}{0,150,0}
- 
+
 \usetheme{kalkulo}
 
 \graphicspath{{./figures/}}
@@ -86,15 +86,15 @@ columns=fixed
 
 
 \begin{frame}
- \frametitle{Dependence}
+ \frametitle{Some random variables are dependent}
  \begin{figure}
  \includegraphics[width = 0.9\textwidth]{dependent.png}
  \end{figure}
 
  \end{frame}
 
- 
- \begin{chaospy}{Repetition: Full 2D implementation}
+
+ \begin{chaospy}{Repetition of our model problem with two independent variables $I$ and $a$}
      \scriptsize
  \begin{lstlisting}[language=python]
 def u(x,a, I):
@@ -117,20 +117,20 @@ u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
  \end{lstlisting}
 \end{chaospy}
- 
+
 
 \begin{frame}
- \frametitle{Dependent variables}
+ \frametitle{Dependent variables break the orthogonality property of polynomials!}
  % TODO
  % copy code from lecture1
  \[  P_{\mathfrak i} = P_{i_1}^{(1)}P_{i_2}^{(2)}\cdots P_{i_D}^{(D)} \qquad \mathfrak i = (i_1,i_2,...,i_D)\]
  \pause
  \begin{align*}
   \langle P_\mathfrak{i},P_\mathfrak{j}\rangle &= E(P_\mathfrak{i},P_\mathfrak{j})\\
-  \onslide<3-> {&=\E{P_{i_1}^{(1)}\cdots P_{i_D}^{(D)}P_{j_1}^{(1)}\cdots P_{j_D}^{(D)}}}\\ 
-  \onslide<4-> {&=\E{P_{i_1}^{(1)}P_{j_1}^{(1)}}\cdots \E{P_{i_D}^{(D)}P_{j_D}^{(D)}}}\\ 
-  \onslide<5-> {&=\langle P_{i_1}^{(1)}P_{j_1}^{(1)}\rangle\cdots \langle P_{i_D}^{(D)}P_{j_D}^{(D)}\rangle}\\ 
-  \onslide<6-> {&=\norm{P_{i_1}^{(1)}}^2\delta_{i_1j_1}\cdots \norm{P_{i_D}^{(D)}}^2\delta_{i_Dj_D}}\\ 
+  \onslide<3-> {&=\E{P_{i_1}^{(1)}\cdots P_{i_D}^{(D)}P_{j_1}^{(1)}\cdots P_{j_D}^{(D)}}}\\
+  \onslide<4-> {&=\E{P_{i_1}^{(1)}P_{j_1}^{(1)}}\cdots \E{P_{i_D}^{(D)}P_{j_D}^{(D)}}}\\
+  \onslide<5-> {&=\langle P_{i_1}^{(1)}P_{j_1}^{(1)}\rangle\cdots \langle P_{i_D}^{(D)}P_{j_D}^{(D)}\rangle}\\
+  \onslide<6-> {&=\norm{P_{i_1}^{(1)}}^2\delta_{i_1j_1}\cdots \norm{P_{i_D}^{(D)}}^2\delta_{i_Dj_D}}\\
   \onslide<7-> { \langle P_\mathfrak{i},P_\mathfrak{j}\rangle &=\norm{P_{\mathfrak{i}}^{(1)}}\delta_{\mathfrak{i}\mathfrak{j}}}
  \end{align*}
  \onslide<7->
@@ -142,9 +142,9 @@ mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 
 
 
- 
- 
-\begin{chaospy}{Simple transformation code}
+
+
+\begin{chaospy}{Code for dependent normal variables}
  \scriptsize
  \begin{lstlisting}[language=Python]
 x = np.linspace(0, 1, 100)
@@ -170,7 +170,7 @@ U_analytic = cp.fit_quadrature(P, nodes0,\
 \end{chaospy}
 
 \begin{frame}
- \frametitle{Convergence of transformation}
+ \frametitle{Convergence plot}
  % TODO
  % Extend to the right
  \begin{figure}
@@ -182,32 +182,30 @@ U_analytic = cp.fit_quadrature(P, nodes0,\
  % TODO
  % use contourf
  \begin{frame}
- \frametitle{Rosenblatt Transformations}
+ \frametitle{All random variables can with aid of the rosenblatt transformations be transformed to/from the uniform distribution}
  \begin{figure}
  \includegraphics[width = \textwidth]{distributions.png}
  \end{figure}
 
  \end{frame}
- 
- 
- \begin{chaospy}{Rosenblatt transformation, code}
+
+
+ \begin{chaospy}{Automating previous code example with Rosenblatt transformation}
  \scriptsize
  \begin{lstlisting}[language=Python]
 def u(x,a, I):
     return I*np.exp(-a*x)
 |\pause|
 C = [[2,1],[1,2]]
-mu = np.array([0.5,0.5])
-dist_R = cp.J(cp.Normal(),cp.Normal())
-dist_Q = cp.MvNormal(mu,C)
+mu = np.array([0.5, 0.5])
+dist_R = cp.J(cp.Normal(), cp.Normal())
+dist_Q = cp.MvNormal(mu, C)
 |\pause|
 x = np.linspace(0, 1, 100)
-dt = x[1]-x[0]
-M = 5
 |\pause|
-P = cp.orth_ttr(M, dist_R)|\pause|
-s_R = dist_R.sample(2*len(P), "M")|\pause|
-s_Q = dist_Q.inv(dist_R.fwd(s_R))|\pause|
+P = cp.orth_ttr(5, dist_R)|\pause|
+nodes_R = dist_R.sample(2*len(P), "M")|\pause|
+nodes_Q = dist_Q.inv(dist_R.fwd(s_R))|\pause|
 
 samples_u = [u(x, s[0], s[1]) for s in s_Q.T]|\pause|
 U_hat = cp.fit_regression(P, s_R, samples_u, rule="LS")
@@ -223,6 +221,6 @@ U_hat = cp.fit_regression(P, s_R, samples_u, rule="LS")
  \end{figure}
 
  \end{frame}
-  
+
 
 \end{document}
