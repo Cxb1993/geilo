@@ -59,6 +59,24 @@ plt.contourf(s, t,dist.pdf([t,s]),alpha=0.6)
 plt.savefig("uniform.png")
 
 
+dist = cp.Normal()
+#dist = cp.J(dist[0],dist[1])
+t = np.linspace(-3,3,100)
+
+
+plt.figure()
+plt.plot(t,dist.pdf(t),linewidth=4)
+plt.savefig("uniform2.png")
+
+
+dist = cp.Normal(1,0.5)
+#dist = cp.J(dist[0],dist[1])
+t = np.linspace(-3,3,100)
+
+
+plt.figure()
+plt.plot(t,dist.pdf(t),linewidth=4)
+plt.savefig("uniform3.png")
 
 
 
