@@ -47,7 +47,16 @@ plt.contourf(s, t,dist.pdf([t,s]),alpha=0.6)
 plt.savefig("normal.png")
 
 
+dist = cp.Iid(cp.Uniform(0.5,1.5),2)
+#dist = cp.J(dist[0],dist[1])
+t, s = np.linspace(0,2,100), np.linspace(0,2,100)
+i1, i2 = np.mgrid[:100,:100]
+t = t[i1]; s = s[i2]
 
+
+plt.figure()
+plt.contourf(s, t,dist.pdf([t,s]),alpha=0.6)
+plt.savefig("uniform.png")
 
 
 

@@ -80,6 +80,31 @@ columns=fixed
   \maketitle
 \end{frame}
 
+
+
+\begin{frame}[fragile]{Relevant links}
+  \begin{center}
+     \includegraphics[width=.5\textwidth]{chaospy_logo.jpg}
+  \end{center}
+    \begin{alert}{A very basic introduction to scientific Python programming:}
+    \scriptsize
+      \href{http://hplgit.github.io/bumpy/doc/pub/sphinx-basics/index.html}{http://hplgit.github.io/bumpy/doc/pub/sphinx-basics/index.html}\\
+%\verb;http://hplgit.github.io/bumpy/doc/pub/sphinx-basics/index.html;
+  \end{alert}
+  \begin{alert}{Installation instructions:}\\
+  \scriptsize
+      \href{https://github.com/hplgit/chaospy}{https://github.com/hplgit/chaospy}\\
+%\verb;http://github.com/hplgit/chaospy/;
+  \end{alert}
+    \begin{alert}{Interactive sessions:}\\
+  \scriptsize
+\href{http://10.50.3.247:8888/}{http://10.50.3.247:8888/}
+
+%\verb;http://10.50.3.247:8888/;
+  \end{alert}
+\end{frame}
+
+
 \begin{frame}
  \frametitle{Repetition of our model problem}
   We have a simple differential equation
@@ -107,14 +132,14 @@ u'(x) &= g(x) \\
 \inner{u',v} &= \inner{g,v}\quad\mbox{(projection)}
 \end{align*}
 
-With $u\approx\sum_n c_n P_n(x)$ this leads to a linear system for
-the coefficients $c_n$
+With $u(x; q) \approx \hat u_M(x; q) = \sum_{n=0}^N c_n(x) P_n(q)$ this leads to a linear system for
+the coefficients $c_n$.
 \end{frame}
 
 \begin{frame}
  \frametitle{Calculating initial condition using Galerkin}
  \begin{align*}
- \hat u_M(0) &= I,\quad \hat u_M = \sum_{n=0}^N c_n(x)P_n(q)\\
+ \hat u_M(0) &= I, & \hat u_M &= \sum_{n=0}^N c_n(x)P_n(q)\\
   \onslide<2-> {\sum_{n=0}^Nc_n(0)P_n &= I}\\
   \onslide<3-> {\inner{\sum_{n=0}^Nc_n(0)P_n,P_k} &= \inner{ I,P_k}
   & k&=0,\dots,N}\\
@@ -128,7 +153,8 @@ the coefficients $c_n$
 
 \begin{frame}
  \frametitle{Galerkin applied to the differential equation}
- \scriptsize
+%  \scriptsize
+\footnotesize
  \begin{align*}
   \frac{d}{dx}\left(\hat u_M \right) &= -a \hat u_M\\
   \onslide<2-> {\frac{d}{dx}\left(\sum_{n=0}^Nc_nP_n \right) &= -a \sum_{n=0}^Nc_nP_n}\\
@@ -168,21 +194,21 @@ the coefficients $c_n$
     \begin{align*}
         E(P_nP_k)
     \end{align*}
-  \includegraphics[width=\textwidth]{binary_matrix1.png}
+  \includegraphics[width=0.9\textwidth]{binary_matrix1.png}
 \end{center}
      \column{.5\textwidth}
      \begin{center}
     \begin{align*}
         E(aP_nP_k)
     \end{align*}
-  \includegraphics[width=\textwidth]{binary_matrix.png}
+  \includegraphics[width=0.9\textwidth]{binary_matrix.png}
      \end{center}
  \end{columns}
  \end{frame}
 
 \begin{frame}
  \frametitle{Intrusive Galerkin usually converges faster}
-\begin{itemize}
+\begin{itemize}[<+->]
 \item Original problem: one scalar differential equation
 \item Stochastic UQ problem: system of differential equations
 \item The method is called \emph{intrusive Galerkin}
@@ -238,7 +264,6 @@ u_hat = cp.dot(P, c)
   \includegraphics[width=0.85\textwidth]{convergence_gallerkin.png}
  \end{figure}
 \end{frame}
-
 
 
 

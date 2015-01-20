@@ -207,8 +207,8 @@ P = cp.orth_ttr(5, dist_R)|\pause|
 nodes_R = dist_R.sample(2*len(P), "M")|\pause|
 nodes_Q = dist_Q.inv(dist_R.fwd(s_R))|\pause|
 
-samples_u = [u(x, s[0], s[1]) for s in s_Q.T]|\pause|
-U_hat = cp.fit_regression(P, s_R, samples_u, rule="LS")
+samples_u = [u(x, *node) for node in nodes_Q.T]|\pause|
+u_hat = cp.fit_regression(P, s_R, samples_u, rule="LS")
 \end{lstlisting}
 \end{chaospy}
 
@@ -221,6 +221,29 @@ U_hat = cp.fit_regression(P, s_R, samples_u, rule="LS")
  \end{figure}
 
  \end{frame}
+
+ 
+\begin{frame}[fragile]{Thank you}
+  \begin{center}
+     \includegraphics[width=.5\textwidth]{chaospy_logo.jpg}
+  \end{center}
+    \begin{alert}{A very basic introduction to scientific Python programming:}
+    \scriptsize
+      \href{http://hplgit.github.io/bumpy/doc/pub/sphinx-basics/index.html}{http://hplgit.github.io/bumpy/doc/pub/sphinx-basics/index.html}\\
+%\verb;http://hplgit.github.io/bumpy/doc/pub/sphinx-basics/index.html;
+  \end{alert}
+  \begin{alert}{Installation instructions:}\\
+  \scriptsize
+      \href{https://github.com/hplgit/chaospy}{https://github.com/hplgit/chaospy}\\
+%\verb;http://github.com/hplgit/chaospy/;
+  \end{alert}
+    \begin{alert}{Interactive sessions:}\\
+  \scriptsize
+\href{http://10.50.3.247:8888/}{http://10.50.3.247:8888/}
+
+%\verb;http://10.50.3.247:8888/;
+  \end{alert}
+\end{frame}
 
 
 \end{document}

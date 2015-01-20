@@ -40,7 +40,7 @@ pl.plot(-1,1, "k--")
 pl.plot(-1,1, "r")
 pl.plot(-1,1, "b")
 pl.plot(-1,1, "g")
-pl.legend(["Mean","Variance", "Gaussian quadrature","Point collocation","Intrusive Gallerkin"],loc=3,prop={"size" :12})
+pl.legend(["Mean","Variance", "Spectral projection","Point collocation","Intrusive Galerkin"],loc=3,prop={"size" :12})
 pl.xlim([5,30])
 pl.ylim([10**-22,10**0])
 
