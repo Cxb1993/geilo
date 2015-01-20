@@ -66,6 +66,12 @@ escapeinside=||
 \title{Polynomial chaos expansions: Solutions}
 \author{Jonathan Feinberg and Simen Tennøe}
 
+ \lstset{
+escapeinside={||},
+basicstyle=\ttfamily\footnotesize, 
+columns=fixed
+}
+
 
 \begin{document}
 
@@ -82,15 +88,14 @@ def s(t, v):
 
 v = cp.Normal(5,1)
 t = np.linspace(0,10,1000)
-M = 5
 
-P = cp.orth_ttr(M, v)
-nodes, weights = cp.generate_quadrature(M+1, v, rule="G")
+P = cp.orth_ttr(5, v)
+nodes, weights = cp.generate_quadrature(6, v, rule="G")
 samples_u = [s(t, n) for n in nodes.T]
 U_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
-E = cp.E(U_hat, v)
-Var = cp.Var(U_hat, v)
+plot(t, cp.E(U_hat, v))
+plot(t, cp.Var(U_hat, v))
 \end{lstlisting}
 \end{chaospy}
 
@@ -120,6 +125,8 @@ distance = np.array([s(t,v0_,a_) for v0_,a_ \
                      in zip(samples_v0.T, samples_a.T)])
 E = np.sum(distance,0)/N
 Var = np.sum(distance**2,0)/N - E**2
+plot(t, E)
+plot(t, Var)
 \end{lstlisting}
 \end{chaospy}
 
@@ -152,6 +159,8 @@ distance = np.array([s(t,v0_,a_) for v0_,a_ \
                      in zip(samples_v0.T, samples_a.T)])
 E = np.sum(distance,0)/N
 Var = np.sum(distance**2,0)/N - E**2
+plot(t, E)
+plot(t, Var)
 \end{lstlisting}
 \end{chaospy}
 
@@ -174,19 +183,18 @@ def s(t, v0, a):
     return v0*t + 0.5*a*t**2
 
 v0 = cp.Uniform(1,2)
-a = cp.Beta(2,0.5)
+a = cp.Beta(2,2)
 dist = cp.J(v0,a)
 
 t = np.linspace(0,10,1000)
-M = 5
 
-P = cp.orth_ttr(M, dist)
-nodes, weights = cp.generate_quadrature(M+1, dist, rule="G")
+P = cp.orth_ttr(5, dist)
+nodes, weights = cp.generate_quadrature(6, dist, rule="G")
 samples_u = [s(t, *n) for n in nodes.T]
 U_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
-E = cp.E(U_hat, dist)
-Var = cp.Var(U_hat, dist)
+plot(t, cp.E(U_hat, dist))
+plot(t, cp.Var(U_hat, dist))
 \end{lstlisting}
 \end{chaospy}
 
@@ -212,16 +220,15 @@ a = cp.Beta(2,2)
 dist = cp.J(v0,a)
 
 t = np.linspace(0,10,1000)
-M = 5
 
 P = cp.orth_ttr(M, dist)
-nodes, weights = cp.generate_quadrature(M+1, dist, rule="C" \
+nodes, weights = cp.generate_quadrature(6, dist, rule="C" \
                                         , sparse=True)
 samples_u = [s(t, *n) for n in nodes.T]
 U_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
-E = cp.E(U_hat, dist)
-Var = cp.Var(U_hat, dist)
+plot(t, cp.E(U_hat, dist))
+plot(t, cp.Var(U_hat, dist))
 \end{lstlisting}
 \end{chaospy}
 
@@ -246,15 +253,14 @@ a = cp.Beta(2,2)
 dist = cp.J(v0,a)
 
 t = np.linspace(0,10,1000)
-M = 5
 
-P = cp.orth_ttr(M, dist)
+P = cp.orth_ttr(5, dist)
 nodes = dist.sample(2*len(P))
 samples_u = [s(t, *n) for n in nodes.T]
 U_hat = cp.fit_regression(P, nodes, samples_u, rule="LS")
 
-E = cp.E(U_hat, dist)
-Var = cp.Var(U_hat, dist)
+plot(t, cp.E(U_hat, dist))
+plot(t, cp.Var(U_hat, dist))
 \end{lstlisting}
 \end{chaospy}
 
@@ -279,15 +285,14 @@ a = cp.Beta(2,2)
 dist = cp.J(v0,a)
 
 t = np.linspace(0,10,1000)
-M = 5
 
-P = cp.orth_ttr(M, dist)
+P = cp.orth_ttr(5, dist)
 nodes = dist.sample(2*len(P), "M")
 samples_u = [s(t, *n) for n in nodes.T]
 U_hat = cp.fit_regression(P, nodes, samples_u, rule="T")
 
-E = cp.E(U_hat, dist)
-Var = cp.Var(U_hat, dist)
+plot(t, cp.E(U_hat, dist))
+plot(t, cp.Var(U_hat, dist))
 \end{lstlisting}
 \end{chaospy}
 
