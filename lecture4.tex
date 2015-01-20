@@ -115,8 +115,6 @@ x = np.linspace(0, 10, 100)
 samples_u = [u(x, *node) for node in nodes.T]
 |\pause|
 u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
-|\pause|
-mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
  \end{lstlisting}
 \end{chaospy}
 
@@ -179,34 +177,43 @@ stochastically dependent}\]
     \pause
     \normalsize
     \begin{align*}
-        Q_1 &= R_1 &
-        Q_2 &= \rho R_2 + \sqrt{1-\rho^2} R_1
+        Q_1(R_1, R_2) &= R_1 &
+        Q_2(R_1, R_2) &= \rho R_2 + \sqrt{1-\rho^2} R_1
     \end{align*}
 \end{frame}
 
+\begin{frame}{Transformations can be used to model dependent
+    variables effectively as a parameterization of independent
+    variables}{}
+    \begin{align*}
+        \hat u_M(x; q)
+        \onslide<2->{= \hat u_M(x; T(r))}
+        \onslide<3->{= \sum_{n=0}^N c_n(x) P_n(r)}
+    \end{align*}
+\end{frame}
 
 \begin{chaospy}{Code for dependent normal variables}
  \scriptsize
  \begin{lstlisting}[language=Python]
 x = np.linspace(0, 1, 100)
-def u(x,a, I):
+def u(x, a, I):
   return I*np.exp(-a*x)
 
 C = [[2,1],[1,2]]
 mu = [0.5,0.5]
 |\pause|
-R = cp.J(cp.Normal(), cp.Normal())|\pause|
+dist_R = cp.J(cp.Normal(), cp.Normal())|\pause|
+P = cp.orth_ttr(M, dist_R)|\pause|
 L =  np.linalg.cholesky(C)      # C = np.dot(L.T, L) |\pause|
 def T(r):
     return np.dot(L,r) + mu
 |\pause|
-P = cp.orth_ttr(M, R)|\pause|
-nodes0, weights = cp.generate_quadrature(M+1, R, rule="G")|\pause|
-nodes1 = T(nodes0)
+nodes_R = dist_R.sample(2*len(P), "M")|\pause|
+nodes_Q = T(nodes_R)
 |\pause|
-samples_u = [u(x, *node) for node in nodes1.T]|\pause|
-U_analytic = cp.fit_quadrature(P, nodes0,\
-			      weights, samples_u)
+samples_u = [u(x, *node) for node in nodes_Q.T]|\pause|
+u_hat = cp.fit_quadrature(\
+    P, nodes_R, weights, samples_u)
 \end{lstlisting}
 \end{chaospy}
 
@@ -223,7 +230,7 @@ U_analytic = cp.fit_quadrature(P, nodes0,\
  % TODO
  % use contourf
  \begin{frame}
- \frametitle{All random variables can with aid of the rosenblatt transformations be transformed to/from the uniform distribution}
+ \frametitle{All random variables can with aid of the Rosenblatt transformations be transformed to/from the uniform distribution}
  \begin{figure}
  \includegraphics[width = \textwidth]{distributions.png}
  \end{figure}
@@ -236,12 +243,12 @@ U_analytic = cp.fit_quadrature(P, nodes0,\
 def u(x,a, I):
     return I*np.exp(-a*x)
 |\pause|
-C = [[2,1],[1,2]]
-mu = np.array([0.5, 0.5])
 dist_R = cp.J(cp.Normal(), cp.Normal())
+C = [[1, 0.5], [0.5, b1]]
+mu = [0, 0]
 dist_Q = cp.MvNormal(mu, C)
 |\pause|
-P = cp.orth_ttr(5, dist_R)|\pause|
+P = cp.orth_ttr(M, dist_R)|\pause|
 nodes_R = dist_R.sample(2*len(P), "M")|\pause|
 nodes_Q = dist_Q.inv(dist_R.fwd(nodes_R))
 |\pause|
@@ -260,9 +267,9 @@ u_hat = cp.fit_regression(P, nodes_R, samples_u)
 
  \begin{frame}{Rosenblatt transformations is essentially variable substitution}{}
      \begin{align*}
-     \E{u} = \int u(x; q)& f_Q(q)\,dq &
+     \qquad\E{u} = \int u(x; q)& f_Q(q)\,dq &
      \onslide<5->{= \int &u\left(x; q\right)
-     f_Q(q) \frac{f_R(r)}{f_Q(q)}\,dr}\\ \\
+     f_Q(q) \frac{f_R(r)}{f_Q(q)}\,dr} \qquad\qquad & &\\ \\
      \onslide<2->{F_Q(q) &= F_R(r)} &
      \onslide<4->{q &= F^{-1}_Q\left( F_R(r) \right)} \\
      \onslide<3->{f_Q(q)\,dq &= f_R(r)\,dq} &
@@ -284,7 +291,8 @@ dist_Q = cp.MvNormal(mu, C)
 P = cp.orth_ttr(M, dist_R)
 nodes_R, weights_R = cp.generate_quadrature(M+1, dist_R)|\pause|
 nodes_Q = dist_Q.inv(dist_R.fwd(nodes_R))|\pause|
-weights_Q = weights_R*dist_Q.pdf(nodes_Q)/dist_R.pdf(nodes_R)
+weights_Q = weights_R*\
+    dist_Q.pdf(nodes_Q)/dist_R.pdf(nodes_R)
 |\pause|
 x = np.linspace(0, 1, 100)
 samples_u = [u(x, *node) for node in nodes_Q.T]|\pause|
