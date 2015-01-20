@@ -98,7 +98,7 @@ columns=fixed
 
     \begin{alert}{Interactive sessions:}
 
-\verb;path/to/ipython/notebook/sessions;
+\verb;http://10.50.3.247:8888/;
   \end{alert}
 \end{frame}
 
@@ -181,16 +181,16 @@ columns=fixed
 \pause
 Initially assume model parameters:
 \begin{align*}
-a &\sim \text{Uniform(0, 0.1)} \sim p_a(a) & I&=1\hbox{ (known)}
+a &\sim \text{Uniform(0, 0.1)} \sim f_a(a) & I&=1\hbox{ (known)}
 \end{align*}
 \pause
   \begin{align*}
-      \E{u} &=  \int\limits_{-\infty}^{\infty} u(x;a)p_a(a)da=
+      \E{u} &=  \int\limits_{-\infty}^{\infty} u(x;a)f_a(a)da=
             \int_0^{0.1}e^{-ax}\frac{1}{10}da
     = \frac{1-   e^{-0.1x}}{10x} \\
     \onslide<4->{ \Var{u} & =\int\limits_{-\infty}^{\infty} (u(x;a)-
-    \E{u})^2p_a(a)da =
-   \frac{1 - e^{-0.2ax}}{20x} - \left(\frac{1-   e^{-0.1x}}{10x}\right)^2}
+    \E{u})^2f_a(a)da =
+   \frac{1 - e^{-0.2ax}}{20x} - \left(\frac{1-e^{-0.1x}}{10x}\right)^2}
  \end{align*}
 \end{frame}
 
