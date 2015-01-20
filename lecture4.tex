@@ -18,8 +18,9 @@
 \newcommand{\dder}[2]{\frac{\partial^2 #1}{\partial #2^2}}
 \newcommand{\p}{\boldsymbol{P}}
 \newcommand{\q}{\boldsymbol{q}}
-\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
-\newcommand{\coef}[2]{\frac{\langle #1,#2\rangle_Q}{\norm{#2}^}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert_{\!Q}}
+\newcommand{\inner}[1]{\left\langle #1\right\rangle_{\!Q}}
+\newcommand{\coef}[2]{\frac{\langle #1,#2\rangle_{\!Q}}{\norm{#2}^2}}
 
 
 \DeclareMathOperator*{\argmin}{argmin}
@@ -72,7 +73,8 @@ columns=fixed
 \graphicspath{{./figures/}}
 
 
-\title{Polynomial chaos expansions part 4: Dependent variables}
+\title{Polynomial chaos expansions part 4: Generalized polynomial
+chaos}
 \author{Jonathan Feinberg and Simen Tennøe}
 
 
@@ -121,39 +123,66 @@ mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 
 \begin{frame}
  \frametitle{Dependent variables break the orthogonality property of polynomials!}
- % TODO
- % copy code from lecture1
+ \scriptsize
  \[  P_{\mathfrak i} = P_{i_1}^{(1)}P_{i_2}^{(2)}\cdots P_{i_D}^{(D)} \qquad \mathfrak i = (i_1,i_2,...,i_D)\]
  \pause
  \begin{align*}
-  \langle P_\mathfrak{i},P_\mathfrak{j}\rangle &= E(P_\mathfrak{i},P_\mathfrak{j})\\
+     \inner{ P_\mathfrak{i},P_\mathfrak{j}} &= E(P_\mathfrak{i},P_\mathfrak{j})\\
   \onslide<3-> {&=\E{P_{i_1}^{(1)}\cdots P_{i_D}^{(D)}P_{j_1}^{(1)}\cdots P_{j_D}^{(D)}}}\\
   \onslide<4-> {&=\E{P_{i_1}^{(1)}P_{j_1}^{(1)}}\cdots \E{P_{i_D}^{(D)}P_{j_D}^{(D)}}}\\
-  \onslide<5-> {&=\langle P_{i_1}^{(1)}P_{j_1}^{(1)}\rangle\cdots \langle P_{i_D}^{(D)}P_{j_D}^{(D)}\rangle}\\
-  \onslide<6-> {&=\norm{P_{i_1}^{(1)}}^2\delta_{i_1j_1}\cdots \norm{P_{i_D}^{(D)}}^2\delta_{i_Dj_D}}\\
-  \onslide<7-> { \langle P_\mathfrak{i},P_\mathfrak{j}\rangle &=\norm{P_{\mathfrak{i}}^{(1)}}\delta_{\mathfrak{i}\mathfrak{j}}}
+  \onslide<5-> {&=\dots}\\
+  \onslide<5-> {&=\norm{P_{\mathfrak{i}}^{(1)}}\delta_{\mathfrak{i}\mathfrak{j}}}
  \end{align*}
- \onslide<7->
+ \onslide<6->
 \begin{alert}{But the problem is:}
-\[\E{uv} \neq \E{u}\E{v} \qquad \text{when $u$ and $v$ are dependent}\]
+\[\E{uv} \neq \E{u}\E{v} \qquad \text{when $u$ and $v$ are
+stochastically dependent}\]
  \end{alert}
 
 \end{frame}
 
 
-\begin{frame}{Transformation between distributions}
+\begin{frame}{Transformations manipulates probability distributions}
 \begin{figure}
  \includegraphics[width=\textwidth]{trans2.png}
 \end{figure}
-\pause
-\begin{figure}
- \includegraphics[width=\textwidth]{trans1.png}
-\end{figure}
-
-
 \end{frame}
 
 
+\begin{frame}{Transformation for multivariate distributions}{}
+\begin{figure}
+ \includegraphics[width=\textwidth]{trans1.png}
+\end{figure}
+    \begin{flushright}
+        $\Sigma_Q = L^TL$
+    \end{flushright}
+    \scriptsize
+\pause
+    \begin{align*}
+        \bm\mu_Q &=
+        \begin{pmatrix}
+            0 \\ 0
+        \end{pmatrix} &
+        \Sigma_Q &=
+        \begin{pmatrix}
+            1 & \rho \\ \rho & 1
+        \end{pmatrix} &
+        \bm\mu_R &=
+        \begin{pmatrix}
+            0 \\ 0
+        \end{pmatrix} &
+        \Sigma_R &=
+        \begin{pmatrix}
+            1 & 0 \\ 0 & 1
+        \end{pmatrix}
+    \end{align*}
+    \pause
+    \normalsize
+    \begin{align*}
+        Q_1 &= R_1 &
+        Q_2 &= \rho R_2 + \sqrt{1-\rho^2} R_1
+    \end{align*}
+\end{frame}
 
 
 \begin{chaospy}{Code for dependent normal variables}
@@ -201,8 +230,7 @@ U_analytic = cp.fit_quadrature(P, nodes0,\
 
  \end{frame}
 
-
- \begin{chaospy}{Automating previous code example with Rosenblatt transformation}
+ \begin{chaospy}{Point collocation with Rosenblatt transformation}
  \scriptsize
  \begin{lstlisting}[language=Python]
 def u(x,a, I):
@@ -213,25 +241,62 @@ mu = np.array([0.5, 0.5])
 dist_R = cp.J(cp.Normal(), cp.Normal())
 dist_Q = cp.MvNormal(mu, C)
 |\pause|
-x = np.linspace(0, 1, 100)
-|\pause|
 P = cp.orth_ttr(5, dist_R)|\pause|
 nodes_R = dist_R.sample(2*len(P), "M")|\pause|
-nodes_Q = dist_Q.inv(dist_R.fwd(s_R))|\pause|
-
+nodes_Q = dist_Q.inv(dist_R.fwd(nodes_R))
+|\pause|
+x = np.linspace(0, 1, 100)
 samples_u = [u(x, *node) for node in nodes_Q.T]|\pause|
-u_hat = cp.fit_regression(P, s_R, samples_u, rule="LS")
+u_hat = cp.fit_regression(P, nodes_R, samples_u)
 \end{lstlisting}
 \end{chaospy}
 
  \begin{frame}
- \frametitle{Convergence of Rosenblatt transformations}
- % TODO
- % fix legend
+ \frametitle{Convergence of point collocation with Rosenblatt transformations}
  \begin{figure}
- \includegraphics[width = 0.9\textwidth]{rosenblatt.png}
+ \includegraphics[width = 0.9\textwidth]{rosenblatt2.png}
  \end{figure}
+ \end{frame}
 
+ \begin{frame}{Rosenblatt transformations is essentially variable substitution}{}
+     \begin{align*}
+     \E{u} = \int u(x; q)& f_Q(q)\,dq &
+     \onslide<5->{= \int &u\left(x; q\right)
+     f_Q(q) \frac{f_R(r)}{f_Q(q)}\,dr}\\ \\
+     \onslide<2->{F_Q(q) &= F_R(r)} &
+     \onslide<4->{q &= F^{-1}_Q\left( F_R(r) \right)} \\
+     \onslide<3->{f_Q(q)\,dq &= f_R(r)\,dq} &
+     \onslide<4->{dq &= \frac{f_R(r)}{f_Q(q)}\,dq}
+     \end{align*}
+ \end{frame}
+
+ \begin{chaospy}{Pseudo-spectral with Rosenblatt transformation}
+ \scriptsize
+ \begin{lstlisting}[language=Python]
+def u(x,a, I):
+    return I*np.exp(-a*x)
+|\pause|
+C = [[2,1],[1,2]]
+mu = np.array([0.5, 0.5])
+dist_R = cp.J(cp.Normal(), cp.Normal())
+dist_Q = cp.MvNormal(mu, C)
+
+P = cp.orth_ttr(M, dist_R)
+nodes_R, weights_R = cp.generate_quadrature(M+1, dist_R)|\pause|
+nodes_Q = dist_Q.inv(dist_R.fwd(nodes_R))|\pause|
+weights_Q = weights_R*dist_Q.pdf(nodes_Q)/dist_R.pdf(nodes_R)
+|\pause|
+x = np.linspace(0, 1, 100)
+samples_u = [u(x, *node) for node in nodes_Q.T]|\pause|
+u_hat = cp.fit_quadrature(P, nodes_R, weights_Q, samples_u)
+\end{lstlisting}
+\end{chaospy}
+
+ \begin{frame}
+ \frametitle{Convergence of pseudo-spectral projection with Rosenblatt transformations}
+ \begin{figure}
+     \includegraphics[width = 0.9\textwidth]{rosenblatt.png}
+ \end{figure}
  \end{frame}
 
  
