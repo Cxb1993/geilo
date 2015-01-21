@@ -102,7 +102,7 @@ columns=fixed
       \href{https://github.com/hplgit/chaospy}{https://github.com/hplgit/chaospy}\\
 %\verb;http://github.com/hplgit/chaospy/;
   \end{alert}
-    \begin{alert}{Interactive sessions:}\\
+    \begin{alert}{Interactive session:}\\
   \scriptsize
 \href{http://10.50.3.247:8888/}{http://10.50.3.247:8888/}
 
@@ -679,7 +679,7 @@ x = np.linspace(0, 10, 100)
  |\pause|
 P = cp.orth_ttr(3, dist) |\pause|
 nodes = dist.sample(2*len(P)) |\pause|
-samples_u = [u(T, *node) for node in nodes.T] |\pause|
+samples_u = [u(x, *node) for node in nodes.T] |\pause|
 u_hat = cp.fit_regression(P, nodes, samples_u)
  \end{lstlisting}
 
@@ -1019,7 +1019,7 @@ var = cp.Var(u_hat, dist)
       \href{https://github.com/hplgit/chaospy}{https://github.com/hplgit/chaospy}\\
 %\verb;http://github.com/hplgit/chaospy/;
   \end{alert}
-    \begin{alert}{Interactive sessions:}\\
+    \begin{alert}{Interactive session:}\\
   \scriptsize
 \href{http://10.50.3.247:8888/}{http://10.50.3.247:8888/}
 

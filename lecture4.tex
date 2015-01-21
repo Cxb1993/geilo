@@ -244,7 +244,7 @@ def u(x,a, I):
     return I*np.exp(-a*x)
 |\pause|
 dist_R = cp.J(cp.Normal(), cp.Normal())
-C = [[1, 0.5], [0.5, b1]]
+C = [[1, 0.5], [0.5, 1]]
 mu = [0, 0]
 dist_Q = cp.MvNormal(mu, C)
 |\pause|
@@ -283,8 +283,8 @@ u_hat = cp.fit_regression(P, nodes_R, samples_u)
 def u(x,a, I):
     return I*np.exp(-a*x)
 |\pause|
-C = [[2,1],[1,2]]
-mu = np.array([0.5, 0.5])
+C = [[1,0.5],[0.5,1]]
+mu = np.array([0, 0])
 dist_R = cp.J(cp.Normal(), cp.Normal())
 dist_Q = cp.MvNormal(mu, C)
 
@@ -322,7 +322,7 @@ u_hat = cp.fit_quadrature(P, nodes_R, weights_Q, samples_u)
       \href{https://github.com/hplgit/chaospy}{https://github.com/hplgit/chaospy}\\
 %\verb;http://github.com/hplgit/chaospy/;
   \end{alert}
-    \begin{alert}{Interactive sessions:}\\
+    \begin{alert}{Interactive session:}\\
   \scriptsize
 \href{http://10.50.3.247:8888/}{http://10.50.3.247:8888/}
 

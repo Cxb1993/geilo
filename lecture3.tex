@@ -96,7 +96,7 @@ columns=fixed
       \href{https://github.com/hplgit/chaospy}{https://github.com/hplgit/chaospy}\\
 %\verb;http://github.com/hplgit/chaospy/;
   \end{alert}
-    \begin{alert}{Interactive sessions:}\\
+    \begin{alert}{Interactive session:}\\
   \scriptsize
 \href{http://10.50.3.247:8888/}{http://10.50.3.247:8888/}
 
@@ -247,7 +247,7 @@ def right_hand_side(c, x):            # c' = right_hand_side(c, x)
 initial_condition = E_IP/norms
 |\pause|
 solver = odespy.RK4(right_hand_side)
-solver.set_initial_condition(intitial_condition)
+solver.set_initial_condition(initial_condition)
 |\pause|
 x = np.linspace(0, 10, 1000)
 c = solver.solve(x)[0]

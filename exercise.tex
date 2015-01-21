@@ -77,6 +77,11 @@ escapeinside=||
 
 \begin{frame}
 \frametitle{Traveling with constant velocity, a simple problem}
+   \begin{alert}{Interactive session:}
+\href{http://10.50.3.247:8888/}{http://10.50.3.247:8888/}\newline
+  \end{alert}
+  
+  
  Distance when traveling at constant velocity is
 \[s(t) = vt\]
 \pause
@@ -92,6 +97,13 @@ where the velocity is measured to
 \begin{frame}
 \frametitle{Traveling with constant acceleration}
 \scriptsize
+   \begin{alert}{Interactive session:}
+\href{http://10.50.3.247:8888/}{http://10.50.3.247:8888/}\newline
+  \end{alert}
+  
+  
+
+
  Distance when traveling with constant acceleration is
  \[s(t) = v_0t + \frac{1}{2}at^2\]
 \pause
@@ -111,6 +123,43 @@ Find the expectation value and variance in the time interval $t=[0,10]$  and plo
 \end{itemize}
 \end{alert}
 \end{frame}
+
+\begin{frame}{A Monte Carlo solution gives}
+ \begin{figure}
+  \includegraphics[width=0.85\textwidth]{solution2.png}
+ \end{figure}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{A different differential equation}
+   \begin{alert}{Interactive session:}
+\href{http://10.50.3.247:8888/}{http://10.50.3.247:8888/}\newline
+  \end{alert}
+  
+  
+We have the differential equation 
+\[\frac{d u(x)}{dx} = u(x) + a \qquad u(0) = I,\]
+where a and I is uncertain and given by
+\[a\sim \text{Normal(4, 1)}\qquad I\sim \text{Uniform(2, 6)}\]
+\begin{alert}{Task:}
+Find the expectation value and variance in the time interval $t=[0,1]$  and plot them. Use:
+\begin{itemize}
+ \item A pseudo spectral method with a Rosenblat transformation, map against a Normal(0, 1) and Uniform(-1, 1) distribution.
+ \item The intrusive Galerkin method.
+\end{itemize}
+
+\end{alert}
+\end{frame}
+
+\begin{frame}{A Monte Carlo solution gives}
+ \begin{figure}
+  \includegraphics[width=0.85\textwidth]{solution8mc.png}
+ \end{figure}
+
+\end{frame}
+
 
 % \begin{frame}
 % \frametitle{Traveling with constant acceleration}
