@@ -92,10 +92,10 @@ t = np.linspace(0,10,1000)
 P = cp.orth_ttr(5, v)
 nodes, weights = cp.generate_quadrature(6, v, rule="G")
 samples_u = [s(t, n) for n in nodes.T]
-U_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
+u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
-plot(t, cp.E(U_hat, v))
-plot(t, cp.Var(U_hat, v))
+plot(t, cp.E(u_hat, v))
+plot(t, cp.Var(u_hat, v))
 \end{lstlisting}
 \end{chaospy}
 
@@ -191,10 +191,10 @@ t = np.linspace(0,10,1000)
 P = cp.orth_ttr(5, dist)
 nodes, weights = cp.generate_quadrature(6, dist, rule="G")
 samples_u = [s(t, *n) for n in nodes.T]
-U_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
+u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
-plot(t, cp.E(U_hat, dist))
-plot(t, cp.Var(U_hat, dist))
+plot(t, cp.E(u_hat, dist))
+plot(t, cp.Var(u_hat, dist))
 \end{lstlisting}
 \end{chaospy}
 
@@ -225,10 +225,10 @@ P = cp.orth_ttr(M, dist)
 nodes, weights = cp.generate_quadrature(6, dist, rule="C" \
                                         , sparse=True)
 samples_u = [s(t, *n) for n in nodes.T]
-U_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
+u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
 
-plot(t, cp.E(U_hat, dist))
-plot(t, cp.Var(U_hat, dist))
+plot(t, cp.E(u_hat, dist))
+plot(t, cp.Var(u_hat, dist))
 \end{lstlisting}
 \end{chaospy}
 
@@ -257,10 +257,10 @@ t = np.linspace(0,10,1000)
 P = cp.orth_ttr(5, dist)
 nodes = dist.sample(2*len(P))
 samples_u = [s(t, *n) for n in nodes.T]
-U_hat = cp.fit_regression(P, nodes, samples_u, rule="LS")
+u_hat = cp.fit_regression(P, nodes, samples_u, rule="LS")
 
-plot(t, cp.E(U_hat, dist))
-plot(t, cp.Var(U_hat, dist))
+plot(t, cp.E(u_hat, dist))
+plot(t, cp.Var(u_hat, dist))
 \end{lstlisting}
 \end{chaospy}
 
@@ -289,10 +289,10 @@ t = np.linspace(0,10,1000)
 P = cp.orth_ttr(5, dist)
 nodes = dist.sample(2*len(P), "M")
 samples_u = [s(t, *n) for n in nodes.T]
-U_hat = cp.fit_regression(P, nodes, samples_u, rule="T")
+u_hat = cp.fit_regression(P, nodes, samples_u, rule="T")
 
-plot(t, cp.E(U_hat, dist))
-plot(t, cp.Var(U_hat, dist))
+plot(t, cp.E(u_hat, dist))
+plot(t, cp.Var(u_hat, dist))
 \end{lstlisting}
 \end{chaospy}
 
@@ -303,6 +303,82 @@ plot(t, cp.Var(U_hat, dist))
   \includegraphics[width=0.85\textwidth]{solution7.png}
  \end{figure}
 \end{frame}
+
+
+\begin{chaospy}{A different differential equation}
+ \scriptsize
+ \begin{lstlisting}[language=Python]
+a = cp.Normal(4,1)
+I = cp.Uniform(2, 6)
+dist_Q = cp.J(a, I)
+dist_R = cp.J(cp.Normal(), cp.Uniform())
+
+x = np.linspace(0,1,100)
+
+P = cp.orth_ttr(2, dist_R)
+nodes_R, weights_R = cp.generate_quadrature(3, dist_R)
+nodes_Q = dist_Q.inv(dist_R.fwd(nodes_R))
+weights_Q = weights_R*dist_Q.pdf(nodes_Q)/dist_R.pdf(nodes_R)
+
+samples_u = [u(x, *node) for node in nodes_Q.T]
+u_hat = cp.fit_quadrature(P, nodes_R, weights_Q, samples_u)
+\end{lstlisting}
+\end{chaospy}
+
+\begin{chaospy}{A different differential equation}
+  \begin{figure}
+  \includegraphics[width=0.85\textwidth]{solution9.png}
+ \end{figure}
+\end{chaospy}
+
+
+
+
+ \begin{chaospy}{A different differential equation}
+ \scriptsize
+ \begin{lstlisting}[language=Python]
+a = cp.Normal(4,1)
+I = cp.Uniform(2, 6)
+dist = cp.J(a, I)
+
+x = np.linspace(0,1,100)
+
+P, norm = cp.orth_ttr(5, dist, retall=True)
+
+q0, q1 = cp.variable(2)
+
+P_nk = cp.outer(P, P)
+E_ak = cp.E(q0*P, dist)
+E_ik = cp.E(q1*P, dist)
+E_nk = cp.E(P_nk, dist)
+\end{lstlisting}
+\end{chaospy}
+
+ \begin{chaospy}{A different differential equation}
+ \scriptsize
+ \begin{lstlisting}[language=Python]
+def f(c_k,x):
+    return (c_k + E_ak)*cp.sum(E_nk, -1)/norm
+        
+solver = odespy.RK4(f)
+c_0 = E_ik/norm
+solver.set_initial_condition(c_0)
+c_n, x_ = solver.solve(x)
+u_hat = cp.sum(P*c_n,-1)
+
+E = cp.E(u_hat, dist)
+Var = cp.Var(u_hat, dist)
+ 
+plot(x, cp.E(u_hat, dist))
+plot(x, cp.Var(u_hat, dist))
+\end{lstlisting}
+\end{chaospy}
+
+\begin{chaospy}{A different differential equation}
+  \begin{figure}
+  \includegraphics[width=0.85\textwidth]{solution8.png}
+ \end{figure}
+\end{chaospy}
 
 
 
