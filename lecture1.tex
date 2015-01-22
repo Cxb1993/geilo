@@ -218,7 +218,7 @@ def u(x, a):
   return np.exp(-a*x)
 
 |\pause|
-dist_a = cp.Uniform(0.0.1)
+dist_a = cp.Uniform(0,0.1)
 
 samples_a = dist_a.sample(size=1000)
 |\pause|
@@ -234,8 +234,8 @@ Var = np.var(samples_u)
 \begin{frame}
   \frametitle{Convergence of Monte Carlo is slow}
   \begin{align*}
-  \varepsilon_E &= \int_0^{10}|\E(u) - \E(\hat{u})|\,dx &
-  \varepsilon_{Var} &= \int_0^{10}|Var(u) - Var(\hat{u})|\,dx
+      \varepsilon_E &= \int_0^{10}|\E{u} - \E{\hat{u}}|\,dx &
+      \varepsilon_{Var} &= \int_0^{10}|\Var{u} - \Var{\hat{u}}|\,dx
   \end{align*}
   \begin{center}
     \includegraphics[width=0.75\textwidth]{MC_convergence_1D_1.png}
@@ -598,7 +598,6 @@ a &\sim \text{Uniform(0, 0.1)} \sim p_a(a) & I&=1\hbox{ (known)}
     $\mathbf{P}_{30} \quad \mathbf{P}_{21}\quad \mathbf{P}_{12}\quad ...$
   \end{tabular}
     \end{center}
-
 \column{.5\textwidth}
 
 \begin{center}
@@ -612,6 +611,14 @@ Single-index\\
   \end{tabular}
 \end{center}
   \end{columns}
+    \pause
+    \begin{align*}
+        N =
+        \begin{pmatrix}
+            M+D \\ M
+        \end{pmatrix}
+    \end{align*}
+
 \end{frame}
 
 
@@ -622,8 +629,8 @@ Single-index\\
     P_{m_1}^{(1)}\cdots P_{m_D}^{(D)}}\\\\
     \onslide<2-> {&= \E{P_{n_1}^{(1)}\cdot P_{m_1}^{(1)}}\cdots
   \E{P_{n_D}^{(D)}\cdot P_{m_D}^{(D)}}} \\\\
-  \onslide<3-> {&= \inner{ P_{n_1}^{(1)}\cdot P_{m_1}^{(1)} }\cdots
-  \inner{ P_{n_D}^{(D)}\cdot P_{m_D}^{(D)} }} \\\\
+  \onslide<3-> {&= \inner{ P_{n_1}^{(1)}, P_{m_1}^{(1)} }\cdots
+  \inner{ P_{n_D}^{(D)}, P_{m_D}^{(D)} }} \\\\
   \onslide<4-> {&=
   \norm{P_{n_1}^{(1)}}\delta_{n_1m_1}\cdots\norm{P_{n_D}^{(D)}}\delta_{n_Dm_D}}
   \\\\
