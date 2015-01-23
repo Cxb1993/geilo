@@ -127,29 +127,29 @@ columns=fixed
 \end{frame}
 
 
-\begin{chaospy}{Teaser: this is all the code we need}
+\begin{chaospy}{Repetition of the Chaospy code}
     \scriptsize
     % TODO
     % high: make it 2-D problem
+%  def u(x, a, I):
+%    return I*np.exp(-a*x)
+%  |\pause|
  \begin{lstlisting}[language=python]
-def u(x, a, I):
-  return I*np.exp(-a*x)
-|\pause|
 dist_a = cp.Uniform(0, 0.1)
 dist_I = cp.Uniform(8, 10)
 dist = cp.J(a,I)
 |\pause|
 P = cp.orth_ttr(2, dist)
-|\pause|
-nodes, weights = cp.generate_quadrature(3, dist)
-
-x = np.linspace(0, 10, 100)
-samples_u = [u(x, *node) for node in nodes.T]
-
-u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
-
-mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 \end{lstlisting}
+%  |\pause|
+%  nodes, weights = cp.generate_quadrature(3, dist)
+%  
+%  x = np.linspace(0, 10, 100)
+%  samples_u = [u(x, *node) for node in nodes.T]
+%  
+%  u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
+%  
+%  mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 \end{chaospy}
 
 
@@ -164,12 +164,12 @@ mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
 %   $   \varepsilon_E = \int_0^{10}|E(u) - E(\hat{u})|\,dx \qquad
 %    \varepsilon_{Var} = \int_0^{10}|Var(u) - Var(\hat{u})|\,dx$
 %  \end{center}
-\scriptsize
-\[   \varepsilon_E = \int_0^{10}|E(u) - E(\hat{u})|\,dx \qquad
-   \varepsilon_{Var} = \int_0^{10}|Var(u) - Var(\hat{u})|\,dx\]
+%  \scriptsize
+%  \[   \varepsilon_E = \int_0^{10}|E(u) - E(\hat{u})|\,dx \qquad
+%     \varepsilon_{Var} = \int_0^{10}|Var(u) - Var(\hat{u})|\,dx\]
 
  \begin{figure}
-  \includegraphics[width=0.7\textwidth]{MC_convergence_2D.png}
+  \includegraphics[width=0.9\textwidth]{MC_convergence_2D.png}
  \end{figure}
 
 \end{frame}
@@ -183,9 +183,11 @@ With $\hat u_M(x;q) = \sum_{n=0}^N c_n(x) P_n(q)$ and orthogonal polynomials, le
  % med: subscript all f and F with Q, e.g. f_Q and F_Q
 
  \begin{align*}
-     c_n(x) &= \frac{\inner{ u,P_n}}{\norm{P_n}^2}\\
-\onslide<2-> {&=\frac{1}{\norm{P_n}^2} \int u(x;q)P_n(q)f_Q(q)dq} \onslide<3-> {\approx\\
-\hat{c}_n(x) &= \frac{1}{\norm{P_n}^2} \sum_{k=0}^K
+     c_n(x) &= \frac{\inner{ u,P_n}}{\norm{P_n}^2}
+     \onslide<2->{=\frac{\E{uP_n}}{\E{P_n^2}}} \\
+     \onslide<3-> {&=\frac{1}{\E{P_n^2}} \int u(x;q)P_n(q)f_Q(q)dq}
+\onslide<4-> {\approx\\
+\hat{c}_n(x) &= \frac{1}{\E{P_n^2}} \sum_{k=0}^K
 P_n(q_k)u(x;q_k)f(q_k)\omega_k}
 \end{align*}
 \onslide<4->
@@ -214,18 +216,6 @@ print weights
 [ 0.16666667  0.66666667  0.16666667]
 \end{lstlisting}
 \normalsize
-\onslide<3->
-
-\begin{tabular}{|ll|l|}
-\hline
- Key & & Description\\\hline
-    "Gaussian"& "G" &    Optimal Gaussian quadrature.\\
-    "Legendre"& "E" &    Gauss-Legendre quadrature\\
-    "Clenshaw"& "C" &    Clenshaw-Curtis quadrature.\\
-    "Leja"& ``J" &          Leja quadrature.\\
-    "Genz"& "Z" &        Hermite Genz-Keizter 16 rule.\\
-    "Patterson" & "P"&    Gauss-Patterson quadrature rule.\\\hline
-\end{tabular}
 
 \end{chaospy}
 
@@ -337,6 +327,32 @@ print weights
 
 \end{chaospy}
 
+\begin{chaospy}{A full implementation of pseudo-spectral projection
+    in Chaospy}
+    \scriptsize
+    % TODO
+    % high: make it 2-D problem
+%  def u(x, a, I):
+%    return I*np.exp(-a*x)
+%  |\pause|
+ \begin{lstlisting}[language=python]
+dist_a = cp.Uniform(0, 0.1)
+dist_I = cp.Uniform(8, 10)
+dist = cp.J(a,I)
+|\pause|
+P = cp.orth_ttr(2, dist)
+|\pause|
+nodes, weights = cp.generate_quadrature(3, dist)
+|\pause|
+x = np.linspace(0, 10, 100)
+samples_u = [u(x, *node) for node in nodes.T]
+|\pause|
+u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
+|\pause|
+mean, var = cp.E(u_hat, dist), cp.Var(u_hat, dist)
+\end{lstlisting}
+\end{chaospy}
+
 
 %  \begin{frame}
 %   \frametitle{Plot of the nodes for the 2D problem, $\Pi_{44}$}
@@ -354,6 +370,7 @@ print weights
   \includegraphics[width=0.85\textwidth]{dimensionality_nodes.png}
  \end{figure}
 \end{frame}
+
 
 \begin{frame}
  \frametitle{Smolyak sparse grids can drastically reduce the
@@ -414,6 +431,19 @@ Smolyak sparse grid:
 %    \includegraphics[width=0.85\textwidth]{dimensionality_nodes_sparse.png}
 %   \end{figure}
 %   \end{frame}
+\begin{frame}{Different problems require different schemes}{}
+\begin{tabular}{|ll|l|}
+\hline
+ Key & & Description\\\hline
+    "Gaussian"& "G" &    Optimal Gaussian quadrature.\\
+    "Legendre"& "E" &    Gauss-Legendre quadrature\\
+    "Clenshaw"& "C" &    Clenshaw-Curtis quadrature.\\
+    "Leja"& ``J" &          Leja quadrature.\\
+    "Genz"& "Z" &        Hermite Genz-Keizter 16 rule.\\
+    "Patterson" & "P"&    Gauss-Patterson quadrature rule.\\\hline
+\end{tabular}
+\end{frame}
+
 
  \begin{frame}
   \frametitle{Nested sparse grids use overlapping nodes to further reduce
@@ -565,35 +595,35 @@ We need weighting function $W(q)$ to be the joint probability distribution $f_Q(
     \end{frame}
 
 
-  \begin{frame}
- \frametitle{Nodes for different probability distributions}
- \begin{columns}
-     \column{.5\textwidth}
-     \begin{center}
-                \includegraphics[width=.7\textwidth]{nodes_uniform.png}
-
-                Uniform
-     \end{center}
-
-     \begin{center}
-                \includegraphics[width=.7\textwidth]{nodes_normal.png}
-
-                Normal
-     \end{center}
-     \column{.5\textwidth}
-     \begin{center}
-                \includegraphics[width=.7\textwidth]{nodes_gamma.png}
-
-                Gamma
-     \end{center}
-
-     \begin{center}
-                \includegraphics[width=.7\textwidth]{nodes_beta.png}
-
-                Beta
-     \end{center}
- \end{columns}
-\end{frame}
+%    \begin{frame}
+%   \frametitle{Nodes for different probability distributions}
+%   \begin{columns}
+%       \column{.5\textwidth}
+%       \begin{center}
+%                  \includegraphics[width=.7\textwidth]{nodes_uniform.png}
+%  
+%                  Uniform
+%       \end{center}
+%  
+%       \begin{center}
+%                  \includegraphics[width=.7\textwidth]{nodes_normal.png}
+%  
+%                  Normal
+%       \end{center}
+%       \column{.5\textwidth}
+%       \begin{center}
+%                  \includegraphics[width=.7\textwidth]{nodes_gamma.png}
+%  
+%                  Gamma
+%       \end{center}
+%  
+%       \begin{center}
+%                  \includegraphics[width=.7\textwidth]{nodes_beta.png}
+%  
+%                  Beta
+%       \end{center}
+%   \end{columns}
+%  \end{frame}
 
 
 %  \begin{frame}
