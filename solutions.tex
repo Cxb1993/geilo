@@ -80,32 +80,32 @@ columns=fixed
   \maketitle
 \end{frame}
 
- \begin{chaospy}{Traveling with constant velocity.}
- \scriptsize
- \begin{lstlisting}[language=Python]
-def s(t, v):
-    return v*t
-
-v = cp.Normal(5,1)
-t = np.linspace(0,10,1000)
-
-P = cp.orth_ttr(5, v)
-nodes, weights = cp.generate_quadrature(6, v, rule="G")
-samples_u = [s(t, n) for n in nodes.T]
-u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
-
-plot(t, cp.E(u_hat, v))
-plot(t, cp.Var(u_hat, v))
-\end{lstlisting}
-\end{chaospy}
-
-
-\begin{frame}
- \frametitle{Traveling with constant velocity.}
-  \begin{figure}
-  \includegraphics[width=0.85\textwidth]{solution1.png}
- \end{figure}
-\end{frame}
+%  \begin{chaospy}{Traveling with constant velocity.}
+%  \scriptsize
+%  \begin{lstlisting}[language=Python]
+% def s(t, v):
+%     return v*t
+% 
+% v = cp.Normal(5,1)
+% t = np.linspace(0,10,1000)
+% 
+% P = cp.orth_ttr(5, v)
+% nodes, weights = cp.generate_quadrature(6, v, rule="G")
+% samples_u = [s(t, n) for n in nodes.T]
+% u_hat = cp.fit_quadrature(P, nodes, weights, samples_u)
+% 
+% plot(t, cp.E(u_hat, v))
+% plot(t, cp.Var(u_hat, v))
+% \end{lstlisting}
+% \end{chaospy}
+% 
+% 
+% \begin{frame}
+%  \frametitle{Traveling with constant velocity.}
+%   \begin{figure}
+%   \includegraphics[width=0.85\textwidth]{solution1.png}
+%  \end{figure}
+% \end{frame}
 
  \begin{chaospy}{Traveling with constant acceleration, classical Monte Carlo integration.}
  \scriptsize
@@ -318,7 +318,8 @@ x = np.linspace(0,1,100)
 P = cp.orth_ttr(2, dist_R)
 nodes_R, weights_R = cp.generate_quadrature(3, dist_R)
 nodes_Q = dist_Q.inv(dist_R.fwd(nodes_R))
-weights_Q = weights_R*dist_Q.pdf(nodes_Q)/dist_R.pdf(nodes_R)
+weights_Q = \
+   weights_R*dist_Q.pdf(nodes_Q)/dist_R.pdf(nodes_R)
 
 samples_u = [u(x, *node) for node in nodes_Q.T]
 u_hat = cp.fit_quadrature(P, nodes_R, weights_Q, samples_u)

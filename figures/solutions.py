@@ -12,8 +12,8 @@ def plot(t,E,Var,name):
     plt.xlabel("Time, t")
     plt.ylabel("Distance, s")
     plt.legend(["Mean","Variance"], loc=2)
-    plt.savefig(name+".png")
-    plt.show()
+    plt.savefig(name+".pdf")
+    #plt.show()
 
 
     
@@ -61,7 +61,7 @@ E = np.sum(distance,0)/N
 Var = np.sum(distance**2,0)/N - E**2
 
 #plot(t,E,Var)
-#plot(t,E,Var, "solution2")
+plot(t,E,Var, "solution2")
 
 
 def s(t, v0, a):
@@ -83,7 +83,7 @@ Var = np.sum(distance**2,0)/N - E**2
 
 
 #plot(t,E,Var)
-#plot(t,E,Var, "solution3")
+plot(t,E,Var, "solution3")
 
 
 
@@ -108,7 +108,7 @@ E = cp.E(U_hat, dist)
 Var = cp.Var(U_hat, dist)
 
 #plot(t,E,Var)
-#plot(t,E,Var, "solution4")
+plot(t,E,Var, "solution4")
 
 
 
@@ -132,7 +132,7 @@ E = cp.E(U_hat, dist)
 Var = cp.Var(U_hat, dist)
 
 #plot(t,E,Var)
-#plot(t,E,Var, "solution5")
+plot(t,E,Var, "solution5")
 
 
 
@@ -157,7 +157,7 @@ E = cp.E(U_hat, dist)
 Var = cp.Var(U_hat, dist)
 
 #plot(t,E,Var)
-#plot(t,E,Var, "solution6")
+plot(t,E,Var, "solution6")
 
 
 
@@ -181,7 +181,7 @@ E = cp.E(U_hat, dist)
 Var = cp.Var(U_hat, dist)
 
 #plot(t,E,Var)
-#plot(t,E,Var, "solution7")
+plot(t,E,Var, "solution7")
 
 
 
@@ -197,8 +197,8 @@ def plot(t,E,Var,name):
     plt.xlabel("x")
     plt.ylabel("u(x)")
     plt.legend(["Mean","Variance"], loc=2)
-    plt.savefig(name+".png")
-    plt.show()
+    plt.savefig(name+".pdf")
+    #plt.show()
 
 
 
