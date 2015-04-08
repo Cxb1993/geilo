@@ -7,14 +7,15 @@ Nt = 10**2
 
 legend = []
 pl.rc("figure", figsize=[6,4])
-pl.plot(-1,1, "k-")
-pl.plot(-1,1, "k--")
-pl.plot(-1,1, "r")
+#pl.plot(-1,1, "k-")
+#pl.plot(-1,1, "k--")
+#pl.plot(-1,1, "r")
 #pl.plot(-1,1, "b")
-pl.plot(-1,1, "g")
-pl.legend(["Mean","Variance", "Monte Carlo","Polynomial chaos"],loc=3,prop={"size" :12})
+#pl.plot(-1,1, "g")
+#pl.legend(["Mean","Variance", "Monte Carlo","Polynomial chaos"],loc=3,prop={"size" :12})
+
 pl.xlim([0,20])
-pl.ylim([10**-26,10**1])
+#pl.ylim([10**-26,10**1])
 
 def E_analytical(x):
     #return (1-np.exp(10*x))/(10*x)
@@ -134,17 +135,18 @@ for k in range(0,N+1):
 pl.plot(totalerrorMC, "r-",linewidth=2)
 pl.plot(totalvarianceMC, "r--", linewidth=2)
 
-pl.plot(K,errorPoly, "b-", linewidth=2)
-pl.plot(K,varPoly,"b--", linewidth=2)
+#pl.plot(K,errorPoly, "b-", linewidth=2)
+#pl.plot(K,varPoly,"b--", linewidth=2)
 
-pl.plot(K,errorCP,"g-", linewidth=2)
-pl.plot(K,varCP,"g--", linewidth=2)
+#pl.plot(K,errorCP,"g-", linewidth=2)
+#pl.plot(K,varCP,"g--", linewidth=2)
 
-pl.xlabel("Evaluations")
+pl.xlabel("Model evaluations")
 pl.ylabel("Error")
 pl.yscale('log')
+pl.legend(["Mean","Variance", "Polynomial chaos, mean","Polynomial chaos, variance"],loc=3,prop={"size" :12})
 #pl.legend(["E, MC","Var, MC","E, PC","Var, PC"], loc=3)
-#pl.savefig("Convergence_repeat.png")
-pl.savefig("MC_convergence_1D_3.png")
+#pl.savefig("Convergence_repeat.svg")
+pl.savefig("MC_convergence_1D_1.svg")
 
 pl.show()
