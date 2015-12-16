@@ -1,4 +1,0 @@
-geilo
-=====
-
-Geilo Winter School
